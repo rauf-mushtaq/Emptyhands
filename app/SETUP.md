@@ -42,8 +42,12 @@ With *Only dates relevant to me* switched on (the default), other dates are show
 
 When a coach sends a notice, students with the app open get it immediately: a pop-up, a red badge on *Notices*, and a system notification if they turned on alerts. Everyone else sees the badge the next time they open the app.
 
-Push notifications to a closed phone app need Firebase Cloud Messaging plus a small server function, which means the paid Firebase (Blaze) plan. That can be added later without changing anything else.
+The App Store / Google Play apps also get push notifications when the app is closed. That uses a small server function on the Firebase Blaze plan; see `mobile/README.md`.
 
 ## Removing a student
 
 **Students → Remove.** They're moved to the *Removed* filter and can no longer read notices. **Restore** undoes it.
+
+## Phone apps
+
+To publish the student app on the App Store and Google Play, see [`mobile/README.md`](../mobile/README.md).

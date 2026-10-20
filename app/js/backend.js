@@ -38,12 +38,11 @@ export function errorText(err) {
 }
 
 async function firebaseBackend() {
-  const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
-  const [{ initializeApp }, A, F] = await Promise.all([
-    import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js'),
-  ]);
+  const { initializeApp, A, F } = await import('./firebase-sdk.js');
   const app = initializeApp(firebaseConfig);
-  const auth = A.getAuth(app);
+  // initializeAuth rather than getAuth: getAuth loads a popup/redirect helper that
+  // never finishes inside the iOS app's web view.
+  const auth = A.initializeAuth(app, { persistence: [A.indexedDBLocalPersistence, A.browserLocalPersistence] });
   const db = F.getFirestore(app);
   const ref = (...p) => F.doc(db, ...p);
   const wrap = u => u && { uid: u.uid, email: (u.email || '').toLowerCase(), emailVerified: u.emailVerified };
@@ -62,11 +61,14 @@ async function firebaseBackend() {
       await auth.currentUser.getIdToken(true);
       return wrap(auth.currentUser);
     },
+    reauthenticate: pw => A.reauthenticateWithCredential(auth.currentUser, A.EmailAuthProvider.credential(auth.currentUser.email, pw)),
     deleteAccount: () => A.deleteUser(auth.currentUser),
 
     getProfile: async uid => { const s = await F.getDoc(ref('users', uid)); return s.exists() ? s.data() : null; },
     saveProfile: (uid, data) => F.setDoc(ref('users', uid), data, { merge: true }),
     deleteProfile: uid => F.deleteDoc(ref('users', uid)),
+    addPushToken: (uid, token) => F.updateDoc(ref('users', uid), { pushTokens: F.arrayUnion(token) }),
+    removePushToken: (uid, token) => F.updateDoc(ref('users', uid), { pushTokens: F.arrayRemove(token) }),
     listStudents: async () => rows(await F.getDocs(F.query(F.collection(db, 'users'), F.where('role', 'in', ['student', 'removed'])))),
 
     watchNotifications: cb => F.onSnapshot(
@@ -137,6 +139,7 @@ function demoBackend() {
     resetPassword: async () => {},
     sendVerification: async () => {},
     reloadUser: async () => me(),
+    reauthenticate: async pw => { if ((accounts()[me().email] || {}).pw !== pw) fail('auth/invalid-credential'); },
     deleteAccount: async () => {
       const u = me(); const a = accounts(); delete a[u.email]; store('accounts', a);
       store('session', null); emitAuth();
@@ -145,6 +148,8 @@ function demoBackend() {
     getProfile: async uid => users.all()[uid] || null,
     saveProfile: async (uid, data) => users.put(uid, { ...(users.all()[uid] || {}), ...data }),
     deleteProfile: async uid => users.del(uid),
+    addPushToken: async () => {},
+    removePushToken: async () => {},
     listStudents: async () => Object.entries(users.all()).map(([id, u]) => ({ id, ...u })).filter(u => u.role === 'student' || u.role === 'removed'),
 
     watchNotifications: cb => { noteCbs.add(cb); setTimeout(() => cb(notes())); return () => noteCbs.delete(cb); },

@@ -54,7 +54,7 @@
         <div class="profile-slot"></div>
         <p class="form-error" hidden></p>
         <button class="btn btn--seal btn--block" type="submit">Create my account</button>
-        <p class="fine">We only use your details to run your classes and send you dojo notices.</p>
+        <p class="fine">Under 13? A parent or guardian should create the account. We only use these details to run classes and send dojo notices — see our <a href="privacy.html" target="_blank" rel="noopener">privacy policy</a>.</p>
       </form>
     </div>
   </section>
@@ -130,6 +130,7 @@
     </form>
     <div class="row-actions">
       <button class="btn btn--ghost" data-signout>Sign out</button>
+      <a class="linkish" href="privacy.html" target="_blank" rel="noopener">Privacy policy</a>
       <button class="linkish danger" id="delete-account">Delete my account</button>
     </div>
   </section>
@@ -149,6 +150,16 @@
     <p id="day-type"></p>
     <p class="day-note" id="day-note"></p>
     <button class="btn btn--block">Close</button>
+  </form>
+</dialog>
+
+<dialog id="delete-dialog" class="sheet">
+  <form method="dialog" class="stack" id="form-delete">
+    <h2>Delete your account?</h2>
+    <p class="muted">This removes your profile and sign-in from EmptyHands. It can’t be undone. Enter your password to confirm.</p>
+    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+    <p class="form-error" hidden></p>
+    <div class="row-actions"><button class="btn btn--seal" value="delete">Delete account</button><button class="btn btn--ghost" value="cancel" formnovalidate>Cancel</button></div>
   </form>
 </dialog>
 

@@ -1,4 +1,6 @@
 import { backend, DEMO, isCoach, errorText } from './backend.js';
+import { SITE_URL } from './config.js';
+import { NATIVE, pushState, enablePush, onPushTap, shareFile } from './native.js';
 import {
   $, $$, esc, TYPES, GRADES, AUDIENCES, renderYear, legendHTML, upcoming, loadCalendar,
   calendarYears, isRelevant, noticeIsFor, longDate, shortDate, whenText, timeAgo, todayKey, icsFor, download,
@@ -117,7 +119,7 @@ async function onAuth(user) {
     return message('Your account is paused', 'The dojo has removed this account from the student list. If you think this is a mistake, please contact us on 07931 300470 or <a href="mailto:info@emptyhands.co.uk">info@emptyhands.co.uk</a>.');
   }
   if (!state.profile && await isCoach(user)) {
-    return message('You’re signed in as a coach', `<b>${esc(user.email)}</b> is a coach account. Open the <a href="coach.html">coach panel</a>, or sign out to use the student app.`);
+    return message('You’re signed in as a coach', `<b>${esc(user.email)}</b> is a coach account. Open the <a href="${NATIVE ? SITE_URL + 'app/coach.html' : 'coach.html'}" target="_blank" rel="noopener">coach panel</a>, or sign out to use the student app.`);
   }
   if (!state.profile) {
     // Signed in but no profile (e.g. removed by a coach, or sign-up interrupted): ask for details again.
@@ -163,6 +165,7 @@ async function enter(user) {
   show(['home', 'calendar', 'notices', 'profile'].includes(start) ? start : 'home');
   drawHome();
   alertsButton();
+  if (NATIVE && !DEMO && (await pushState()) === 'granted') turnOnPush(true);
 }
 
 function myNotices() { return state.notices.filter(n => noticeIsFor(n, state.profile)); }
@@ -278,8 +281,11 @@ $('#cal-year-select').addEventListener('change', async e => {
   state.cal = await loadCalendar(api, state.year);
   drawCalendar();
 });
-$('#ics').addEventListener('click', () => {
-  download(`emptyhands-${state.year}.ics`, icsFor(state.year, state.cal.days, state.profile), 'text/calendar');
+$('#ics').addEventListener('click', async () => {
+  const name = `emptyhands-${state.year}.ics`;
+  const ics = icsFor(state.year, state.cal.days, state.profile);
+  if (NATIVE) { try { await shareFile(name, ics); } catch (e) { console.warn(e); } return; }
+  download(name, ics, 'text/calendar');
 });
 
 function openDay(key) {
@@ -313,22 +319,52 @@ $('#form-profile').addEventListener('submit', async e => {
     } catch (err) { showError(form, errorText(err)); }
   });
 });
-$$('[data-signout]').forEach(b => b.addEventListener('click', () => api.signOut()));
-$('#delete-account').addEventListener('click', async () => {
-  if (!confirm('Delete your EmptyHands student account? This can’t be undone.')) return;
-  try {
-    await api.deleteProfile(state.user.uid);
-    await api.deleteAccount();
-    toast('Your account has been deleted');
-  } catch (err) { toast(errorText(err), 'bad'); }
+async function signOut() {
+  // Stop this phone getting pushes for the account that's signing out.
+  if (state.pushToken) { try { await api.removePushToken(state.user.uid, state.pushToken); } catch (e) { console.warn(e); } state.pushToken = null; }
+  await api.signOut();
+}
+$$('[data-signout]').forEach(b => b.addEventListener('click', signOut));
+
+$('#delete-account').addEventListener('click', () => {
+  $('#form-delete').reset();
+  showError($('#form-delete'));
+  $('#delete-dialog').showModal();
+});
+$('#form-delete').addEventListener('submit', async e => {
+  if (e.submitter && e.submitter.value === 'cancel') return;
+  e.preventDefault();
+  const form = e.target;
+  await busy(form.querySelector('[value=delete]'), async () => {
+    try {
+      await api.reauthenticate(form.password.value);
+      await api.deleteProfile(state.user.uid);
+      await api.deleteAccount();
+      $('#delete-dialog').close();
+      toast('Your account has been deleted');
+    } catch (err) { showError(form, errorText(err)); }
+  });
 });
 
-// ---- browser alerts ----
-function alertsButton() {
+// ---- alerts: push notifications in the phone app, browser notifications on the web ----
+async function turnOnPush(quiet) {
+  try {
+    const token = await enablePush(async t => {
+      if (state.user) await api.addPushToken(state.user.uid, t);
+      state.pushToken = t;
+    });
+    if (!quiet) toast(token ? 'Notifications on — we’ll let you know when your coaches send a notice.' : 'Notifications are off. You can turn them on in your phone’s Settings.');
+  } catch (err) { console.warn(err); if (!quiet) toast('Couldn’t turn on notifications. Please try again.', 'bad'); }
+  alertsButton();
+}
+async function alertsButton() {
   const btn = $('#enable-alerts');
+  if (NATIVE) { btn.hidden = DEMO || (await pushState()) === 'granted'; return; }
   btn.hidden = !('Notification' in window) || Notification.permission !== 'default';
 }
+onPushTap(() => { if (state.profile) show('notices'); });
 $('#enable-alerts').addEventListener('click', async () => {
+  if (NATIVE) return turnOnPush(false);
   const r = await Notification.requestPermission();
   toast(r === 'granted' ? 'Alerts on — you’ll get a pop-up for new notices while the app is open.' : 'Alerts are off. You can change this in your browser settings.');
   alertsButton();

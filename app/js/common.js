@@ -176,7 +176,7 @@ export async function busy(btn, fn) {
 }
 
 export function registerSW() {
-  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.Capacitor) {
     navigator.serviceWorker.register(new URL('../sw.js', import.meta.url)).catch(() => {});
   }
 }

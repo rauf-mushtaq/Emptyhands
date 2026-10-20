@@ -16,3 +16,6 @@ export const firebaseConfig = {
 //    their email) and can add other coaches from it. Keep this list identical to
 //    OWNERS in app/firestore.rules.
 export const OWNER_EMAILS = ['info@emptyhands.co.uk'];
+
+// 3. Where the website lives. The phone app links here for the coach panel and privacy policy.
+export const SITE_URL = 'https://rauf-mushtaq.github.io/emptyhands/';
