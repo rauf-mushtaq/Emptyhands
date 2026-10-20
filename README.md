@@ -26,6 +26,7 @@ python3 -m http.server 8000   # then visit http://localhost:8000
 | `testimonials.html`, `gallery.html` | All reviews; photo gallery with lightbox + the full dojo film |
 | `contact.html`, `join.html` | Both dojos with maps; contact and trial-class forms (open the visitor's email app or WhatsApp — nothing is stored) |
 | `blog/` | All 26 journal articles with category filter and search |
+| `app/index.html`, `app/coach.html` | Student app (account, year calendar with their key dates, coaches' notices) and coach panel (send notices, student list, edit and publish the calendar). See [`app/SETUP.md`](app/SETUP.md) |
 
 ## Editing
 

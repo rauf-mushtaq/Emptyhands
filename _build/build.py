@@ -85,6 +85,7 @@ DOJO_MENU = [
     ('yudansha', '有段', 'Yudansha wall', 'Our black belts'),
     ('testimonials', '声', 'Testimonials', 'Parents, students & masters'),
     ('gallery', '写真', 'Gallery', 'Life in the dojo'),
+    ('app/index', '生徒', 'Student app', 'Your calendar & dojo notices'),
 ]
 
 
@@ -148,6 +149,8 @@ def footer(prefix):
           <li><a href="%(p)syudansha.html">Yudansha wall</a></li>
           <li><a href="%(p)stestimonials.html">Testimonials</a></li>
           <li><a href="%(p)sgallery.html">Gallery</a></li>
+          <li><a href="%(p)sapp/index.html">Student app</a></li>
+          <li><a href="%(p)sapp/coach.html">Coach panel</a></li>
           <li><a href="%(p)s%(syllabus)s" target="_blank" rel="noopener">Syllabus (PDF)</a></li>
           <li><a href="%(p)s%(calendar)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
         </ul>
