@@ -290,9 +290,7 @@ TIMETABLE = [
     ('Thursday', 'karate', 'Karate-Dō', 'All grades, children & adults', '7:00pm – 9:00pm', 'Ilford', 'Weekly'),
     ('Thursday', 'taichi', 'Tai Chi Chuan', 'Yang family style', '6:00pm – 7:00pm', 'Ilford', 'Book ahead'),
     ('Thursday', 'yoga', 'Yoga', 'Himalayan Hatha — drop-in', '8:00pm – 9:00pm', 'Ilford', 'Drop-in'),
-    ('Tuesday', 'taichi', 'Tai Chi Chuan', 'Yang family style', '6:30pm – 8:30pm', 'Epping (invite only)', 'Book ahead'),
-    ('Advanced', 'karate', 'Advanced Karate', 'For our more developed students', 'By invitation', 'Epping (invite only)', 'Senior'),
-    ('Any day', 'shiatsu', 'Shiatsu & Coaching', 'One-to-one sessions & workshops', 'By appointment', 'Epping (invite only) / Teams', 'Free 15-min consult'),
+    ('Any day', 'shiatsu', 'Shiatsu & Coaching', 'One-to-one sessions & workshops', 'By appointment', '', 'Free 15-min consult'),
 ]
 
 
