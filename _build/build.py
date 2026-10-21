@@ -473,12 +473,12 @@ def build_home():
   <div class="wrap">
     <div class="section-head reveal">
       <div><span class="eyebrow">Inside the dojo</span><h2>Watch the dojo in action</h2></div>
-      <p class="lead">Kihon, kata, kumite and gradings — two minutes of real training on the dojo floor.</p>
+      <p class="lead">Both EmptyHands trailers back to back — kihon, kata, kumite and gradings, set to music.</p>
     </div>
     <div class="film reveal">
-      <video preload="none" playsinline poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
+      <video preload="metadata" playsinline poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
       <button class="film-play" aria-label="Play the EmptyHands dojo film"><span>%(play)s</span></button>
-      <div class="film-meta">EmptyHands Karate School<strong>Training in our dojo · 2 min</strong></div>
+      <div class="film-meta">EmptyHands Karate School<strong>Trailers 1 &amp; 2 · with music · 3 min 40</strong></div>
     </div>
   </div>
 </section>
@@ -1014,9 +1014,9 @@ def build_gallery():
     <div class="section-head reveal"><div><span class="eyebrow">Film</span><h2>The EmptyHands dojo film</h2></div>
     <a class="link-arrow" href="%s" target="_blank" rel="noopener">More on YouTube</a></div>
     <div class="film reveal">
-      <video preload="none" playsinline poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
+      <video preload="metadata" playsinline poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
       <button class="film-play" aria-label="Play the EmptyHands dojo film"><span>%s</span></button>
-      <div class="film-meta">EmptyHands Karate School<strong>Training in our dojo · 2 min</strong></div>
+      <div class="film-meta">EmptyHands Karate School<strong>Trailers 1 &amp; 2 · with music · 3 min 40</strong></div>
     </div>
   </div>
 </section>
