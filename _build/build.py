@@ -184,6 +184,8 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>%(title)s</title>
 <meta name="description" content="%(desc)s">
 <meta name="theme-color" content="#14120f">
@@ -193,9 +195,7 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <meta property="og:image" content="%(p)sassets/img/hero-poster.jpg">
 <link rel="icon" href="%(p)sassets/img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="%(p)sassets/img/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700&family=Shippori+Mincho:wght@500;600;700&display=swap">
+<link rel="preload" href="%(p)sassets/fonts/karla.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%(p)sassets/css/style.css">
 %(extra)s</head>
 <body>
@@ -325,9 +325,9 @@ def locations():
     out = []
     for d in DOJOS:
         out.append('''<article class="location reveal">
-  <iframe src="%s" title="Map of %s" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div class="map-consent"><button class="map-load" type="button" data-src="%s" data-title="Map of %s">Show map</button><p>Loads Google Maps, which may set cookies.</p></div>
   <div class="body"><h3>%s <span class="k kanji">%s</span></h3><p class="muted">%s</p><ul>%s</ul>
-  <a class="link-arrow" href="%s" target="_blank" rel="noopener">Get directions</a></div>
+  <a class="link-arrow" href="%s" target="_blank" rel="noopener noreferrer">Get directions</a></div>
 </article>''' % (d['map'], d['name'], d['name'], d['k'], d['address'], ''.join('<li>%s</li>' % c for c in d['classes']), d['directions']))
     return '<div class="locations">%s</div>' % ''.join(out)
 
