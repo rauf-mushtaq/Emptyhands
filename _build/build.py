@@ -193,8 +193,10 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <meta property="og:title" content="%(title)s">
 <meta property="og:description" content="%(desc)s">
 <meta property="og:image" content="%(p)sassets/img/hero-poster.jpg">
-<link rel="icon" href="%(p)sassets/img/favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="%(p)sassets/img/favicon.png">
+<link rel="icon" href="%(p)sassets/img/home-icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="%(p)sassets/img/home-icon-180.png">
+<link rel="manifest" href="%(p)ssite.webmanifest">
+<meta name="apple-mobile-web-app-title" content="EmptyHands">
 <link rel="preload" href="%(p)sassets/fonts/karla.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="%(p)sassets/css/style.css">
 %(extra)s</head>
