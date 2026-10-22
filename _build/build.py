@@ -677,7 +677,8 @@ def build_about():
     </div>
     <div class="reveal reveal-d1">
       <ol class="timeline">
-        <li><strong>1994</strong><span>Azeem begins formal Karate training as a founding member of an East London dojo — Poon Dojo, Stratford.</span></li>
+        <li><strong>Early years</strong><span>Inspired by a family tradition of wrestling, Azeem’s passion for martial arts begins in childhood, growing in his teens through kickboxing.</span></li>
+        <li><strong>1994</strong><span>Azeem begins his formal Karate path as a founding member of an East London dojo.</span></li>
         <li><strong>1990s</strong><span>Launches ZenKarate, one of the first online Karate magazines.</span></li>
         <li><strong>1999</strong><span>Begins studying Tai Chi Chuan with Master John Ding.</span></li>
         <li><strong>2003</strong><span>Graduates from the British School of Shiatsu-Dô and founds the EmptyHands clinic.</span></li>
