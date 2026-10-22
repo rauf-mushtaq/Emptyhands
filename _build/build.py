@@ -113,13 +113,14 @@ def header(active, prefix, over_hero):
       %(fees)s
       %(blog)s
       %(contact)s
+      %(app)s
       <a class="btn btn--seal" href="%(p)sjoin.html">Book a trial</a>
     </nav>
   </div>
 </header>''' % {
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
         'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
-        'contact': top('contact', 'Contact'),
+        'contact': top('contact', 'Contact'), 'app': top('our-app', 'Our app'),
     }
 
 
@@ -148,6 +149,7 @@ def footer(prefix):
           <li><a href="%(p)syudansha.html">Yudansha wall</a></li>
           <li><a href="%(p)stestimonials.html">Testimonials</a></li>
           <li><a href="%(p)sgallery.html">Gallery</a></li>
+          <li><a href="%(p)sour-app.html">Our app</a></li>
           <li><a href="%(p)s%(syllabus)s" target="_blank" rel="noopener">Syllabus (PDF)</a></li>
           <li><a href="%(p)s%(calendar)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
         </ul>
@@ -877,6 +879,51 @@ def build_fees():
     page('fees.html', 'Fees', 'EmptyHands fees for Karate, Yoga, Tai Chi, Shiatsu, Coaching and gradings. New Karate starters pay £10 per lesson for their first few weeks.', body, 'fees')
 
 
+STUDENT_APP = 'https://rauf-mushtaq.github.io/emptyhands.student/'
+
+
+def build_app():
+    features = [
+        ('暦', 'Your dojo calendar', 'Training dates, days off, gradings and black-belt classes, with a countdown to your next class.'),
+        ('便', 'Messages from Sensei', 'Notices, the group chat, your training journal and private messages to Sensei.'),
+        ('宿', 'Homework', 'See what Sensei has set and tick it off when it’s done.'),
+        ('£', 'Pay your fees', 'Pay per lesson or per month by card or PayPal, and see what you’ve paid.'),
+    ]
+    feats = ''.join('<div class="app-feature reveal"><span class="k" aria-hidden="true">%s</span><h3>%s</h3><p>%s</p></div>' % f for f in features)
+    body = page_hero('Our app', 'EmptyHands in your pocket.',
+                     'The EmptyHands Student app puts your calendar, Sensei’s notices, homework and fees on your phone — free for every student.', '生徒', None, 'Our app') + '''
+<section class="section">
+  <div class="wrap split app-get">
+    <div class="reveal">
+      <span class="eyebrow">Get the app</span>
+      <h2>One tap to add it to your home screen.</h2>
+      <p class="lead">Tap the button on your phone or tablet. On Android it installs straight away; on iPhone and iPad we’ll show you the two taps needed.</p>
+      <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a><a class="btn btn--ghost" href="%(app)s">Open in the browser</a></div>
+      <p class="muted" style="margin-top:14px">New students create an account in the app, then Sensei accepts the request.</p>
+    </div>
+    <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/home-icon-512.png" alt="The EmptyHands Student app icon" width="512" height="512" loading="lazy"><span>EmptyHands Student</span></div>
+  </div>
+</section>
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="section-head reveal"><div><span class="eyebrow">What’s inside</span><h2>Everything for your training</h2></div></div>
+    <div class="app-features">%(feats)s</div>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal"><div><span class="eyebrow">Adding it yourself</span><h2>If the button doesn’t work</h2></div></div>
+    <div class="app-steps">
+      <div class="app-step reveal"><h3>iPhone &amp; iPad</h3><ol><li>Open the app link in <strong>Safari</strong>.</li><li>Tap <strong>Share</strong> (the square with an arrow).</li><li>Tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li></ol></div>
+      <div class="app-step reveal reveal-d1"><h3>Android</h3><ol><li>Open the app link in <strong>Chrome</strong>.</li><li>Tap <strong>Install</strong> when it asks — or the <strong>⋮</strong> menu.</li><li>Tap <strong>Install app</strong> / <strong>Add to Home screen</strong>.</li></ol></div>
+      <div class="app-step reveal reveal-d2"><h3>Computer</h3><ol><li>Open the app link in <strong>Chrome</strong> or <strong>Edge</strong>.</li><li>Click the <strong>install</strong> icon at the end of the address bar.</li><li>Click <strong>Install</strong>.</li></ol></div>
+    </div>
+    <p class="muted reveal" style="margin-top:24px">Coming soon to the App Store and Google Play.</p>
+  </div>
+</section>''' % {'app': STUDENT_APP, 'feats': feats}
+    page('our-app.html', 'Our app', 'The EmptyHands Student app: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
+
+
 def build_contact():
     body = page_hero('Contact', 'Come and say hello.',
                      'Questions about classes, therapies or your child’s first lesson? We’re always happy to hear from you.', '連絡', None, 'Contact') + '''
@@ -1090,7 +1137,7 @@ def build_404():
 def build_sitemap():
     base = 'https://emptyhands.co.uk/'
     pages = ['index.html', 'karate.html', 'yoga.html', 'tai-chi.html', 'shiatsu.html', 'coaching.html', 'about.html', 'instructors.html',
-             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'blog/index.html']
+             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'blog/index.html']
     pages += ['blog/%s.html' % p['slug'] for p in POSTS]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % ''.join(
         '  <url><loc>%s%s</loc></url>\n' % (base, p) for p in pages)
@@ -1107,6 +1154,7 @@ if __name__ == '__main__':
     build_testimonials()
     build_fees()
     build_contact()
+    build_app()
     build_join()
     build_gallery()
     build_blog()

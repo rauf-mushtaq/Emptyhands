@@ -791,3 +791,15 @@ html { -webkit-tap-highlight-color: transparent; }
   .wa-float { width: 50px; height: 50px; }
   .wa-float svg { width: 25px; height: 25px; }
 }
+
+/* Our app page */
+.btn--lg { min-height: 56px; padding: 14px 32px; font-size: 1.05rem; }
+.app-icon { display: grid; justify-items: center; gap: 14px; }
+.app-icon img { width: min(240px, 60vw); border-radius: 22%; box-shadow: 0 30px 60px -30px rgba(20, 18, 15, .55); }
+.app-icon span { font-weight: 700; letter-spacing: .02em; }
+.app-features { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.app-feature .k { display: block; font: 700 2.4rem/1 var(--serif); color: var(--bronze-2); margin-bottom: 12px; }
+.app-steps { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.app-step { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
+.app-step ol { margin: 0; padding-left: 20px; }
+.app-step li { margin-bottom: 6px; }
