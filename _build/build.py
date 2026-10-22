@@ -898,7 +898,7 @@ def build_app():
       <span class="eyebrow">Get the app</span>
       <h2>One tap to add it to your home screen.</h2>
       <p class="lead">Tap the button on your phone or tablet. On Android it installs straight away; on iPhone and iPad we’ll show you the two taps needed.</p>
-      <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a><a class="btn btn--ghost" href="%(app)s">Open in the browser</a></div>
+      <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a></div>
       <p class="muted" style="margin-top:14px">New students create an account in the app, then Sensei accepts the request.</p>
     </div>
     <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/home-icon-512.png" alt="The EmptyHands Student app icon" width="512" height="512" loading="lazy"><span>EmptyHands Student</span></div>
@@ -910,17 +910,7 @@ def build_app():
     <div class="app-features">%(feats)s</div>
   </div>
 </section>
-<section class="section">
-  <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">Adding it yourself</span><h2>If the button doesn’t work</h2></div></div>
-    <div class="app-steps">
-      <div class="app-step reveal"><h3>iPhone &amp; iPad</h3><ol><li>Open the app link in <strong>Safari</strong>.</li><li>Tap <strong>Share</strong> (the square with an arrow).</li><li>Tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li></ol></div>
-      <div class="app-step reveal reveal-d1"><h3>Android</h3><ol><li>Open the app link in <strong>Chrome</strong>.</li><li>Tap <strong>Install</strong> when it asks — or the <strong>⋮</strong> menu.</li><li>Tap <strong>Install app</strong> / <strong>Add to Home screen</strong>.</li></ol></div>
-      <div class="app-step reveal reveal-d2"><h3>Computer</h3><ol><li>Open the app link in <strong>Chrome</strong> or <strong>Edge</strong>.</li><li>Click the <strong>install</strong> icon at the end of the address bar.</li><li>Click <strong>Install</strong>.</li></ol></div>
-    </div>
-    <p class="muted reveal" style="margin-top:24px">Coming soon to the App Store and Google Play.</p>
-  </div>
-</section>''' % {'app': STUDENT_APP, 'feats': feats}
+''' % {'app': STUDENT_APP, 'feats': feats}
     page('our-app.html', 'Our app', 'The EmptyHands Student app: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
 
 
