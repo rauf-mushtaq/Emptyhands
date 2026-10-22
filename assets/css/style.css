@@ -119,7 +119,7 @@ p { margin: 0 0 1.1em; }
   box-shadow: 0 1px 0 var(--line);
 }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; position: relative; z-index: 2; }
-.brand img { height: 62px; width: auto; }
+.brand img { height: 62px; width: auto; border-radius: 12px; }
 @media (max-width: 600px) { .brand img { height: 52px; } }
 .brand .logo-light { display: none; }
 .is-over-hero:not(.is-scrolled) .brand .logo-dark { display: none; }

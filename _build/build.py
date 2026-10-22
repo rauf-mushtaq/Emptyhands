@@ -103,8 +103,8 @@ def header(active, prefix, over_hero):
 <header class="%(cls)s">
   <div class="wrap">
     <a class="brand" href="%(p)sindex.html" aria-label="EmptyHands home">
-      <img class="logo-dark" src="%(p)sassets/img/logo.png" alt="EmptyHands KaraTe School" width="597" height="399">
-      <img class="logo-light" src="%(p)sassets/img/logo-light.png" alt="" width="597" height="399">
+      <img class="logo-dark" src="%(p)sassets/img/logo.png" alt="EmptyHands KaraTe School" width="600" height="600">
+      <img class="logo-light" src="%(p)sassets/img/logo-light.png" alt="" width="600" height="600">
     </a>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
     <nav class="nav" id="site-nav" aria-label="Main">
@@ -132,7 +132,7 @@ def footer(prefix):
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="597" height="399" loading="lazy"></a>
+        <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="600" height="600" loading="lazy"></a>
         <p>EmptyHands Well-Being School — quality teaching in Karate, Yoga, Tai Chi &amp; Shiatsu. Established 2006, with classes across Ilford, Woodford &amp; Epping (invite only).</p>
         <div class="socials">%(social)s</div>
       </div>
