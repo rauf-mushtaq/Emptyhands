@@ -345,5 +345,19 @@
     });
   });
 
+  /* Phones: the WhatsApp button slides away while reading (scrolling down) and comes
+     back when scrolling up, so it doesn't sit on top of text and buttons */
+  var wa = $('.wa-float');
+  if (wa) {
+    var phone = window.matchMedia('(max-width: 600px)'), lastY = window.scrollY;
+    window.addEventListener('scroll', function () {
+      var yNow = window.scrollY;
+      if (!phone.matches) { wa.classList.remove('is-tucked'); lastY = yNow; return; }
+      if (Math.abs(yNow - lastY) < 8) return;
+      wa.classList.toggle('is-tucked', yNow > lastY && yNow > 200);
+      lastY = yNow;
+    }, { passive: true });
+  }
+
   var y = $('#year'); if (y) y.textContent = new Date().getFullYear();
 })();
