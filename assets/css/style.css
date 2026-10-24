@@ -119,8 +119,19 @@ p { margin: 0 0 1.1em; }
   box-shadow: 0 1px 0 var(--line);
 }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; position: relative; z-index: 2; }
-.brand img { height: 76px; width: auto; border-radius: 14px; }
-@media (max-width: 600px) { .brand img { height: 54px; } }
+/* The logo is large enough to read and hangs below the header bar like a badge;
+   it shrinks back to header size once the page is scrolled or the menu is open. */
+.site-header .brand { align-self: flex-start; margin-top: 10px; transition: margin-top .3s var(--ease); }
+.brand img { height: 130px; width: auto; border-radius: 18px; box-shadow: 0 14px 34px -14px rgba(0, 0, 0, .55); transition: height .3s var(--ease), border-radius .3s var(--ease); }
+.site-header.is-scrolled .brand { margin-top: 12px; }
+.site-header.is-scrolled .brand img { height: 68px; border-radius: 12px; }
+.site-header .wrap { align-self: stretch; }
+.page-hero { padding-top: calc(var(--header-h) + clamp(70px, 9vw, 110px)); }
+@media (max-width: 600px) {
+  .brand img { height: 84px; border-radius: 14px; }
+  .site-header.is-scrolled .brand { margin-top: 9px; }
+  .site-header.is-scrolled .brand img, .menu-open .site-header .brand img { height: 52px; }
+}
 .brand .logo-light { display: none; }
 .is-over-hero:not(.is-scrolled) .brand .logo-dark { display: none; }
 .is-over-hero:not(.is-scrolled) .brand .logo-light { display: block; }
@@ -199,8 +210,6 @@ p { margin: 0 0 1.1em; }
   color: rgba(246, 242, 234, .9); letter-spacing: .1em; text-shadow: 0 4px 30px rgba(0, 0, 0, .4);
 }
 .hero-kanji small { display: block; font: 700 .7rem/1 var(--sans); letter-spacing: .4em; color: var(--bronze-3); margin-top: 1.2em; text-transform: uppercase; }
-/* Large logo at the top of the home page, big enough to read the lettering */
-.hero-logo { display: block; width: clamp(190px, 18vw, 250px); height: auto; border-radius: 20px; margin-bottom: 26px; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .8); }
 .hero-stats {
   display: grid; grid-template-columns: repeat(4, 1fr); margin-top: clamp(36px, 7vh, 70px);
   border-top: 1px solid var(--line-light);
@@ -726,7 +735,6 @@ html { -webkit-tap-highlight-color: transparent; }
 
 @media (max-width: 600px) {
   :root { --header-h: 70px; }
-  .brand img { height: 54px; }
   body { font-size: 16px; }
 
   /* Small headings: smaller, no leading rule, so long ones wrap cleanly */
@@ -735,7 +743,7 @@ html { -webkit-tap-highlight-color: transparent; }
 
   /* Faded kanji behind page titles: smaller and fainter so it never fights the text */
   .page-hero .watermark { font-size: 7.5rem; bottom: -0.12em; opacity: .55; }
-  .page-hero { padding-top: calc(var(--header-h) + 36px); padding-bottom: 44px; }
+  .page-hero { padding-top: calc(var(--header-h) + 50px); padding-bottom: 44px; }
   .page-hero.has-media { min-height: 56vh; }
   .page-hero.has-media::before { background: linear-gradient(180deg, rgba(20, 18, 15, .72), rgba(20, 18, 15, .55) 45%, rgba(20, 18, 15, .92)); }
   .page-hero.has-media .eyebrow { color: var(--paper); opacity: .85; }

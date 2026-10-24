@@ -378,7 +378,6 @@ def build_home():
   <video data-bg data-film autoplay muted loop playsinline preload="auto" poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
   <button class="hero-sound" type="button" aria-label="Turn sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="wave" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="cross" d="m16 9 6 6m0-6-6 6"/></svg><span>Tap for sound</span></button>
   <div class="wrap">
-    <img class="hero-logo" src="assets/img/logo.png" alt="EmptyHands School" width="600" height="600" fetchpriority="high">
     <span class="eyebrow">Traditional Karate School · Est. 2006</span>
     <h1>The way of the <em>empty hand</em>.</h1>
     <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford &amp; Epping (invite only) — taught with patience, rooted in tradition, and open to every age and ability.</p>
