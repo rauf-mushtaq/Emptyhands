@@ -281,7 +281,7 @@ YUDANSHA = [
     ('Ishaaq Adam', 'ShoDan', 'December 2013', 'ishaaq.webp', 'Ishaaq started his Karate journey during the early days of EmptyHands Dojo. His attendance and loyalty to the Dojo has been exemplary. He has developed technically and found his niche within Karate, and has the potential to become a champion Karateka in the Traditional and Sport Karate arena.', '1'),
     ('Abdullah Shakeel', 'ShoDan', 'December 2013', 'abdul.webp', 'Abdullah worked incredibly hard over five to six years to become one of the most technically gifted students within our Dojo. His training and gradings have always been excellent; he has often been noted by external instructors during their visits and has the true heart of a Karateka.', '1'),
     ('Shihan Sumoondur', 'ShoDan', 'December 2013', 'shihan.webp', 'Shihan worked incredibly hard over five to six years to become one of the most technically gifted students within our Dojo. His training and gradings have always been excellent and often noted by external instructors. Shihan is a brave individual with great spirit and tenacity, making him a role model for his juniors.', '1'),
-    ('Mahwish Iftikhar', 'ShoDan', 'December 2011', 'a.webp', 'Mahwish was one of the founding members of our Dojo in 2006. She started her training in 2002 at the Poon Dojo in Stratford and has worked very hard developing her Martial Arts training over the years. She also completed our Instructor training programme.', '1'),
+    ('Mahwish Iftikhar', 'ShoDan', 'December 2011', 'a.webp', 'Mahwish was one of the founding members of our Dojo in 2006.', '1'),
 ]
 
 DOJO_KUN = [
@@ -679,7 +679,7 @@ def build_about():
       <ol class="timeline">
         <li><strong>Early years</strong><span>Inspired by a family tradition of wrestling, Azeem’s passion for martial arts begins in childhood, growing in his teens through kickboxing. He trained at the Gold Steel Gym in Walthamstow.</span></li>
         <li><strong>1994</strong><span>Azeem begins his formal Karate path as a founding member of an East London dojo.</span></li>
-        <li><strong>1990s</strong><span>Launches ZenKarate, one of the first online Karate magazines.</span></li>
+        <li><strong>1999</strong><span>Launches ZenKarate, one of the first online Karate magazines.</span></li>
         <li><strong>1999</strong><span>Begins studying Tai Chi Chuan with Master John Ding.</span></li>
         <li><strong>2003</strong><span>Graduates from the British School of Shiatsu-Dô and founds the EmptyHands clinic.</span></li>
         <li><strong>2006</strong><span>EmptyHands Dojo opens its doors in Ilford.</span></li>
