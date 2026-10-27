@@ -665,7 +665,7 @@ def build_disciplines():
 def build_about():
     body = page_hero('About EmptyHands', 'A safe space to learn and grow since 2006.',
                      'Martial arts, healing and bodywork — taught by people who believe martial arts can transform lives.', '歴史',
-                     ('img', 'shotokan-tigers.webp'), 'About') + '''
+                     ('img', 'eh-students-q.webp'), 'About') + '''
 <section class="section">
   <div class="wrap split">
     <div class="reveal">
@@ -741,7 +741,7 @@ def build_instructors():
     instructors = [
         ('Azeem Mushtaq', 'Sensei — GoDan', 'amushtaqsensei.webp', ['GoDan', 'MA', 'BA (Hons)', 'Dip Shiatsu-Do (FWSS)'], '''
 <p class="lead">Azeem founded EmptyHands in March 2006 to create a Dojo grounded in the principles of Bushidō — discipline, respect and purpose — while embracing thoughtful, modern interpretation. This vision grew naturally from his lifelong journey through the martial, healing and coaching arts.</p>
-<p>Inspired by a family tradition of wrestling, Azeem’s passion began in childhood and expanded in his teens through kickboxing. His formal Karate path started in 1994 as a founding member of an East London Dojo. He trained widely across local Dojos and travelled to learn from multiple Sensei, deepening his Shotokan practice and exploring Tai Chi Chuan and Shiatsu. He also launched the first online Karate magazine (ZenKarate), sharing knowledge with a growing community. Years of dedication led him to earn the title Sensei, guided by masters including Hirokazu Kanazawa Sōke, Chris Rowen Shihan, Yoshinobu Ohta Sensei and Nobuaki Kanazawa Kanchō.</p>
+<p>Inspired by a family tradition of wrestling, Azeem’s passion began in childhood and expanded in his teens through kickboxing at the Gold Steel Gym in Walthamstow. His formal Karate path started in 1994 as a founding member of an East London Dojo. He trained widely across local Dojos and travelled to learn from multiple Sensei, deepening his Shotokan practice and exploring Tai Chi Chuan and Shiatsu. He also launched the first online Karate magazine (ZenKarate), sharing knowledge with a growing community. Years of dedication led him to earn the title Sensei, guided by masters including Hirokazu Kanazawa Sōke, Chris Rowen Shihan, Yoshinobu Ohta Sensei and Nobuaki Kanazawa Kanchō.</p>
 <p>In 1999 Azeem began studying internal arts with Master John Ding at the International Academy of Tai Chi Chuan, training until 2005 and returning in 2014. He graduated from the British School of Shiatsu-Do in 2003 and continues client work and research in Epping (invite only). His Shiatsu development was supported by the late Rex Lassalle (Shiatsu Master), whose guidance helped shape Azeem’s integrated approach.</p>
 <p>Azeem holds an M.A. in Coaching (Oxford Brookes, 2013), where he developed the first Karate Coaching Model, and he actively promotes coaching in Martial Arts through talks and publications. He also serves as a board member of the Shiatsu Society, helping raise awareness of Shiatsu and wellbeing.</p>
 <p>Alongside teaching, Azeem has 30+ years’ experience in Business Architecture and IT Transformation as a Senior Business Consultant (Bespoke Vista Ltd), working with major organisations and maintaining current safeguarding checks.</p>
