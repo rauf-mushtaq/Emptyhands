@@ -505,13 +505,6 @@ def build_home():
   </div>
 </section>
 
-<section class="section section--alt">
-  <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">Find us</span><h2>Two dojos in East London &amp; Essex</h2></div>
-    <p class="lead">Classes have run across Ilford, Woodford &amp; Epping (invite only) since 2006.</p></div>
-    %(locations)s
-  </div>
-</section>
 %(cta)s
 ''' % {
         'img_main': img('azeem-mushtaq-sensei.webp', 'Sensei Azeem leading a training session in the dojo hall', 'main'),
