@@ -515,7 +515,7 @@ def build_home():
 %(cta)s
 ''' % {
         'img_main': img('azeem-mushtaq-sensei.webp', 'Sensei Azeem leading a training session in the dojo hall', 'main'),
-        'img_inset': img('reet.webp', 'Reet performing a high kick', 'inset'),
+        'img_inset': '',
         'cards': ''.join(cards), 'kun': kun, 'timetable': timetable(), 'calendar': DOCS['calendar'],
         'azeem': img('amushtaqsensei.webp', 'Azeem Mushtaq Sensei', '', 724, 1048), 'play': ICON['play'],
         'quotes': quotes, 'faces': faces, 'posts': posts, 'locations': locations(), 'cta': cta_band(),
