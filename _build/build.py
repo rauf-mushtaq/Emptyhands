@@ -24,8 +24,8 @@ WHATSAPP = 'https://wa.me/447931300470'
 # Leave it empty to keep Google off the site entirely. Conversion labels are optional:
 # each one comes from a conversion action's "Install the tag yourself" page (the part after the slash).
 GOOGLE_ADS = {
-    'id': '',
-    'labels': {'lead': '', 'contact': '', 'whatsapp': '', 'call': ''},
+    'id': 'AW-1066885133',
+    'labels': {'lead': '0yW_CO7uv64dEI3A3fwD', 'contact': '', 'whatsapp': '', 'call': ''},
 }
 
 
