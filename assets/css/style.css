@@ -813,3 +813,20 @@ html { -webkit-tap-highlight-color: transparent; }
 .app-step { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; }
 .app-step ol { margin: 0; padding-left: 20px; }
 .app-step li { margin-bottom: 6px; }
+
+/* ------------------------------------------------------------------ cookie consent (Google Ads only) */
+.consent {
+  position: fixed; left: 16px; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 60;
+  max-width: 560px; margin: 0 auto; padding: 20px 22px; border-radius: 12px;
+  background: var(--night); color: var(--paper); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .6);
+  display: grid; gap: 14px;
+}
+.consent[hidden] { display: none; }
+.consent p { margin: 0; font-size: .95rem; color: rgba(246, 242, 234, .85); }
+.consent strong { color: var(--paper); }
+.consent-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.consent .btn { min-height: 44px; }
+.consent .btn--ghost { --bg: var(--paper); color: var(--paper); }
+.consent .btn--ghost:hover { color: var(--ink); }
+.link-btn { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; margin-right: 10px; }
+.link-btn[hidden] { display: none; }

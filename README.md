@@ -38,3 +38,4 @@ python3 _build/build.py
 - Timetable, fees, testimonials, black belts, contact details: edit the data near the top of `_build/build.py`, then rebuild.
 - Blog posts: `_build/content/posts.json` (originally imported from the WordPress site with `_build/import_wp.py`).
 - Styles: `assets/css/style.css`. Behaviour: `assets/js/main.js`.
+- Google Ads: set `GOOGLE_ADS['id']` (and optional conversion labels) near the top of `_build/build.py`, then rebuild. This adds Google's tag behind a cookie consent banner and tracks trial registrations, contact forms, WhatsApp taps and phone taps. Leave the ID empty to keep Google off the site.

@@ -20,6 +20,36 @@ EMAIL = 'info@emptyhands.co.uk'
 PHONE = '+44 7931 300470'
 PHONE_HREF = 'tel:+447931300470'
 WHATSAPP = 'https://wa.me/447931300470'
+# Google Ads: paste the tag ID from Google Ads (Goals > Conversions > Google tag), e.g. 'AW-123456789'.
+# Leave it empty to keep Google off the site entirely. Conversion labels are optional:
+# each one comes from a conversion action's "Install the tag yourself" page (the part after the slash).
+GOOGLE_ADS = {
+    'id': '',
+    'labels': {'lead': '', 'contact': '', 'whatsapp': '', 'call': ''},
+}
+
+
+def csp():
+    """Content-Security-Policy for every page; opens up to Google only when Google Ads is switched on."""
+    script, img, connect, frame = ["'self'"], ["'self'", 'data:'], ["'self'"], ['https://www.google.com']
+    if GOOGLE_ADS['id']:
+        g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://www.google.com']
+        script += g
+        img += g + ['https://www.google.co.uk']
+        connect += g + ['https://*.google-analytics.com', 'https://www.google.co.uk', 'https://pagead2.googlesyndication.com']
+        frame += ['https://www.googletagmanager.com', 'https://td.doubleclick.net', 'https://bid.g.doubleclick.net']
+    return ("default-src 'self'; script-src %s; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src %s; media-src 'self'; "
+            "frame-src %s; connect-src %s; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests"
+            % (' '.join(script), ' '.join(img), ' '.join(frame), ' '.join(connect)))
+
+
+def ads_tags(prefix):
+    if not GOOGLE_ADS['id']:
+        return ''
+    labels = ''.join(' data-%s="%s"' % (k, e(v)) for k, v in GOOGLE_ADS['labels'].items() if v)
+    return '<meta name="google-ads" content="%s"%s>\n<script src="%sassets/js/ads.js" defer></script>\n' % (e(GOOGLE_ADS['id']), labels, prefix)
+
+
 SOCIAL = {
     'facebook': 'https://www.facebook.com/share/1GHWq27qj6/',
     'instagram': 'https://www.instagram.com/ehdojo/?hl=en-gb',
@@ -166,7 +196,7 @@ def footer(prefix):
     </div>
     <div class="footer-bottom">
       <span>© <span id="year">%(year)d</span> EmptyHands Karate School. All rights reserved.</span>
-      <span>Website by <a href="https://bespokevista.co.uk/" target="_blank" rel="noopener">Bespoke Vista</a></span>
+      <span><button type="button" class="link-btn js-cookie-settings" hidden>Cookie settings</button> Website by <a href="https://bespokevista.co.uk/" target="_blank" rel="noopener">Bespoke Vista</a></span>
     </div>
   </div>
 </footer>
@@ -186,7 +216,7 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="%(csp)s">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>%(title)s</title>
 <meta name="description" content="%(desc)s">
@@ -209,10 +239,11 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 </main>
 %(footer)s
 <script src="%(p)sassets/js/main.js" defer></script>
-</body>
+%(ads)s</body>
 </html>
 ''' % {
         'title': e(full_title), 'desc': e(description), 'p': prefix, 'extra': extra_head,
+        'csp': csp(), 'ads': ads_tags(prefix),
         'header': header(active, prefix, over_hero), 'body': body.replace('{{p}}', prefix), 'footer': footer(prefix),
     }
     dest = os.path.join(OUT, path)
@@ -1125,6 +1156,13 @@ def build_sitemap():
     open(os.path.join(OUT, 'robots.txt'), 'w').write('User-agent: *\nAllow: /\nSitemap: %ssitemap.xml\n' % base)
 
 
+def write_headers():
+    p = os.path.join(HERE, '_headers')
+    lines = open(p).read().split('\n')
+    lines = ["  Content-Security-Policy: %s; frame-ancestors 'none'" % csp() if l.startswith('  Content-Security-Policy:') else l for l in lines]
+    open(p, 'w').write('\n'.join(lines))
+
+
 if __name__ == '__main__':
     build_home()
     build_disciplines()
@@ -1140,4 +1178,5 @@ if __name__ == '__main__':
     build_blog()
     build_404()
     build_sitemap()
+    write_headers()
     print('built %d posts + pages into %s' % (len(POSTS), OUT))
