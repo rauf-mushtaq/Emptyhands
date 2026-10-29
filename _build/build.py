@@ -386,7 +386,6 @@ def build_home():
       <div><strong>2006</strong><span>Founded</span></div>
       <div><strong>15</strong><span>Black belts awarded</span></div>
       <div><strong>5</strong><span>Disciplines</span></div>
-      <div><strong>2</strong><span>Dojos</span></div>
     </div>
   </div>
   <button class="video-toggle" aria-label="Pause video"></button>
