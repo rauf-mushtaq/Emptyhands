@@ -210,8 +210,8 @@ def header(active, prefix, over_hero):
 <header class="%(cls)s">
   <div class="wrap">
     <a class="brand" href="%(p)sindex.html" aria-label="EmptyHands home">
-      <img class="logo-dark" src="%(p)sassets/img/logo.png" alt="EmptyHands KaraTe School" width="960" height="600">
-      <img class="logo-light" src="%(p)sassets/img/logo-light.png" alt="" width="960" height="600">
+      <img class="logo-dark" src="%(p)sassets/img/logo.png" alt="EmptyHands KaraTe School" width="600" height="600">
+      <img class="logo-light" src="%(p)sassets/img/logo-light.png" alt="" width="600" height="600">
     </a>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
     <nav class="nav" id="site-nav" aria-label="Main">
@@ -240,7 +240,7 @@ def footer(prefix):
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="960" height="600" loading="lazy"></a>
+        <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="600" height="600" loading="lazy"></a>
         <p>A traditional Karate and wellbeing school, teaching Karate, Tai Chi, Yoga and Shiatsu since 2006. Classes run in Ilford and Woodford, with an invite-only dojo in Epping.</p>
         <div class="socials">%(social)s</div>
       </div>
@@ -372,7 +372,8 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <meta property="og:description" content="%(desc)s">
 <meta property="og:image" content="%(base)sassets/img/hero-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="%(p)sassets/img/home-icon-192.png" type="image/png">
+<link rel="icon" href="%(p)sassets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="%(p)sassets/img/home-icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="%(p)sassets/img/home-icon-180.png">
 <link rel="manifest" href="%(p)ssite.webmanifest">
 <meta name="apple-mobile-web-app-title" content="EmptyHands">
@@ -1118,7 +1119,7 @@ def build_app():
       <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a></div>
       <p class="muted" style="margin-top:14px">New students create an account in the app, then Sensei accepts the request.</p>
     </div>
-    <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/home-icon-512.png" alt="The EmptyHands Student app icon" width="512" height="512" loading="lazy"><span>EmptyHands Student</span></div>
+    <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/app-icon-512.png" alt="The EmptyHands Student app icon" width="512" height="512" loading="lazy"><span>EmptyHands Student</span></div>
   </div>
 </section>
 <section class="section section--alt">
