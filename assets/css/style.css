@@ -832,3 +832,12 @@ html { -webkit-tap-highlight-color: transparent; }
 .consent .btn--ghost:hover { color: var(--ink); }
 .link-btn { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; margin-right: 10px; }
 .link-btn[hidden] { display: none; }
+
+/* ------------------------------------------------------------------ normal text: one size and font everywhere
+   Intro paragraphs, card text, quotes and articles all match ordinary paragraph text. */
+.lead, .discipline p, .pillar p, .timeline span, .post-card p, .prose, .prose table, .note, .word p,
+.quote blockquote, .prose blockquote, .cta-band p, .location ul, .aside-card ol {
+  font-family: var(--sans); font-size: 1em; font-weight: 400; font-style: normal; line-height: 1.7;
+}
+.lead, .prose { color: var(--ink); }
+.prose > p:first-child::first-letter { float: none; font: inherit; color: inherit; margin: 0; }
