@@ -958,7 +958,7 @@ def build_fees():
                    % (s, s, 'true' if i == 0 else 'false', 0 if i == 0 else -1, k, n) for i, (s, k, n, _, _) in enumerate(panels))
     bodies = ''.join('<div class="fee-panel" role="tabpanel" id="%s" aria-labelledby="%s-tab"%s><div class="price-list">%s</div><p class="note">%s</p></div>'
                      % (s, s, '' if i == 0 else ' hidden', ''.join(items), note) for i, (s, _, _, items, note) in enumerate(panels))
-    body = page_hero('Fees', 'Simple drop-in and monthly fees',
+    body = page_hero('Fees', 'Drop-in and monthly fees',
                      'Fees are calculated from the total number of lessons taught across the year, so the monthly cost stays the same.', '月謝', None, 'Fees') + '''
 <section class="section">
   <div class="wrap">
