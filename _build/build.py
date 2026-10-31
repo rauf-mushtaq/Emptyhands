@@ -98,7 +98,7 @@ def csp():
     """Content-Security-Policy for every page; opens up to Google only when Google Ads is switched on."""
     script, img, connect, frame = ["'self'"], ["'self'", 'data:'], ["'self'"], ['https://www.google.com']
     if GOOGLE_ADS['id']:
-        g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://www.google.com']
+        g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://ad.doubleclick.net', 'https://www.google.com']
         script += g
         img += g + ['https://www.google.co.uk']
         connect += g + ['https://*.google-analytics.com', 'https://www.google.co.uk', 'https://pagead2.googlesyndication.com']
