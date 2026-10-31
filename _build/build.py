@@ -143,6 +143,18 @@ DOJOS = [
 e = html.escape
 
 
+def _asset_version():
+    """Short fingerprint of the CSS/JS, added to their links so browsers fetch new versions straight away."""
+    import hashlib
+    h = hashlib.sha1()
+    for f in ('assets/css/style.css', 'assets/js/main.js'):
+        h.update(open(os.path.join(OUT, f), 'rb').read())
+    return h.hexdigest()[:8]
+
+
+ASSET_V = _asset_version()
+
+
 def img(name, alt='', cls='', w=None, h=None, lazy=True, prefix=''):
     attrs = ['src="%sassets/img/%s"' % (prefix, name), 'alt="%s"' % e(alt)]
     if cls:
@@ -295,7 +307,7 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <link rel="manifest" href="%(p)ssite.webmanifest">
 <meta name="apple-mobile-web-app-title" content="EmptyHands">
 <link rel="preload" href="%(p)sassets/fonts/karla.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="%(p)sassets/css/style.css">
+<link rel="stylesheet" href="%(p)sassets/css/style.css?v=%(v)s">
 %(extra)s</head>
 <body>
 %(header)s
@@ -303,12 +315,12 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 %(body)s
 </main>
 %(footer)s
-<script src="%(p)sassets/js/main.js" defer></script>
+<script src="%(p)sassets/js/main.js?v=%(v)s" defer></script>
 %(ads)s</body>
 </html>
 ''' % {
         'title': e(full_title), 'desc': e(description), 'p': prefix, 'extra': extra_head,
-        'csp': csp(), 'ads': ads_tags(prefix),
+        'csp': csp(), 'ads': ads_tags(prefix), 'v': ASSET_V,
         'header': header(active, prefix, over_hero), 'body': body.replace('{{p}}', prefix), 'footer': footer(prefix),
     }
     dest = os.path.join(OUT, path)
