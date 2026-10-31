@@ -15,6 +15,71 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.dirname(HERE)
 POSTS = json.load(open(os.path.join(HERE, 'content', 'posts.json')))
 
+# Cleaner, consistent (sentence-case) titles for the imported WordPress articles. URLs (slugs) stay the same.
+POST_TITLES = {
+    'reflections-learning-from-lockdown': 'Reflections: lessons from lockdown',
+    'history-of-karate-do': 'The history of Karate-Dō',
+    'sports-injuries': 'Sports injuries and the martial arts',
+    'emptyhands-charity-cup': 'The EmptyHands Charity Cup',
+    'workshop-with-shihan-chris-rowen': 'Workshop with Shihan Chris Rowen',
+    'sotai-master-class-with-rex-lassalle': 'Sōtai master class with Rex Lassalle',
+    'warm-up': 'The dojo warm-up',
+    'clinic': 'The EmptyHands Shiatsu clinic',
+    'bodhidharma-founder-of-martial-arts': 'Bodhidharma, founder of the martial arts',
+    'chi': 'Chi: understanding the vital life force',
+    'virtual-dojo': 'The virtual dojo',
+    'yoga-karate': 'Yoga and Karate',
+    'coronavirus-online-karate-training': 'Training Karate online through the pandemic',
+    'fight-club': 'Fight Club: back to the roots of Karate',
+    'immunity-tips': 'Boosting immunity with acupressure',
+    'kobudo': 'Kobudō: traditional Japanese weaponry',
+    'coping-with-stress-is-karate-the-answer': 'Coping with stress: is Karate the answer?',
+    '5-actionable-tips-to-becoming-a-better-karateka': 'Five ways to become a better karateka',
+    'neurobics-for-karate': 'Neurobics for Karate',
+    'karate-mindsets': 'Karate mindsets',
+    'shotokan-tigers': 'The Shotokan tiger',
+    'evidence-based-karate-training': 'Evidence-based Karate training',
+    'budo-culture': 'Budō culture',
+    'creating-online-dojo-with-microsoft-teams': 'Creating an online dojo with Microsoft Teams',
+    'karate_rules': 'Karate rules for personal growth',
+}
+# Words that keep their capital letter when article headings are put into sentence case.
+KEEP_CAPS = {'Karate', 'Karateka', 'Karate-Dō', 'EmptyHands', 'Shihan', 'Chris', 'Rowen', 'Bodhidharma', 'China', 'Shaolin',
+             'Japan', 'Japanese', 'Chi', 'Yin', 'Yang', 'To-Te', 'Jitsu', 'Gichin', 'Funakoshi', 'Asian', 'Kidney', 'Lung', 'Intestine',
+             'Kobudō', 'Kihon', 'Kata', 'Kumite', 'Mokuso', 'Jodo', 'Shotokan', 'Budō', 'Shiatsu', 'Fight', 'Club', 'I', 'EBT', 'Ks'}
+
+
+def tidy_heading(text):
+    """Sentence case, no trailing colon, no ALL CAPS — so article headings match the rest of the site."""
+    import re
+    text = re.sub(r'<[^>]+>', '', text).strip().rstrip(':').strip()
+    words = text.split(' ')
+    out = []
+    for i, w in enumerate(words):
+        core = w.strip('()“”‘’!?,.:')
+        first = i == 0 or (i == 1 and re.fullmatch(r'\d+\.', words[0]))
+        if core.isupper() and len(core) > 1 and core not in KEEP_CAPS:
+            w = w.replace(core, core.capitalize())
+            core = core.capitalize()
+        if core not in KEEP_CAPS and '-' in core:   # Real-Life -> Real-life
+            parts = core.split('-')
+            w = w.replace(core, '-'.join([parts[0]] + [x.lower() for x in parts[1:]]))
+            core = w.strip('()“”‘’!?,.:')
+        if not first and core not in KEEP_CAPS and core[:1].isupper() and not re.search(r'[　-鿿]', core):
+            w = w.replace(core, core[:1].lower() + core[1:], 1)
+        out.append(w)
+    return ' '.join(out).replace('new year', 'New Year')
+
+
+def tidy_post(p):
+    import re
+    p['title'] = POST_TITLES.get(p['slug'], p['title'])
+    p['html'] = re.sub(r'<(h[1-6])([^>]*)>(.*?)</\1>', lambda m: '<%s%s>%s</%s>' % (m.group(1), m.group(2), tidy_heading(m.group(3)), m.group(1)), p['html'], flags=re.S)
+    return p
+
+
+POSTS = [tidy_post(p) for p in POSTS]
+
 SITE = 'EmptyHands'
 EMAIL = 'info@emptyhands.co.uk'
 PHONE = '+44 7931 300470'
@@ -110,9 +175,9 @@ CLASSES = [
     ('coaching', '指導', 'Coaching', 'Person-centred self-development'),
 ]
 DOJO_MENU = [
-    ('about', '歴史', 'About us', 'Our story since 2006'),
+    ('about', '歴史', 'About us', 'The story since 2006'),
     ('instructors', '先生', 'Instructors & mentors', 'Sensei and senior students'),
-    ('yudansha', '有段', 'Yudansha wall', 'Our black belts'),
+    ('yudansha', '有段', 'Yudansha wall', 'Black belts of the dojo'),
     ('testimonials', '声', 'Testimonials', 'Parents, students & masters'),
     ('gallery', '写真', 'Gallery', 'Life in the dojo'),
 ]
@@ -150,7 +215,7 @@ def header(active, prefix, over_hero):
 </header>''' % {
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
         'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
-        'contact': top('contact', 'Contact'), 'app': top('our-app', 'Our app'),
+        'contact': top('contact', 'Contact'), 'app': top('our-app', 'Student app'),
     }
 
 
@@ -164,7 +229,7 @@ def footer(prefix):
     <div class="footer-grid">
       <div>
         <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="600" height="600" loading="lazy"></a>
-        <p>EmptyHands Well-Being School — quality teaching in Karate, Yoga, Tai Chi &amp; Shiatsu. Established 2006, with classes across Ilford, Woodford &amp; Epping (invite only).</p>
+        <p>A traditional Karate and wellbeing school, teaching Karate, Tai Chi, Yoga and Shiatsu since 2006. Classes run in Ilford and Woodford, with an invite-only dojo in Epping.</p>
         <div class="socials">%(social)s</div>
       </div>
       <div>
@@ -179,7 +244,7 @@ def footer(prefix):
           <li><a href="%(p)syudansha.html">Yudansha wall</a></li>
           <li><a href="%(p)stestimonials.html">Testimonials</a></li>
           <li><a href="%(p)sgallery.html">Gallery</a></li>
-          <li><a href="%(p)sour-app.html">Our app</a></li>
+          <li><a href="%(p)sour-app.html">Student app</a></li>
           <li><a href="%(p)s%(syllabus)s" target="_blank" rel="noopener">Syllabus (PDF)</a></li>
           <li><a href="%(p)s%(calendar)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
         </ul>
@@ -274,8 +339,8 @@ def page_hero(eyebrow, title, lead='', watermark='', media=None, crumbs=None):
                  '<div class="watermark" aria-hidden="true">%s</div>' % watermark if watermark else '')
 
 
-def cta_band(title='Your first lesson is the hardest step. We’ll take it with you.',
-             text='New students can pay as they go for their first few weeks — just turn up in comfortable clothes.'):
+def cta_band(title='The first class is the hardest step — you won’t take it alone',
+             text='New students pay as they go for the first few weeks. Just bring comfortable clothes.'):
     return '''<section class="cta-band section--tight">
   <div class="wrap">
     <div><h2>%s</h2><p>%s</p></div>
@@ -298,21 +363,21 @@ TESTIMONIALS = [
 ]
 
 YUDANSHA = [
-    ('Irm Mushtaq', 'Sensei — SanDan', 'May 2016 (Nidan)', 'irm-300x300-1.webp', 'Irm started her Karate career in 2006 when EmptyHands first opened its doors. She worked diligently as an ambassador of Karate, promoting the philosophy and aim of our Dojo. Irm has been actively involved in the management of EmptyHands alongside coaching and mentoring beginner students. She is one of our Senior Instructors and founder/teacher of our EmptyHands Yoga classes.', '3'),
-    ('Amarah Adam', 'NiDan', 'December 2018', 'amarah-1.webp', 'Amarah was one of the founding members of our Dojo and has been with us from the very beginning. Her Karate journey over the last 12 years has been exemplary. She has become a key member of our Dojo family and provides valuable support through instructing and mentoring students, and plans to run our new EmptyHands Fight Club Dojo in Redbridge. Her goal is to become a Sensei one day. She carried out critical research into the benefits of Karate on mental health, leveraging her professional and academic background. She holds a 1st Class Honours Degree in Psychology, is planning to study for a Doctorate in Counselling Psychology, and works professionally as a mental health counsellor in hospitals.', '2'),
-    ('Hamza Iftikhar', 'NiDan', 'December 2017', 'amarah-adam3.webp', 'Hamza is one of the founding members of our Dojo from 2006. He started training under Azeem Sensei privately in 2004. He has been a devout and loyal student of EmptyHands and continues his journey today as one of our main Instructors and senior students. He has played an active role in developing our Dojo and continues his CPD in Shiatsu and Internal Martial Arts. Hamza is a testament to the hard work that is required to become a true traditional Karateka!', '2'),
-    ('Reet Chadda', 'Senpai — ShoDan', '', 'reet.webp', 'Reet started her journey in Karate-Do in 2016 and is currently one of our most senior students. She has established her place in Karate and knows what she wants in terms of application and development. Karate has enabled her to test the limits of her comfort zones mentally and physically, thereby increasing confidence levels. It has taught her many great lessons, including to never think like a defeatist regardless of the situation — a mindset that has helped her achieve great accolades in the Dojo and in her academic life.', '1'),
-    ('Leila Mushtaq', 'Senpai — ShoDan', '', 'leila.webp', 'Leila started her journey in Karate-Do when she was 3 years old. Karate has been an integral part of her life and has greatly influenced her passion for performing arts. Leila studies at Sylvia Young Theatre School where she has found her love for Drama and Dance, and often discovers many parallels between her practice in the Dojo and school. Her journey has gone from a weekly fun class to leading sessions online and in class.', '1'),
-    ('Adwaitha Vinayan', 'Senpai — ShoDan', '', 'adwaitha.webp', 'Adwaitha has been training in Karate-Do since the age of 7. The teaching of Karate and Dojo Kun has allowed her to grow as an individual and become more confident within herself. Karate has helped Adwaitha become a strong and grounded individual; she has discovered that vulnerabilities need not be a weakness. Learning to find personal balance and overcome anxiety has been her greatest achievement. Adwaitha is an outstanding Karateka with all-round abilities.', '1'),
-    ('Dhillon Baines', 'Senpai — ShoDan', '', 'dhillon.webp', 'Dhillon has been practising Karate-Do since the age of 4 and has been very dedicated to the EmptyHands Dojo. He trains every week without fail and is always accompanied by his Dad (Bobby), who takes a keen interest in his Karate journey. Karate has enabled Dhillon to develop his interpersonal skills, with special emphasis on the Dojo Kun. Dhillon is an outstanding Karateka with great technical abilities.', '1'),
-    ('Rayyan Javaid', 'ShoDan', 'December 2018', 'rayyan-dan-profile-pic-230x300-1.webp', 'Rayyan started his Karate journey at EmptyHands in 2011, and his attendance and loyalty to the Dojo has been exemplary. He has often achieved above-average standards within his Kumite training and has been noticed by external instructors for his technical abilities and good form. He joined our black belt programme in 2017 and worked incredibly hard towards his Yudansha goal, often mentoring his peers during classes.', '1'),
-    ('Dhaniyal Hameed', 'ShoDan', 'December 2017', 'dhaniyal-yudansha-2-768x1042-1.webp', 'Dhaniyal started his Karate training in 2008 and has been a dedicated and loyal student with an excellent attendance record, taking part in many Dojo workshops and events. He joined our black belt programme in 2015 and worked incredibly hard towards achieving his Yudansha goal. His determination and pursuit of excellence was admired and recognised by his peers.', '1'),
-    ('Ismael Adam', 'ShoDan', 'June 2015', 'ismael.webp', 'Ismael started his Karate journey at EmptyHands in 2006. His attendance and loyalty to the Dojo has been exemplary, and he has been noticed by external instructors for his technical abilities and good form. Ismael has really found himself in terms of his Karate style and preferences within the syllabus — a shining example of how a Karateka should persistently pursue his goals and aspirations.', '1'),
-    ('Dasina Kerai', 'ShoDan', 'June 2015', 'dasina.webp', 'Dasina joined EmptyHands in 2008 after training in other Martial Arts. She swiftly integrated into our Dojo and became an excellent student with extraordinary abilities. She joined our Instructor Apprenticeship Programme in 2010 and after much hard work became an Assistant Instructor. Dasina brings a much needed rigour to an art that is indeed changing with the times!', '1'),
-    ('Ishaaq Adam', 'ShoDan', 'December 2013', 'ishaaq.webp', 'Ishaaq started his Karate journey during the early days of EmptyHands Dojo. His attendance and loyalty to the Dojo has been exemplary. He has developed technically and found his niche within Karate, and has the potential to become a champion Karateka in the Traditional and Sport Karate arena.', '1'),
-    ('Abdullah Shakeel', 'ShoDan', 'December 2013', 'abdul.webp', 'Abdullah worked incredibly hard over five to six years to become one of the most technically gifted students within our Dojo. His training and gradings have always been excellent; he has often been noted by external instructors during their visits and has the true heart of a Karateka.', '1'),
-    ('Shihan Sumoondur', 'ShoDan', 'December 2013', 'shihan.webp', 'Shihan worked incredibly hard over five to six years to become one of the most technically gifted students within our Dojo. His training and gradings have always been excellent and often noted by external instructors. Shihan is a brave individual with great spirit and tenacity, making him a role model for his juniors.', '1'),
-    ('Mahwish Iftikhar', 'ShoDan', 'December 2011', 'a.webp', 'Mahwish was one of the founding members of our Dojo in 2006.', '1'),
+    ('Irm Mushtaq', 'Sensei — SanDan', 'May 2016 (Nidan)', 'irm-300x300-1.webp', 'Irm began training in 2006, the year EmptyHands opened its doors, and has been a tireless ambassador for Karate and the philosophy of the dojo ever since. Alongside coaching and mentoring beginners, she helps run EmptyHands day to day. She is a Senior Instructor and the founder and teacher of EmptyHands Yoga.', '3'),
+    ('Amarah Adam', 'NiDan', 'December 2018', 'amarah-1.webp', 'A founding member of the dojo, Amarah has been part of EmptyHands from the very beginning, and her 12-year Karate journey has been exemplary. Today she is a key member of the dojo family, instructing and mentoring students, and plans to lead the new EmptyHands Fight Club dojo in Redbridge, with the goal of one day becoming a Sensei. Drawing on her professional and academic background, she has researched the benefits of Karate for mental health. Amarah holds a first-class honours degree in Psychology, plans to study for a Doctorate in Counselling Psychology, and works as a mental health counsellor in hospitals.', '2'),
+    ('Hamza Iftikhar', 'NiDan', 'December 2017', 'amarah-adam3.webp', 'Hamza began training privately with Azeem Sensei in 2004 and became a founding member of the dojo in 2006. A devoted and loyal student, he is now one of the main instructors and senior students at EmptyHands, has played an active part in developing the dojo, and continues his professional development in Shiatsu and the internal martial arts. Hamza is a testament to the hard work it takes to become a true traditional karateka.', '2'),
+    ('Reet Chadda', 'Senpai — ShoDan', '', 'reet.webp', 'Reet began her Karate-Dō journey in 2016 and is now one of the most senior students in the dojo. She knows exactly what she wants from her training, and Karate has helped her push past her comfort zone, mentally and physically, building real confidence. Above all, it has taught her never to think like a defeatist, whatever the situation — a mindset that has brought her success both in the dojo and in her studies.', '1'),
+    ('Leila Mushtaq', 'Senpai — ShoDan', '', 'leila.webp', 'Leila began Karate-Dō at the age of three, and it has been part of her life ever since, shaping her passion for the performing arts. A student at Sylvia Young Theatre School, where she has found her love of drama and dance, she often sees parallels between the stage and the dojo. Her journey has taken her from a weekly fun class to leading sessions, both online and in the dojo.', '1'),
+    ('Adwaitha Vinayan', 'Senpai — ShoDan', '', 'adwaitha.webp', 'Adwaitha has trained in Karate-Dō since the age of seven. Karate and the Dojo Kun have helped her grow in confidence and become strong and grounded, discovering that vulnerability need not be a weakness. Finding personal balance and overcoming anxiety has been her greatest achievement. Adwaitha is an outstanding, all-round karateka.', '1'),
+    ('Dhillon Baines', 'Senpai — ShoDan', '', 'dhillon.webp', 'Dhillon has practised Karate-Dō since the age of four and is deeply committed to EmptyHands. He trains every week without fail, always accompanied by his dad, Bobby, who takes a keen interest in his progress. Karate, and the Dojo Kun in particular, has helped Dhillon develop strong interpersonal skills. He is an outstanding karateka with excellent technique.', '1'),
+    ('Rayyan Javaid', 'ShoDan', 'December 2018', 'rayyan-dan-profile-pic-230x300-1.webp', 'Rayyan joined EmptyHands in 2011, and his attendance and loyalty have been exemplary. He regularly excels in kumite and has been singled out by visiting instructors for his technique and form. After joining the black belt programme in 2017, he worked tirelessly towards Yudansha, often mentoring his peers along the way.', '1'),
+    ('Dhaniyal Hameed', 'ShoDan', 'December 2017', 'dhaniyal-yudansha-2-768x1042-1.webp', 'Dhaniyal began training in 2008 and has been a dedicated, loyal student with an excellent attendance record, taking part in many dojo workshops and events. He joined the black belt programme in 2015 and worked tirelessly towards Yudansha. His determination and pursuit of excellence earned the admiration of his peers.', '1'),
+    ('Ismael Adam', 'ShoDan', 'June 2015', 'ismael.webp', 'Ismael began training at EmptyHands in 2006. His attendance and loyalty have been exemplary, and visiting instructors have noted his technique and form. Having found his own style within the syllabus, he is a shining example of a karateka who pursues his goals with persistence.', '1'),
+    ('Dasina Kerai', 'ShoDan', 'June 2015', 'dasina.webp', 'Dasina joined EmptyHands in 2008 after training in other martial arts. She quickly settled into the dojo and proved an excellent student with exceptional ability. In 2010 she joined the Instructor Apprenticeship Programme and, through hard work, became an Assistant Instructor. Dasina brings much-needed rigour to an art that is changing with the times.', '1'),
+    ('Ishaaq Adam', 'ShoDan', 'December 2013', 'ishaaq.webp', 'Ishaaq began training in the early days of EmptyHands, and his attendance and loyalty have been exemplary. Having developed strong technique and found his niche, he has the potential to become a champion in both traditional and sport Karate.', '1'),
+    ('Abdullah Shakeel', 'ShoDan', 'December 2013', 'abdul.webp', 'Over five to six years of hard work, Abdullah became one of the most technically gifted students in the dojo. His training and gradings have always been excellent, visiting instructors have often noticed him, and he has the true heart of a karateka.', '1'),
+    ('Shihan Sumoondur', 'ShoDan', 'December 2013', 'shihan.webp', 'Through five to six years of dedicated training, Shihan became one of the most technically gifted students in the dojo, with excellent gradings that visiting instructors often remarked on. Brave, spirited and tenacious, he is a role model for younger students.', '1'),
+    ('Mahwish Iftikhar', 'ShoDan', 'December 2011', 'a.webp', 'Mahwish was one of the founding members of the dojo in 2006.', '1'),
 ]
 
 DOJO_KUN = [
@@ -410,8 +475,8 @@ def build_home():
   <button class="hero-sound" type="button" aria-label="Turn sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="wave" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="cross" d="m16 9 6 6m0-6-6 6"/></svg><span>Tap for sound</span></button>
   <div class="wrap">
     <span class="eyebrow">Traditional Karate School · Est. 2006</span>
-    <h1>The way of the <em>empty hand</em>.</h1>
-    <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford &amp; Epping (invite only) — taught with patience, rooted in tradition, and open to every age and ability.</p>
+    <h1>The way of the empty hand</h1>
+    <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford and Epping (invite only). Patient teaching, rooted in tradition and open to every age and ability.</p>
     <div class="btn-row"><a class="btn btn--seal" href="join.html">Book a trial class</a><a class="btn btn--ghost btn--light" href="#classes">Explore classes</a></div>
     <div class="hero-stats">
       <div><strong>2006</strong><span>Founded</span></div>
@@ -425,11 +490,11 @@ def build_home():
 <section class="section">
   <div class="wrap split">
     <div class="reveal">
-      <span class="eyebrow">Our dojo</span>
-      <h2>A traditional school with a modern, person-centred heart.</h2>
-      <p class="lead">EmptyHands is a Traditional KaraTe School. Our practice is based on the classical Shotokan system with influences from Goju Ryu, Shiatsu (acupressure) and Internal Martial Arts (Tai Chi Chuan).</p>
-      <p>Our Dojo was founded in 2006 on the ideals of Gichin Funakoshi Hanshi, founder of modern-day Karate. The format of our syllabus has been inspired by the work of the late Hirokazu Kanazawa Sōke, with some adaptations — and we place great emphasis on the values and beliefs of Karate through the study of the Dojo Kun.</p>
-      <div class="btn-row" style="margin-top:28px"><a class="btn" href="about.html">Our story</a><a class="btn btn--ghost" href="karate.html">Karate classes</a></div>
+      <span class="eyebrow">The dojo</span>
+      <h2>A traditional school with a modern, person-centred heart</h2>
+      <p class="lead">EmptyHands is a traditional Karate school. Training follows the classical Shotokan system, with influences from Goju Ryu, Shiatsu (acupressure) and the internal martial art of Tai Chi Chuan.</p>
+      <p>Founded in 2006 on the ideals of Gichin Funakoshi Hanshi, the father of modern Karate, the dojo follows a syllabus inspired by the late Hirokazu Kanazawa Sōke. Just as much weight is given to the values of Karate, studied through the Dojo Kun.</p>
+      <div class="btn-row" style="margin-top:28px"><a class="btn" href="about.html">The EmptyHands story</a><a class="btn btn--ghost" href="karate.html">Karate classes</a></div>
     </div>
     <div class="figure-stack reveal reveal-d1">
       %(img_main)s
@@ -442,8 +507,8 @@ def build_home():
 <section class="section section--alt" id="classes">
   <div class="wrap">
     <div class="section-head reveal">
-      <div><span class="eyebrow">Classes &amp; therapies</span><h2>Five paths. One practice.</h2></div>
-      <p class="lead">From your first bow on the dojo floor to one-to-one healing — everything we teach informs everything else.</p>
+      <div><span class="eyebrow">Classes &amp; therapies</span><h2>Five paths, one practice</h2></div>
+      <p class="lead">From the first bow on the dojo floor to one-to-one healing, each discipline strengthens the others.</p>
     </div>
     <div class="disciplines">%(cards)s</div>
   </div>
@@ -453,7 +518,7 @@ def build_home():
   <div class="wrap">
     <div class="section-head reveal">
       <div><span class="eyebrow">The fundamentals</span><h2>Four pillars of Karate-Dō</h2></div>
-      <p class="lead">Our teaching philosophy is person-centred and built on the fundamentals every karateka returns to, from white belt to Sensei.</p>
+      <p class="lead">Person-centred teaching, built on the fundamentals every karateka returns to — from white belt to Sensei.</p>
     </div>
     <div class="pillars">
       <div class="pillar reveal"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks repeated until they become second nature.</p></div>
@@ -469,8 +534,8 @@ def build_home():
     <div class="dojo-kun-title reveal" aria-hidden="true">道場<span>訓</span></div>
     <div>
       <div class="reveal"><span class="eyebrow">Dojo Kun · the five precepts</span>
-      <h2>Karate begins and ends with respect.</h2>
-      <p class="lead">Recited at the close of every class, the Dojo Kun are the values our students carry out of the dojo and into school, work and family life.</p></div>
+      <h2>Karate begins and ends with respect</h2>
+      <p class="lead">Recited at the close of every class, the Dojo Kun are the values students carry beyond the dojo — into school, work and family life.</p></div>
       <ol class="kun-list reveal">%(kun)s</ol>
     </div>
   </div>
@@ -480,7 +545,7 @@ def build_home():
   <div class="wrap">
     <div class="section-head reveal">
       <div><span class="eyebrow">Weekly timetable</span><h2>Train with us this week</h2></div>
-      <p class="lead">We publish our calendar at the end of each year so every student can plan the year ahead. <a class="link-arrow" href="%(calendar)s" target="_blank" rel="noopener">2026 calendar</a></p>
+      <p class="lead">A full calendar is published at the end of each year, so everyone can plan ahead. <a class="link-arrow" href="%(calendar)s" target="_blank" rel="noopener">2026 calendar</a></p>
     </div>
     <div class="reveal">%(timetable)s</div>
   </div>
@@ -494,11 +559,11 @@ def build_home():
     </div>
     <div class="reveal reveal-d1">
       <span class="eyebrow">Meet the Sensei</span>
-      <h2>Three decades on the path of the martial, healing &amp; coaching arts.</h2>
+      <h2>Three decades on the path of the martial, healing and coaching arts</h2>
       <ul class="quals"><li>GoDan · 5th Dan</li><li>MA Coaching</li><li>BA (Hons)</li><li>Dip Shiatsu-Do</li></ul>
       <p>Azeem founded EmptyHands in March 2006 to create a Dojo grounded in the principles of Bushidō — discipline, respect and purpose — while embracing thoughtful, modern interpretation.</p>
       <p>Guided by masters including Hirokazu Kanazawa Sōke, Chris Rowen Shihan, Yoshinobu Ohta Sensei and Nobuaki Kanazawa Kanchō, he also studied Tai Chi Chuan with Master John Ding and graduated from the British School of Shiatsu-Do. His Oxford Brookes MA developed the first Karate Coaching Model.</p>
-      <a class="link-arrow" href="instructors.html">Meet all our instructors</a>
+      <a class="link-arrow" href="instructors.html">Meet the instructors</a>
     </div>
   </div>
 </section>
@@ -507,7 +572,7 @@ def build_home():
 <section class="section section--dark" style="padding-top:0">
   <div class="wrap quotes">
     <div class="section-head reveal">
-      <div><span class="eyebrow">Kind words</span><h2>From parents, students &amp; masters</h2></div>
+      <div><span class="eyebrow">Kind words</span><h2>From parents, students and masters</h2></div>
       <div class="quote-nav"><button data-dir="-1" aria-label="Previous testimonial">←</button><button data-dir="1" aria-label="Next testimonial">→</button></div>
     </div>
     <div class="quote-track reveal" tabindex="0" aria-label="Testimonials">%(quotes)s</div>
@@ -518,8 +583,8 @@ def build_home():
 <section class="section section--alt">
   <div class="wrap center narrow reveal">
     <span class="eyebrow">有段者 · Yudansha</span>
-    <h2>Fifteen black belts — and counting.</h2>
-    <p class="lead">Every name on our Yudansha wall started exactly where you would: at white belt, nervous, on their first night.</p>
+    <h2>Fifteen black belts and counting</h2>
+    <p class="lead">Every name on the Yudansha wall started exactly where you will: a nervous white belt on their very first night.</p>
     <div class="faces" style="margin:36px 0">%(faces)s</div>
     <a class="btn" href="yudansha.html">Visit the Yudansha wall</a>
   </div>
@@ -581,10 +646,10 @@ def build_disciplines():
 <section class="section section--dark">
   <div class="wrap">
     <div class="section-head reveal"><div><span class="eyebrow">The fundamentals</span><h2>How every class is built</h2></div>
-    <p class="lead">Each lesson moves through the four fundamentals of Karate-Dō, closing with the Dojo Kun.</p></div>
+    <p class="lead">Every lesson works through the four fundamentals of Karate-Dō and closes with the Dojo Kun.</p></div>
     <div class="pillars">
       <div class="pillar reveal"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks — the alphabet of Karate.</p></div>
-      <div class="pillar reveal reveal-d1"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Shotokan kata from Heian Shodan upwards, as set out in our syllabus.</p></div>
+      <div class="pillar reveal reveal-d1"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Shotokan kata from Heian Shodan upwards, as set out in the EmptyHands syllabus.</p></div>
       <div class="pillar reveal reveal-d2"><div class="k">分解</div><h3>Bunkai</h3><span class="romaji">Application</span><p>Practical application of kata, including self-defence scenarios.</p></div>
       <div class="pillar reveal reveal-d3"><div class="k">組手</div><h3>Kumite</h3><span class="romaji">Sparring</span><p>From pre-arranged gohon kumite to controlled free sparring.</p></div>
     </div>
@@ -594,7 +659,7 @@ def build_disciplines():
 <section class="section">
   <div class="wrap">
     <div class="section-head reveal"><div><span class="eyebrow">Grading path</span><h2>From white belt to Shodan</h2></div>
-    <p class="lead">Students grade through the kyu ranks across four programmes, each with its own class fees and grading fee.</p></div>
+    <p class="lead">Students progress through the kyu ranks across four programmes, each with its own monthly and grading fees.</p></div>
     <div class="price-list">
       <div class="price reveal"><span class="label">Beginner</span><span class="amount">White → Orange</span><span class="muted">Grading £25</span><div class="belts"><i style="background:#fff;border:1px solid #ccc"></i><i style="background:#c9302c"></i><i style="background:#e8892b"></i></div></div>
       <div class="price reveal reveal-d1"><span class="label">Intermediate</span><span class="amount">Yellow → Green</span><span class="muted">Grading £30</span><div class="belts"><i style="background:#e6c229"></i><i style="background:#3d7a3d"></i></div></div>
@@ -608,12 +673,12 @@ def build_disciplines():
         'Classical Shotokan with influences from Goju Ryu, Shiatsu and the internal martial arts — for children and adults of every level.',
         ('img', 'azeem-mushtaq-sensei.webp'),
         '''<span class="eyebrow">Information</span>
-<h2>Karate as it was meant to be taught.</h2>
-<p class="lead">EmptyHands is a Traditional KaraTe School. Our practice is based on the classical Shotokan System with some influences from Goju Ryu, Shiatsu (acupressure) &amp; Internal Martial Arts (Tai Chi Chuan).</p>
-<p>Our Dojo was founded in 2006 on the ideals of Gichin Funakoshi Hanshi (founder of modern-day Karate). The format of our syllabus has been inspired by the work of the late Hirokazu Kanazawa Sōke with some adaptations.</p>
-<p>Our teaching philosophy is person-centred and based upon the fundamentals of KaraTe-Dô: Kihon (basics), Kata (form), Bunkai (application) and Kumite (sparring). We also place great emphasis on the values and beliefs of KaraTe through the study of the Dojo Kun.</p>
-<p>We run weekly classes every Thursday from 7pm to 9pm, and advanced classes for our more developed students at our other Dojo in Epping (invite only). We publish our calendar at the end of each year so that every student has ample opportunity to plan their year ahead.</p>''',
-        [('When', 'Thursdays, 7pm – 9pm'), ('Where', 'Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE'), ('Advanced', 'Additional classes at our Epping Dojo (invite only)'),
+<h2>Karate as it was meant to be taught</h2>
+<p class="lead">Classical Shotokan Karate with influences from Goju Ryu, Shiatsu (acupressure) and Tai Chi Chuan — taught the traditional way, to children and adults alike.</p>
+<p>EmptyHands was founded in 2006 on the ideals of Gichin Funakoshi Hanshi, the father of modern Karate. The syllabus is inspired by the work of the late Hirokazu Kanazawa Sōke, with a few adaptations.</p>
+<p>Teaching is person-centred and built on the four fundamentals of Karate-Dō: Kihon (basics), Kata (form), Bunkai (application) and Kumite (sparring). Just as important are the values of Karate, explored through the Dojo Kun.</p>
+<p>Classes run every Thursday from 7pm to 9pm in Ilford, with advanced training for experienced students at the Epping dojo (invite only). A full calendar is published at the end of each year, so everyone can plan ahead.</p>''',
+        [('When', 'Thursdays, 7pm – 9pm'), ('Where', 'Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE'), ('Advanced', 'Extra classes at the Epping dojo (invite only)'),
          ('Style', 'Shotokan, with Goju Ryu influences'), ('Ages', 'Children (from 4) and adults'), ('Try it', '£10 pay-as-you-go for new starters')],
         [('fist', 'f.ist', 'hand and fingers clenched, a gesture'), ('learn', 'le.arn', 'to gain or acquire knowledge or skill'),
          ('develop', 'de.vel.op', 'to grow or transform into a new state'), ('empower', 'em.pow.er', 'to give ability, freedom — to enable'),
@@ -624,13 +689,13 @@ def build_disciplines():
 
     body = discipline_page(
         'yoga', 'ヨガ', 'Yoga', 'Himalayan Hatha Yoga · Ilford',
-        'A practice to help alleviate everyday stresses — drop in on Thursday evenings.',
+        'A practice to ease the stresses of everyday life — drop in on Thursday evenings.',
         ('video', 'yoga.mp4', 'yoga-poster.jpg'),
         '''<span class="eyebrow">Information</span>
-<h2>Breath, posture and stillness.</h2>
-<p class="lead">EmptyHands Yoga is principally based on Himalayan Hatha Yoga, developed by Yogi Ashokananda.</p>
-<p>We also incorporate teachings from other modalities such as Karate, Tai Chi and Shiatsu to form a practice that helps alleviate everyday stresses. Classes are led by Irm Mushtaq Sensei, founder and teacher of EmptyHands Yoga.</p>
-<p>Our drop-in classes run every Thursday from 8pm to 9pm. We also provide dedicated sessions upon request — feel free to contact us for further information or booking.</p>''',
+<h2>Breath, posture and stillness</h2>
+<p class="lead">EmptyHands Yoga is rooted in Himalayan Hatha Yoga, as developed by Yogi Ashokananda.</p>
+<p>Classes also draw on Karate, Tai Chi and Shiatsu, creating a practice that eases the stresses of everyday life. Sessions are led by Irm Mushtaq Sensei, founder and teacher of EmptyHands Yoga.</p>
+<p>Drop-in classes run every Thursday from 8pm to 9pm, and private sessions are available on request — get in touch to find out more or to book.</p>''',
         [('When', 'Thursdays, 8pm – 9pm'), ('Where', 'Ilford Dojo'), ('Format', 'Drop-in, plus dedicated sessions on request'), ('Teacher', 'Irm Mushtaq (Sensei)'), ('Fees', '£10 per class or £30 per month')],
         [('supportive', 'sup.por.tive', 'to encourage or provide emotional help'), ('strength', 'str.ength', 'capacity to withstand great force'),
          ('cleansing', 'cleans.ing', 'to clean or remove harmful substances from oneself'), ('revitalising', 're.vital.ising', 'to give new life, energy or success to something')],
@@ -643,10 +708,10 @@ def build_disciplines():
         'Traditional Yang family Tai Chi Chuan — for relaxation, mindfulness, balance and physical fitness.',
         ('video', 'taichi.mp4', 'taichi-poster.jpg'),
         '''<span class="eyebrow">Information</span>
-<h2>Softness that overcomes hardness.</h2>
-<p class="lead">We teach traditional Yang family Tai Chi Chuan based on the principles and teachings of Master Ding Academy.</p>
-<p>Tai Chi Chuan is an internal martial art designed to enhance flexibility, balance and mindfulness, which makes it suitable for students of all ages and fitness levels. Azeem Sensei began studying the internal arts with Master John Ding at the International Academy of Tai Chi Chuan in 1999.</p>
-<p>Our classes run every week in Ilford (Thursday, 6pm–7pm). These classes require advance booking to ensure a personalised experience for all participants.</p>''',
+<h2>Softness that overcomes hardness</h2>
+<p class="lead">Traditional Yang family Tai Chi Chuan, taught according to the principles of the Master Ding Academy.</p>
+<p>Tai Chi Chuan is an internal martial art that builds flexibility, balance and mindfulness, making it suitable for all ages and fitness levels. Azeem Sensei began studying the internal arts with Master John Ding at the International Academy of Tai Chi Chuan in 1999.</p>
+<p>Classes run weekly in Ilford on Thursdays, 6pm to 7pm. Places must be booked in advance, so every participant receives personal attention.</p>''',
         [('Ilford', 'Thursdays, 6pm – 7pm'), ('Style', 'Traditional Yang family'), ('Lineage', 'Master Ding Academy'), ('Booking', 'Advance booking required'), ('Fees', '£10 per class or £30 per month')],
         [('grand', 'gr.and', 'magnificent and imposing'), ('ultimate', 'ulti.mate', 'the best or most extreme'), ('energise', 'ener.gise', 'achieving vitality and enthusiasm')],
         [('taichi-school.webp', 'Students practising Tai Chi in a sports hall'), ('wuchi.webp', 'Wu Chi — ink brush circle')],
@@ -655,13 +720,13 @@ def build_disciplines():
 
     body = discipline_page(
         'shiatsu', '指圧', 'Shiatsu', 'Japanese healing therapy · Epping clinic (invite only)',
-        'Finger pressure — acupressure — grounded in Traditional Oriental Medicine, without needles or herbs.',
+        'Finger-pressure therapy grounded in Traditional Oriental Medicine — no needles, no herbs.',
         ('video', 'shiatsu.mp4', 'shiatsu-poster.jpg'),
         '''<span class="eyebrow">Information</span>
-<h2>Healing through touch.</h2>
-<p class="lead">Shiatsu is a powerful Japanese healing therapy. Shiatsu literally means finger pressure, or acupressure.</p>
-<p>It is based on the principles and practices of Traditional Oriental Medicine but without the needles or herbs. We specialise in mental wellbeing, self-care and rehabilitation, and run dedicated workshops and one-to-one sessions.</p>
-<p>The EmptyHands clinic was founded by Azeem Mushtaq (Sensei) in 2003 after graduating from the British School of Shiatsu-Dô, and is registered under the Shiatsu Society. It provides advice, support and rehabilitation for sports injuries, back problems and trauma. Azeem’s development was supported by the late Rex Lassalle, Shiatsu Master.</p>''',
+<h2>Healing through touch</h2>
+<p class="lead">Shiatsu is a powerful Japanese healing therapy. The name literally means “finger pressure” — a form of acupressure.</p>
+<p>Rooted in Traditional Oriental Medicine, it works without needles or herbs. The clinic specialises in mental wellbeing, self-care and rehabilitation, through workshops and one-to-one sessions.</p>
+<p>Azeem Mushtaq Sensei founded the EmptyHands clinic in 2003 after graduating from the British School of Shiatsu-Dō, and it is registered with the Shiatsu Society. Treatments offer advice, support and rehabilitation for sports injuries, back problems and trauma. Azeem’s development was supported by the late Shiatsu Master Rex Lassalle.</p>''',
         [('Clinic', 'Epping (invite only) — by appointment'), ('Consultation', 'Free 15-minute consultation'), ('Treatment', '£100 per treatment'), ('Specialisms', 'Mental wellbeing, self-care, rehabilitation, sports injuries'), ('Registered', 'The Shiatsu Society')],
         [('therapy', 'thera.py', 'treatment intended to relieve or heal a disorder'), ('acupressure', 'acu.pressure', 'a therapy in which manual pressure is used to stimulate specific points on the body'),
          ('rehabilitation', 're.hab.ilitation', 'supporting the restoration of good health through interventions'), ('revitalising', 're.vital.ising', 'to give new life, energy or success to something')],
@@ -674,10 +739,10 @@ def build_disciplines():
         'Guidance, support and structure to help you overcome obstacles and reach personal and professional goals.',
         ('video', 'coaching.mp4', 'coaching-poster.jpg'),
         '''<span class="eyebrow">Information</span>
-<h2>Find the path through the obstacle.</h2>
-<p class="lead">Coaching is a professional relationship that helps individuals achieve their personal and professional goals through guidance, support and structured interaction.</p>
-<p>It involves a coach working with groups or individuals to find a path that helps overcome obstacles. Our coaching philosophy is based on a person-centred approach, and we specialise in self-development, rehabilitation and wellbeing — including dedicated Coaching for Mental Health sessions.</p>
-<p>Azeem Sensei holds an MA in Coaching from Oxford Brookes (2013), where he developed the first Karate Coaching Model. We provide a free 15-minute consultation in person or via a Teams call.</p>''',
+<h2>Find the path through the obstacle</h2>
+<p class="lead">Coaching is a professional partnership that helps you reach personal and professional goals through guidance, support and structure.</p>
+<p>Working one-to-one or with groups, a coach helps find a way past whatever stands in the way. The approach is person-centred, specialising in self-development, rehabilitation and wellbeing — including dedicated Coaching for Mental Health sessions.</p>
+<p>Azeem Sensei holds an MA in Coaching from Oxford Brookes (2013), where he developed the first Karate Coaching Model. Start with a free 15-minute consultation, in person or on a Teams call.</p>''',
         [('Consultation', 'Free 15 minutes, in person or on Teams'), ('Sessions', '£25 per hour'), ('Approach', 'Person-centred'), ('Focus', 'Self-development, rehabilitation, wellbeing'), ('Coach', 'Azeem Mushtaq, MA Coaching')],
         [('create', 'cre.ate', 'bring something into existence'), ('extraordinary', 'extra.ordinary', 'unusual or remarkable act'), ('moments', 'mo.ments', 'brief period of time'), ('grow', 'gr.ow', 'to become better or advanced')],
         [('coaching.webp', 'A butterfly silhouetted against the setting sun'), ('coaching-1.webp', 'A butterfly resting on grass at sunset')],
@@ -686,21 +751,21 @@ def build_disciplines():
 
 
 def build_about():
-    body = page_hero('About EmptyHands', 'A safe space to learn and grow since 2006.',
-                     'Martial arts, healing and bodywork — taught by people who believe martial arts can transform lives.', '歴史',
+    body = page_hero('About EmptyHands', 'A safe space to learn and grow since 2006',
+                     'Martial arts, healing and bodywork, taught by people who believe in their power to transform lives.', '歴史',
                      ('img', 'eh-students-q.webp'), 'About') + '''
 <section class="section">
   <div class="wrap split">
     <div class="reveal">
-      <span class="eyebrow">Our story</span>
-      <h2>Founded by Azeem Mushtaq (Sensei) in 2006.</h2>
-      <p class="lead">EmptyHands Karate School fosters an inclusive and welcoming environment for everyone. Our mission is to provide a safe space where people can learn and grow through Martial Arts, Healing and Bodywork.</p>
-      <p>Since our establishment we have proudly taught hundreds of students, helping them achieve their personal and martial arts goals. Our commitment to excellence is evident in the black belts we have awarded over the years.</p>
-      <p>We understand that martial arts involves more than just physical skills — it’s also about building confidence, discipline and a sense of community. Our students often describe their experience as life-changing, highlighting the self-esteem and resilience they have gained through their training.</p>
+      <span class="eyebrow">The story</span>
+      <h2>Founded by Azeem Mushtaq Sensei in 2006</h2>
+      <p class="lead">EmptyHands Karate School welcomes everyone. The mission is simple: a safe space where people can learn and grow through martial arts, healing and bodywork.</p>
+      <p>Hundreds of students have trained at the dojo since it opened, reaching personal and martial arts goals along the way — and fifteen have earned their black belt.</p>
+      <p>Martial arts are about far more than physical skill. They build confidence, discipline and a sense of belonging, and many students describe the experience as life-changing, pointing to the self-esteem and resilience they have gained.</p>
     </div>
     <div class="reveal reveal-d1">
       <ol class="timeline">
-        <li><strong>Early years</strong><span>Inspired by a family tradition of wrestling, Azeem’s passion for martial arts begins in childhood, growing in his teens through kickboxing. He trained at the Gold Steel Gym in Walthamstow.</span></li>
+        <li><strong>Early years</strong><span>Inspired by a family tradition of wrestling, Azeem discovers martial arts as a child and takes up kickboxing as a teenager at the Gold Steel Gym in Walthamstow.</span></li>
         <li><strong>1994</strong><span>Azeem begins his formal Karate path as a founding member of an East London dojo.</span></li>
         <li><strong>1999</strong><span>Launches ZenKarate, one of the first online Karate magazines.</span></li>
         <li><strong>1999</strong><span>Begins studying Tai Chi Chuan with Master John Ding.</span></li>
@@ -717,11 +782,11 @@ def build_about():
 
 <section class="section section--alt">
   <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">What we offer</span><h2>More than self-defence.</h2></div></div>
+    <div class="section-head reveal"><div><span class="eyebrow">What’s on offer</span><h2>More than self-defence</h2></div></div>
     <div class="grid-3">
-      <div class="panel reveal"><h3>Tailored coaching sessions</h3><p>Workshops and seminars designed around our students’ needs — Karate for self-defence, discipline and personal growth; popular Self-Defence Scenarios workshops; and Coaching for Mental Health sessions that address the psychological side of martial arts.</p></div>
-      <div class="panel reveal reveal-d1"><h3>Holistic wellbeing</h3><p>Shiatsu (acupressure) self-care sessions promote relaxation and stress relief through ancient healing techniques, while Tai Chi Chuan enhances flexibility, balance and mindfulness for all ages and fitness levels.</p></div>
-      <div class="panel reveal reveal-d2"><h3>Rehabilitation &amp; self-development</h3><p>Whether you are recovering from an injury or seeking personal growth, we tailor our coaching to each individual. Reach out to us in confidence — we’re here to listen and to guide.</p></div>
+      <div class="panel reveal"><h3>Tailored coaching sessions</h3><p>Workshops and seminars built around each student’s needs: Karate for self-defence, discipline and personal growth; the popular Self-Defence Scenarios workshops; and Coaching for Mental Health sessions exploring the psychological side of martial arts.</p></div>
+      <div class="panel reveal reveal-d1"><h3>Holistic wellbeing</h3><p>Shiatsu (acupressure) self-care sessions use ancient healing techniques to relieve stress and aid relaxation, while Tai Chi Chuan builds flexibility, balance and mindfulness at any age or fitness level.</p></div>
+      <div class="panel reveal reveal-d2"><h3>Rehabilitation &amp; self-development</h3><p>Whether recovering from injury or looking for personal growth, every programme is tailored to the individual. Get in touch in confidence — there’s always someone here to listen and guide.</p></div>
     </div>
   </div>
 </section>
@@ -734,10 +799,10 @@ def build_about():
     </div>
     <div class="reveal reveal-d1">
       <span class="eyebrow">Community</span>
-      <h2>The friendships matter as much as the techniques.</h2>
-      <p>At EmptyHands we pride ourselves on fostering a strong sense of community. Our students frequently take part in local events, demonstrations and charity initiatives — including our annual Charity Cup — connecting with others and giving back.</p>
-      <p>Research indicates that martial arts training can enhance physical and mental health — see this <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4658763/" target="_blank" rel="noopener">study on martial arts and mental well-being</a>.</p>
-      <p>Whether you are a beginner or an experienced practitioner, you will find a welcoming space to grow and learn. Our community is diverse, and we celebrate each individual’s journey.</p>
+      <h2>The friendships matter as much as the techniques</h2>
+      <p>Community sits at the heart of EmptyHands. Students regularly take part in local events, demonstrations and charity initiatives — including the annual Charity Cup — making friends and giving back.</p>
+      <p>Research shows that martial arts training can improve both physical and mental health — see this <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4658763/" target="_blank" rel="noopener">study on martial arts and mental well-being</a>.</p>
+      <p>Complete beginner or experienced practitioner, everyone finds a welcoming place to learn and grow. The community is wonderfully diverse, and every individual’s journey is celebrated.</p>
       <div class="btn-row" style="margin-top:26px"><a class="btn" href="contact.html">Get in touch</a><a class="btn btn--ghost" href="testimonials.html">Read testimonials</a></div>
     </div>
   </div>
@@ -745,7 +810,7 @@ def build_about():
 
 <section class="section section--alt">
   <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">Our values</span><h2>In a word</h2></div></div>
+    <div class="section-head reveal"><div><span class="eyebrow">Values</span><h2>In a word</h2></div></div>
     %(words)s
   </div>
 </section>
@@ -770,9 +835,9 @@ def build_instructors():
 <p>Alongside teaching, Azeem has 30+ years’ experience in Business Architecture and IT Transformation as a Senior Business Consultant (Bespoke Vista Ltd), working with major organisations and maintaining current safeguarding checks.</p>
 <p>EmptyHands brings this journey together — Karate-Do, Tai Chi Chuan, Shiatsu, Yoga and Coaching — to inspire disciplined practice, personal insight and real-world transformation.</p>'''),
         ('Irm Mushtaq', 'Sensei — SanDan', 'irmensoform-225x300-1.webp', ['SanDan', 'MA', 'BA (Hons)', 'Yoga Teacher'], '''
-<p class="lead">Irm began her training in 2006 when EmptyHands first opened its doors. She has worked diligently as an ambassador of karate, promoting the philosophy and aims of our dojo.</p>
-<p>Irm has been actively involved in the management of EmptyHands, as well as coaching and mentoring beginner students. She is one of our Senior Instructors and the founder and teacher of our EmptyHands Yoga classes.</p>
-<p>Irm has a background in investment banking and aviation, and has recently been working for a performance coaching company, providing consultancy on end-user journeys for wellbeing.</p>'''),
+<p class="lead">Irm began training in 2006, the year EmptyHands opened its doors, and has been a tireless ambassador for Karate and the philosophy of the dojo ever since.</p>
+<p>Alongside coaching and mentoring beginners, Irm plays a central role in running EmptyHands. She is a Senior Instructor and the founder and teacher of EmptyHands Yoga.</p>
+<p>With a background in investment banking and aviation, Irm has more recently worked with a performance coaching company, advising on wellbeing-focused user journeys.</p>'''),
     ]
     profiles = ''.join('''<article class="profile reveal" id="%s">
   %s
@@ -780,18 +845,18 @@ def build_instructors():
 </article>''' % (n.split()[0].lower(), img(im, n), rank, n, ''.join('<li>%s</li>' % q for q in quals), bio) for n, rank, im, quals, bio in instructors)
 
     mentors = [
-        ('Leila Mushtaq', 'Senpai — ShoDan', 'leila2-edited.webp', 'Leila started her journey in Karate-Do when she was 3 years old. Karate has been an integral part of her life and has greatly influenced her passion for performing arts. Leila studies at Sylvia Young Theatre School, where she has found her love for Drama and Dance, and often discovers parallels between her practice in the Dojo and school. Her journey has gone from a weekly fun class to leading sessions online and in class. She has really found herself as an individual through her training — an asset to the Dojo and her lineage, she will make a fine instructor one day.'),
-        ('Dhillon Baines', 'Senpai — ShoDan', 'dhillon.webp', 'Dhillon has been practising Karate-Do since the age of 4 and has been very dedicated to the EmptyHands Dojo. He trains every week without fail and is always accompanied by his Dad (Bobby), who takes a keen interest in his Karate journey. Karate has enabled Dhillon to develop his interpersonal skills through interacting with other students via our online platform, in the dojo, and with special emphasis on the Dojo Kun. Dhillon is an outstanding Karateka with great technical abilities.'),
+        ('Leila Mushtaq', 'Senpai — ShoDan', 'leila2-edited.webp', 'Leila began Karate-Dō at the age of three, and it has been part of her life ever since, shaping her passion for the performing arts. A student at Sylvia Young Theatre School, where she has found her love of drama and dance, she often sees parallels between the stage and the dojo. Her journey has taken her from a weekly fun class to leading sessions, both online and in the dojo. Training has helped her grow into a confident individual — an asset to the dojo who will one day make a fine instructor.'),
+        ('Dhillon Baines', 'Senpai — ShoDan', 'dhillon.webp', 'Dhillon has practised Karate-Dō since the age of four and is deeply committed to EmptyHands. He trains every week without fail, always accompanied by his dad, Bobby, who takes a keen interest in his progress. Training with others online and in the dojo — and living by the Dojo Kun — has helped Dhillon develop strong interpersonal skills. He is an outstanding karateka with excellent technique.'),
     ]
     mentor_cards = ''.join(person_card(n, r, '', im, a) for n, r, im, a in mentors)
 
     body = page_hero('The people behind the dojo', 'Instructors &amp; mentors',
-                     'Our Sensei, senior instructors and senpai — the people who will guide you from your first bow.', '先生', None, 'Instructors') + '''
+                     'The Sensei and senpai who will guide you from your very first bow.', '先生', None, 'Instructors') + '''
 <section class="section"><div class="wrap">%s</div></section>
 <section class="section section--alt" id="mentors">
   <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">先輩 · Senpai</span><h2>Our mentors</h2></div>
-    <p class="lead">Senior students who lead warm-ups, support beginners and are training to become the instructors of tomorrow.</p></div>
+    <div class="section-head reveal"><div><span class="eyebrow">先輩 · Senpai</span><h2>Mentors</h2></div>
+    <p class="lead">Senior students who lead warm-ups, support beginners and are training to become tomorrow’s instructors.</p></div>
     <div class="people">%s</div>
   </div>
 </section>
@@ -816,7 +881,7 @@ def person_card(name, rank, when, image, about, dan=None):
 def build_yudansha():
     cards = ''.join(person_card(n, r, d, im, a, dan) for n, r, d, im, a, dan in YUDANSHA)
     body = page_hero('有段者 · Yudansha', 'The black belt wall',
-                     'Students who have achieved the rank of black belt at EmptyHands — each one a story of years of patience, effort and loyalty to the dojo.', '有段者', None, 'Yudansha wall') + '''
+                     'Every student who has earned a black belt at EmptyHands — each one a story of years of patience, effort and loyalty.', '有段者', None, 'Yudansha wall') + '''
 <section class="section">
   <div class="wrap">
     <div class="section-head reveal"><div><span class="eyebrow">Shodan and above</span><h2>Fifteen black belts since 2006</h2></div>
@@ -828,9 +893,9 @@ def build_yudansha():
   <div class="wrap split">
     <div class="reveal">
       <span class="eyebrow">The black belt programme</span>
-      <h2>Your name could be next.</h2>
-      <p class="lead">Advanced students join our black belt programme, training more regularly and privately with the Sensei on the path to Shodan.</p>
-      <p>Grading follows our published syllabus from 10th Kyu to Shodan. Download it below, or talk to us about where you are on your journey.</p>
+      <h2>Your name could be next</h2>
+      <p class="lead">Advanced students join the black belt programme, training more often — and privately with the Sensei — on the path to Shodan.</p>
+      <p>Gradings follow the published syllabus from 10th Kyu to Shodan. Download it here, or get in touch to talk about the next step in your journey.</p>
     </div>
     <div class="reveal reveal-d1">%s</div>
   </div>
@@ -843,12 +908,12 @@ def build_yudansha():
 def build_testimonials():
     quotes = ''.join(quote_html(*t) for t in TESTIMONIALS)
     body = page_hero('Testimonials', 'In their own words',
-                     'Parents, students, fellow therapists and the masters who taught our Sensei.', '声', None, 'Testimonials') + '''
+                     'Parents, students, fellow therapists and the masters who trained Azeem Sensei.', '声', None, 'Testimonials') + '''
 <section class="section"><div class="wrap"><div class="quote-grid">%s</div></div></section>
 <section class="section section--alt"><div class="wrap center narrow reveal">
   <span class="eyebrow">Share your experience</span>
-  <h2>Train with us? We’d love to hear from you.</h2>
-  <p class="lead">Leave us a review on Google or send us a message — every word helps another family find the dojo.</p>
+  <h2>Trained at EmptyHands? Share your experience</h2>
+  <p class="lead">A Google review or a quick message makes a real difference — every word helps another family find the dojo.</p>
   <div class="btn-row" style="justify-content:center;margin-top:24px"><a class="btn" href="https://www.google.com/search?q=Emptyhands+Karate+School+Ilford" target="_blank" rel="noopener">Review us on Google</a><a class="btn btn--ghost" href="contact.html">Contact us</a></div>
 </div></section>
 %s''' % (quotes, cta_band())
@@ -870,7 +935,7 @@ def build_fees():
             price('Advanced (extended)', '£50', '/ month', 'Purple to Brown belt, 6:30pm – 9pm'),
             price('Advanced II', 'On application', '', 'Black belt programme — trains more regularly and privately with the Sensei'),
             price('Black belt (Yudansha)', 'On application', '', 'Trains more regularly and privately with the Sensei'),
-        ], 'We offer a <strong>10% discount</strong> for families with 3+ students, and for students on the Black Belt or Apprenticeship programme. Classes cannot be carried forward.'),
+        ], 'A <strong>10% discount</strong> applies to families with three or more students, and to students on the Black Belt or Apprenticeship programme. Missed classes cannot be carried forward.'),
         ('yoga', 'ヨガ', 'Yoga', [price('Drop-in', '£10', '/ class'), price('Monthly', '£30', '/ month', '', True)], 'Classes cannot be carried forward.'),
         ('tai-chi', '太極', 'Tai Chi', [price('Drop-in', '£10', '/ class'), price('Monthly', '£30', '/ month', '', True)], 'Classes cannot be carried forward. Advance booking required.'),
         ('shiatsu', '指圧', 'Shiatsu', [price('Consultation', 'Free', '', '15 minutes', True), price('Treatment', '£100', '/ treatment')], 'Book your free consultation by phone, WhatsApp or email.'),
@@ -881,8 +946,8 @@ def build_fees():
                    % (s, s, 'true' if i == 0 else 'false', 0 if i == 0 else -1, k, n) for i, (s, k, n, _, _) in enumerate(panels))
     bodies = ''.join('<div class="fee-panel" role="tabpanel" id="%s" aria-labelledby="%s-tab"%s><div class="price-list">%s</div><p class="note">%s</p></div>'
                      % (s, s, '' if i == 0 else ' hidden', ''.join(items), note) for i, (s, _, _, items, note) in enumerate(panels))
-    body = page_hero('Fees', 'Simple, annualised fees.',
-                     'Our fees are annualised and calculated based on the total number of lessons we teach each year — so you pay the same each month.', '月謝', None, 'Fees') + '''
+    body = page_hero('Fees', 'Simple, annualised fees',
+                     'Fees are calculated from the total number of lessons taught across the year, so the monthly cost stays the same.', '月謝', None, 'Fees') + '''
 <section class="section">
   <div class="wrap">
     <div class="fee-tabs reveal" role="tablist" aria-label="Fees by discipline">%s</div>
@@ -892,7 +957,7 @@ def build_fees():
 <section class="section section--alt">
   <div class="wrap split">
     <div class="reveal"><span class="eyebrow">Getting started</span><h2>Not sure where to begin?</h2>
-    <p class="lead">Come and try a few Karate classes on pay-as-you-go before committing. We’ll help you choose the right programme.</p>
+    <p class="lead">Try a few Karate classes on pay-as-you-go before committing, and get help choosing the right programme.</p>
     <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal" href="join.html">Book a trial</a><a class="btn btn--ghost" href="%s">%s Ask on WhatsApp</a></div></div>
     <div class="reveal reveal-d1">%s</div>
   </div>
@@ -911,14 +976,14 @@ def build_app():
         ('£', 'Pay your fees', 'Pay per lesson or per month by card or PayPal, and see what you’ve paid.'),
     ]
     feats = ''.join('<div class="app-feature reveal"><span class="k" aria-hidden="true">%s</span><h3>%s</h3><p>%s</p></div>' % f for f in features)
-    body = page_hero('Our app', 'EmptyHands in your pocket.',
+    body = page_hero('Student app', 'EmptyHands in your pocket',
                      'The EmptyHands Student app puts your calendar, Sensei’s notices, homework and fees on your phone — free for every student.', '生徒', None, 'Our app') + '''
 <section class="section">
   <div class="wrap split app-get">
     <div class="reveal">
       <span class="eyebrow">Get the app</span>
-      <h2>One tap to add it to your home screen.</h2>
-      <p class="lead">Tap the button on your phone or tablet. On Android it installs straight away; on iPhone and iPad we’ll show you the two taps needed.</p>
+      <h2>One tap to add it to your home screen</h2>
+      <p class="lead">Tap the button on your phone or tablet. On Android it installs straight away; on iPhone and iPad, a quick guide shows the two taps needed.</p>
       <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a></div>
       <p class="muted" style="margin-top:14px">New students create an account in the app, then Sensei accepts the request.</p>
     </div>
@@ -932,12 +997,12 @@ def build_app():
   </div>
 </section>
 ''' % {'app': STUDENT_APP, 'feats': feats}
-    page('our-app.html', 'Our app', 'The EmptyHands Student app: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
+    page('our-app.html', 'Student app', 'The EmptyHands Student app: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
 
 
 def build_contact():
-    body = page_hero('Contact', 'Come and say hello.',
-                     'Questions about classes, therapies or your child’s first lesson? We’re always happy to hear from you.', '連絡', None, 'Contact') + '''
+    body = page_hero('Contact', 'Come and say hello',
+                     'Questions about classes, therapies or a child’s first lesson? Get in touch any time.', '連絡', None, 'Contact') + '''
 <section class="section">
   <div class="wrap">
     <div class="contact-cards">
@@ -949,7 +1014,7 @@ def build_contact():
 </section>
 <section class="section section--alt">
   <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">Our dojos</span><h2>Where we train</h2></div></div>
+    <div class="section-head reveal"><div><span class="eyebrow">Locations</span><h2>Where to train</h2></div></div>
     %(locations)s
   </div>
 </section>
@@ -957,7 +1022,7 @@ def build_contact():
   <div class="wrap split split--wide-left" style="align-items:start">
     <div class="panel reveal">
       <span class="eyebrow">Send a message</span>
-      <h2 style="font-size:2rem">How can we help?</h2>
+      <h2>How can we help?</h2>
       <form class="form" data-mailto="%(email)s" data-subject="Website enquiry">
         <div class="field"><label for="c-name">Name</label><input id="c-name" name="Name" autocomplete="name" required></div>
         <div class="field"><label for="c-email">Email</label><input id="c-email" name="Email" type="email" autocomplete="email" required></div>
@@ -990,8 +1055,8 @@ def build_contact():
 
 def build_join():
     checks = ''.join('<label><input type="checkbox" name="Interested in" value="%s"%s><span>%s</span></label>' % (t, ' checked' if s == 'karate' else '', t) for s, _, t, _ in CLASSES)
-    body = page_hero('Join', 'Book your trial class.',
-                     'Tell us a little about yourself (or your child) and we’ll be in touch to arrange your first session.', '入門', None, 'Join') + '''
+    body = page_hero('Join', 'Book your trial class',
+                     'Share a few details about yourself or your child, and you’ll hear back soon to arrange a first session.', '入門', None, 'Join') + '''
 <section class="section">
   <div class="wrap split split--wide-left" style="align-items:start">
     <div class="panel reveal">
@@ -1138,7 +1203,7 @@ def build_blog():
 def build_404():
     body = '''<section class="page-hero" style="min-height:80vh;display:flex;align-items:center"><div class="wrap center">
 <div class="kanji" style="font-size:clamp(6rem,20vw,12rem);line-height:1;color:var(--seal)">空</div>
-<span class="eyebrow">Page not found</span><h1 style="margin:0 auto .4em">This page is truly empty.</h1>
+<span class="eyebrow">Page not found</span><h1 style="margin:0 auto .4em">This page is truly empty</h1>
 <p class="lead">The page you were looking for has moved or no longer exists.</p>
 <div class="btn-row" style="justify-content:center"><a class="btn" href="{{p}}index.html">Back to the dojo</a><a class="btn btn--ghost" href="{{p}}blog/index.html">Read the journal</a></div>
 </div></section>'''

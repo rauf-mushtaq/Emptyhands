@@ -56,6 +56,8 @@ h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; line-height: 1.2; 
 h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); font-weight: 700; }
 h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
+/* Every title uses the same face and weight, even when imported text wraps words in bold or italics */
+:is(h1, h2, h3, h4) :is(strong, b, em, i) { font-weight: inherit; font-style: normal; color: inherit; }
 p { margin: 0 0 1.1em; }
 
 .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
@@ -687,7 +689,7 @@ dialog.modal::backdrop { background: rgba(20, 18, 15, .7); backdrop-filter: blur
 /* ------------------------------------------------------------------ footer */
 .site-footer { background: var(--night); color: rgba(246, 242, 234, .75); padding: clamp(60px, 8vw, 100px) 0 30px; font-size: .95rem; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
-.site-footer h4 { font: 700 .74rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--bronze-3); margin-bottom: 18px; }
+.site-footer h4 { font: 600 1.15rem/1.2 var(--serif); letter-spacing: .005em; color: var(--bronze-3); margin-bottom: 16px; }
 .site-footer ul { list-style: none; padding: 0; margin: 0; }
 .site-footer li { margin-bottom: 9px; }
 .site-footer a { text-decoration: none; transition: color .2s; }

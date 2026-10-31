@@ -66,7 +66,7 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-label', 'Cookie choice');
     banner.innerHTML =
-      '<p><strong>Cookies</strong> — we use Google cookies to see which of our adverts help people find the dojo. ' +
+      '<p><strong>Cookies</strong> — Google cookies show which adverts help people find the dojo. ' +
       'Nothing is shared with Google unless you accept.</p>' +
       '<div class="consent-actions"><button type="button" class="btn btn--ghost" data-choice="denied">Reject</button>' +
       '<button type="button" class="btn btn--seal" data-choice="granted">Accept</button></div>';
