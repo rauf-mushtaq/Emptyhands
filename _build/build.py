@@ -284,10 +284,77 @@ def footer(prefix):
     }
 
 
-def page(path, title, description, body, active='', over_hero=False, extra_head=''):
+BASE_URL = 'https://emptyhands.co.uk/'
+BUSINESS_ID = BASE_URL + '#dojo'
+AREAS = ['Ilford', 'Redbridge', 'Gants Hill', 'Barkingside', 'Seven Kings', 'Newbury Park', 'Woodford', 'Wanstead', 'Epping', 'East London', 'Essex']
+
+
+def page_url(path):
+    return BASE_URL if path == 'index.html' else BASE_URL + path
+
+
+def breadcrumbs(items, url):
+    """items: list of (name, path) ending with the current page (path None)."""
+    trail = [('Home', 'index.html')] + list(items)
+    return {'@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': page_url(p) if p else url} for i, (n, p) in enumerate(trail)]}
+
+
+def business_schema():
+    """The dojo as a local business, so Google can show it for 'karate classes in Ilford' and in Maps results."""
+    return {
+        '@type': ['SportsActivityLocation', 'LocalBusiness'], '@id': BUSINESS_ID,
+        'name': 'EmptyHands Karate School', 'alternateName': ['EmptyHands', 'Empty Hands School', 'EmptyHands Dojo'],
+        'description': 'Traditional Shotokan Karate school in Ilford, founded in 2006, also teaching Tai Chi Chuan, Yoga, Shiatsu and Coaching.',
+        'url': BASE_URL, 'logo': BASE_URL + 'assets/img/logo.png', 'image': BASE_URL + 'assets/img/hero-poster.jpg',
+        'telephone': PHONE.replace(' ', ''), 'email': EMAIL, 'foundingDate': '2006', 'priceRange': '£10–£100',
+        'founder': {'@type': 'Person', 'name': 'Azeem Mushtaq', 'jobTitle': 'Founder & Chief Instructor (5th Dan)'},
+        'address': {'@type': 'PostalAddress', 'streetAddress': 'Church Hall, St Andrew’s, The Drive', 'addressLocality': 'Ilford',
+                    'addressRegion': 'London', 'postalCode': 'IG1 3PE', 'addressCountry': 'GB'},
+        'geo': {'@type': 'GeoCoordinates', 'latitude': 51.5698476, 'longitude': 0.0553191},
+        'hasMap': 'https://www.google.com/maps/search/?api=1&query=Emptyhands+Karate+School+The+Drive+Ilford+IG1+3PE',
+        'openingHoursSpecification': [{'@type': 'OpeningHoursSpecification', 'dayOfWeek': 'https://schema.org/Thursday', 'opens': '18:00', 'closes': '21:00'}],
+        'areaServed': [{'@type': 'Place', 'name': a} for a in AREAS],
+        'sameAs': list(SOCIAL.values()),
+        'makesOffer': [{'@type': 'Offer', 'itemOffered': {'@id': BASE_URL + s + '.html#service'}} for s in ('karate', 'tai-chi', 'yoga', 'shiatsu', 'coaching')],
+    }
+
+
+def service_schema(slug, name, service_type, description, price, unit, faqs):
+    """A discipline as a service of the dojo, plus its FAQ (shown on the page) as an FAQPage."""
+    url = page_url(slug + '.html')
+    return [
+        {'@type': 'Service', '@id': url + '#service', 'name': name, 'serviceType': service_type, 'description': description, 'url': url,
+         'provider': {'@id': BUSINESS_ID}, 'areaServed': [{'@type': 'Place', 'name': a} for a in AREAS],
+         'offers': {'@type': 'Offer', 'price': price, 'priceCurrency': 'GBP', 'description': unit, 'url': BASE_URL + 'fees.html'}},
+        {'@type': 'FAQPage', '@id': url + '#faq', 'mainEntity': [
+            {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in faqs]},
+    ]
+
+
+def faq_html(title, faqs):
+    items = ''.join('<details class="faq-item"><summary>%s</summary><p>%s</p></details>' % (e(q), e(a)) for q, a in faqs)
+    return """<section class="section section--alt" id="faq">
+  <div class="wrap narrow">
+    <div class="section-head reveal"><div><span class="eyebrow">Questions</span><h2>%s</h2></div></div>
+    <div class="faq reveal">%s</div>
+  </div>
+</section>""" % (title, items)
+
+
+def page(path, title, description, body, active='', over_hero=False, extra_head='', schema=None, noindex=False, crumb=None):
     depth = path.count('/')
     prefix = '../' * depth
-    full_title = '%s · %s' % (title, SITE) if title != SITE else 'EmptyHands · Traditional Karate, Tai Chi, Yoga & Shiatsu in Ilford & Epping (invite only)'
+    full_title = '%s · %s' % (title, SITE) if title != SITE else 'Karate Classes in Ilford · Tai Chi, Yoga & Shiatsu · EmptyHands'
+    url = page_url(path)
+    graph = list(schema or [])
+    if crumb:
+        graph.append(breadcrumbs(crumb, url))
+    seo = '<link rel="canonical" href="%s">\n<meta property="og:url" content="%s">\n' % (url, url)
+    if noindex:
+        seo = '<meta name="robots" content="noindex">\n'
+    if graph:
+        seo += '<script type="application/ld+json">%s</script>\n' % json.dumps({'@context': 'https://schema.org', '@graph': graph}, ensure_ascii=False).replace('</', '<\\/')
     doc = '''<!doctype html>
 <html lang="en-GB" class="no-js">
 <head>
@@ -298,10 +365,13 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <title>%(title)s</title>
 <meta name="description" content="%(desc)s">
 <meta name="theme-color" content="#14120f">
-<meta property="og:type" content="website">
+%(seo)s<meta property="og:type" content="website">
+<meta property="og:site_name" content="EmptyHands Karate School">
+<meta property="og:locale" content="en_GB">
 <meta property="og:title" content="%(title)s">
 <meta property="og:description" content="%(desc)s">
-<meta property="og:image" content="%(p)sassets/img/hero-poster.jpg">
+<meta property="og:image" content="%(base)sassets/img/hero-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="%(p)sassets/img/home-icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="%(p)sassets/img/home-icon-180.png">
 <link rel="manifest" href="%(p)ssite.webmanifest">
@@ -320,7 +390,7 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 </html>
 ''' % {
         'title': e(full_title), 'desc': e(description), 'p': prefix, 'extra': extra_head,
-        'csp': csp(), 'ads': ads_tags(prefix), 'v': ASSET_V,
+        'csp': csp(), 'ads': ads_tags(prefix), 'v': ASSET_V, 'seo': seo, 'base': BASE_URL,
         'header': header(active, prefix, over_hero), 'body': body.replace('{{p}}', prefix), 'footer': footer(prefix),
     }
     dest = os.path.join(OUT, path)
@@ -486,7 +556,7 @@ def build_home():
   <video data-bg data-film autoplay muted loop playsinline preload="auto" poster="assets/img/dojo-film-poster.jpg"><source src="assets/video/dojo-film.mp4" type="video/mp4"></video>
   <button class="hero-sound" type="button" aria-label="Turn sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path class="wave" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="cross" d="m16 9 6 6m0-6-6 6"/></svg><span>Tap for sound</span></button>
   <div class="wrap">
-    <span class="eyebrow">Traditional Karate School · Est. 2006</span>
+    <span class="eyebrow">Karate, Tai Chi, Yoga &amp; Shiatsu in Ilford · Est. 2006</span>
     <h1>The way of the empty hand</h1>
     <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford and Epping (invite only). Patient teaching, rooted in tradition and open to every age and ability.</p>
     <div class="btn-row"><a class="btn btn--seal" href="join.html">Book a trial class</a><a class="btn btn--ghost btn--light" href="#classes">Explore classes</a></div>
@@ -620,14 +690,15 @@ def build_home():
         'azeem': img('amushtaqsensei.webp', 'Azeem Mushtaq Sensei', '', 724, 1048), 'play': ICON['play'],
         'quotes': quotes, 'faces': faces, 'posts': posts, 'locations': locations(), 'cta': cta_band(),
     }
-    page('index.html', SITE, 'EmptyHands is a traditional Shotokan Karate school in Ilford and Epping (invite only), founded in 2006 — also teaching Tai Chi Chuan, Yoga, Shiatsu and Coaching.', body, over_hero=True)
+    page('index.html', SITE, 'Karate classes in Ilford for children and adults since 2006, plus Tai Chi, Yoga, Shiatsu and Coaching. Thursdays at St Andrew’s Church Hall, IG1 3PE — book a trial class.', body, over_hero=True,
+         schema=[business_schema(), {'@type': 'WebSite', '@id': BASE_URL + '#website', 'url': BASE_URL, 'name': 'EmptyHands Karate School', 'publisher': {'@id': BUSINESS_ID}}])
 
 
-def discipline_page(slug, kanji, name, eyebrow, lead, media, intro_html, facts, word_items, gallery_imgs, related_cats, extra=''):
+def discipline_page(slug, kanji, name, eyebrow, lead, media, intro_html, facts, word_items, gallery_imgs, related_cats, extra='', h1=None, faq=''):
     related = [p for p in POSTS if p['category'] in related_cats][:3]
     facts_html = '<ul class="facts">%s</ul>' % ''.join('<li><span>%s</span><span>%s</span></li>' % f for f in facts)
     gal = ''.join('<div class="reveal">%s</div>' % img(g, a, 'img-round') for g, a in gallery_imgs)
-    body = page_hero(eyebrow, name, lead, kanji, media, crumbs='<a href="{{p}}index.html#classes">Classes</a>') + '''
+    body = page_hero(eyebrow, h1 or name, lead, kanji, media, crumbs='<a href="{{p}}index.html#classes">Classes</a>') + '''
 <section class="section">
   <div class="wrap split split--wide-left">
     <div class="reveal prose-lite">%s
@@ -645,12 +716,50 @@ def discipline_page(slug, kanji, name, eyebrow, lead, media, intro_html, facts, 
 </section>
 %s
 %s
+%s
 %s''' % (intro_html, slug, facts_html, extra, name, words(word_items),
          ('<section class="section"><div class="wrap grid-%d">%s</div></section>' % (min(3, len(gallery_imgs)), gal)) if gallery_imgs else '',
          ('<section class="section%s"><div class="wrap"><div class="section-head reveal"><div><span class="eyebrow">From the journal</span><h2>Further reading</h2></div><a class="link-arrow" href="{{p}}blog/index.html">All articles</a></div><div class="posts">%s</div></div></section>'
           % (' section--alt' if not gallery_imgs else '', ''.join(post_card(p) for p in related))) if related else '',
-         cta_band())
+         faq, cta_band())
     return body
+
+
+FAQS = {
+    'karate': [
+        ('How old do you need to be to start karate?', 'Children can start from the age of 4, and adults of any age are welcome. Classes cover all grades, from complete beginners to black belts.'),
+        ('When and where are the karate classes in Ilford?', 'Every Thursday from 7pm to 9pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE — easy to reach from Gants Hill, Barkingside, Seven Kings and across Redbridge. Advanced students also train at the Epping dojo (invite only).'),
+        ('How much do karate classes cost?', 'New starters pay as they go at £10 per lesson for their first few weeks. After that, monthly fees run from £30 (Beginner) to £40 (Advanced), plus a £40 annual membership that covers the dojo licence and insurance. Families with three or more students get a 10% discount.'),
+        ('What should I wear to my first karate class?', 'Just comfortable clothes — there is no need to buy a karate suit (gi) before your first class.'),
+        ('What style of karate is taught?', 'Traditional Shotokan Karate with influences from Goju Ryu, following a syllabus inspired by the late Hirokazu Kanazawa Sōke. Students grade from 10th Kyu (white belt) to Shodan (black belt).'),
+    ],
+    'tai-chi': [
+        ('Is tai chi suitable for beginners and older people?', 'Yes. Tai Chi Chuan builds flexibility, balance and mindfulness, and is suitable for all ages and fitness levels.'),
+        ('When and where are the tai chi classes in Ilford?', 'Every Thursday from 6pm to 7pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE. Places must be booked in advance.'),
+        ('How much do tai chi classes cost?', '£10 per class, or £30 per month.'),
+        ('What style of tai chi do you teach?', 'Traditional Yang family T’ai Chi Ch’uan (tai chi chuan), taught according to the principles of the Master Ding Academy. Azeem Sensei has studied with Master John Ding since 1999.'),
+    ],
+    'yoga': [
+        ('When and where are the yoga classes in Ilford?', 'Every Thursday from 8pm to 9pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE.'),
+        ('Do I need to book a yoga class?', 'No — the Thursday classes are drop-in. Private yoga sessions are also available on request.'),
+        ('How much do yoga classes cost?', '£10 per class, or £30 per month.'),
+        ('What kind of yoga is it?', 'Himalayan Hatha Yoga, as developed by Yogi Ashokananda, drawing on Karate, Tai Chi and Shiatsu to ease everyday stress. Classes are taught by Irm Mushtaq Sensei.'),
+    ],
+    'shiatsu': [
+        ('What is shiatsu?', 'Shiatsu is a Japanese healing therapy whose name means “finger pressure”. It is a form of acupressure based on Traditional Oriental Medicine, without needles or herbs.'),
+        ('What can a shiatsu session help with?', 'Sessions focus on mental wellbeing, self-care and rehabilitation, including sports injuries, back problems and trauma.'),
+        ('How much does a shiatsu treatment cost?', 'A 15-minute consultation is free, and a treatment costs £100.'),
+        ('Where are shiatsu sessions held?', 'Treatments take place at the EmptyHands clinic in Epping (invite only), by appointment. Book a free consultation by phone, WhatsApp or email.'),
+        ('Is the practitioner qualified?', 'Yes. Azeem Mushtaq graduated from the British School of Shiatsu-Dō in 2003, is registered with the Shiatsu Society and serves on its board.'),
+    ],
+    'coaching': [
+        ('What is person-centred coaching?', 'A professional partnership that helps you reach personal and professional goals through guidance, support and structure, built around you as an individual.'),
+        ('Are coaching sessions in person or online?', 'Both — sessions are available in person in Ilford or online via Microsoft Teams.'),
+        ('How much does coaching cost?', 'The first 15-minute consultation is free, and coaching sessions cost £25 per hour.'),
+        ('What can coaching help with?', 'Self-development, rehabilitation and wellbeing, including dedicated Coaching for Mental Health sessions.'),
+        ('Who is the coach?', 'Azeem Mushtaq, who holds an MA in Coaching from Oxford Brookes University (2013), where he developed the first Karate Coaching Model.'),
+    ],
+}
 
 
 def build_disciplines():
@@ -681,7 +790,7 @@ def build_disciplines():
   </div>
 </section>''' % downloads()
     body = discipline_page(
-        'karate', '空手道', 'Karate-Dō', 'Traditional Shotokan Karate · Ilford &amp; Epping (invite only)',
+        'karate', '空手道', 'Karate-Dō', 'Traditional Shotokan Karate · Ilford, Redbridge',
         'Classical Shotokan with influences from Goju Ryu, Shiatsu and the internal martial arts — for children and adults of every level.',
         ('img', 'azeem-mushtaq-sensei.webp'),
         '''<span class="eyebrow">Information</span>
@@ -696,8 +805,10 @@ def build_disciplines():
          ('develop', 'de.vel.op', 'to grow or transform into a new state'), ('empower', 'em.pow.er', 'to give ability, freedom — to enable'),
          ('inspire', 'in.spire', 'to fill with an animating, quickening, or exalting influence')],
         [('homekarate.webp', 'Kicks, kata and line work at the dojo'), ('leila2-edited.webp', 'Leila in a deep stance'), ('eh-students-q.webp', 'Students in red and orange belts practising together')],
-        {'Karate', 'History'}, karate_extra)
-    page('karate.html', 'Karate classes in Ilford & Epping (invite only)', 'Traditional Shotokan Karate classes for children and adults in Ilford (Thursdays 7–9pm) and Epping (invite only). Founded 2006 on the ideals of Gichin Funakoshi.', body, 'karate', over_hero=True)
+        {'Karate', 'History'}, karate_extra, h1='Karate classes in Ilford', faq=faq_html('Karate classes: your questions', FAQS['karate']))
+    page('karate.html', 'Karate Classes in Ilford for Kids & Adults', 'Traditional Shotokan karate classes in Ilford for children (from 4) and adults, every Thursday 7–9pm at St Andrew’s Church Hall, IG1 3PE. New starters £10 a lesson — book a trial class.', body, 'karate', over_hero=True,
+         schema=service_schema('karate', 'Karate classes in Ilford', 'Karate classes', 'Traditional Shotokan Karate classes for children and adults in Ilford.', '10', 'Per lesson for new starters', FAQS['karate']),
+         crumb=[('Classes', 'index.html#classes'), ('Karate classes in Ilford', None)])
 
     body = discipline_page(
         'yoga', 'ヨガ', 'Yoga', 'Himalayan Hatha Yoga · Ilford',
@@ -712,8 +823,10 @@ def build_disciplines():
         [('supportive', 'sup.por.tive', 'to encourage or provide emotional help'), ('strength', 'str.ength', 'capacity to withstand great force'),
          ('cleansing', 'cleans.ing', 'to clean or remove harmful substances from oneself'), ('revitalising', 're.vital.ising', 'to give new life, energy or success to something')],
         [('yoga-studio.webp', 'A yoga practitioner stretching on a mat'), ('irmensoform-225x300-1.webp', 'Irm Sensei')],
-        {'Wellbeing'})
-    page('yoga.html', 'Yoga classes in Ilford', 'Himalayan Hatha Yoga drop-in classes in Ilford every Thursday 8–9pm, blending Karate, Tai Chi and Shiatsu teachings.', body, 'yoga', over_hero=True)
+        {'Wellbeing'}, h1='Yoga classes in Ilford', faq=faq_html('Yoga classes: your questions', FAQS['yoga']))
+    page('yoga.html', 'Yoga Classes in Ilford · Drop-in Hatha Yoga', 'Drop-in Himalayan Hatha yoga classes in Ilford every Thursday 8–9pm at St Andrew’s Church Hall, IG1 3PE. £10 per class or £30 a month, with private sessions on request.', body, 'yoga', over_hero=True,
+         schema=service_schema('yoga', 'Yoga classes in Ilford', 'Yoga classes', 'Drop-in Himalayan Hatha Yoga classes in Ilford.', '10', 'Per class', FAQS['yoga']),
+         crumb=[('Classes', 'index.html#classes'), ('Yoga classes in Ilford', None)])
 
     body = discipline_page(
         'tai-chi', '太極拳', 'Tai Chi Chuan', 'Internal martial arts · Ilford',
@@ -727,8 +840,10 @@ def build_disciplines():
         [('Ilford', 'Thursdays, 6pm – 7pm'), ('Style', 'Traditional Yang family'), ('Lineage', 'Master Ding Academy'), ('Booking', 'Advance booking required'), ('Fees', '£10 per class or £30 per month')],
         [('grand', 'gr.and', 'magnificent and imposing'), ('ultimate', 'ulti.mate', 'the best or most extreme'), ('energise', 'ener.gise', 'achieving vitality and enthusiasm')],
         [('taichi-school.webp', 'Students practising Tai Chi in a sports hall'), ('wuchi.webp', 'Wu Chi — ink brush circle')],
-        {'Wellbeing'})
-    page('tai-chi.html', 'Tai Chi Chuan in Ilford', 'Traditional Yang family Tai Chi Chuan classes in Ilford (Thursdays), in the lineage of Master Ding Academy.', body, 'tai-chi', over_hero=True)
+        {'Wellbeing'}, h1='Tai Chi classes in Ilford', faq=faq_html('Tai Chi classes: your questions', FAQS['tai-chi']))
+    page('tai-chi.html', 'Tai Chi Classes in Ilford · Yang Style Tai Chi Chuan', 'Traditional Yang family Tai Chi Chuan (t’ai chi) classes in Ilford every Thursday 6–7pm at St Andrew’s Church Hall, IG1 3PE. For all ages and fitness levels — £10 a class.', body, 'tai-chi', over_hero=True,
+         schema=service_schema('tai-chi', 'Tai Chi classes in Ilford', 'Tai Chi classes', 'Traditional Yang family Tai Chi Chuan classes in Ilford.', '10', 'Per class', FAQS['tai-chi']),
+         crumb=[('Classes', 'index.html#classes'), ('Tai Chi classes in Ilford', None)])
 
     body = discipline_page(
         'shiatsu', '指圧', 'Shiatsu', 'Japanese healing therapy · Epping clinic (invite only)',
@@ -743,8 +858,10 @@ def build_disciplines():
         [('therapy', 'thera.py', 'treatment intended to relieve or heal a disorder'), ('acupressure', 'acu.pressure', 'a therapy in which manual pressure is used to stimulate specific points on the body'),
          ('rehabilitation', 're.hab.ilitation', 'supporting the restoration of good health through interventions'), ('revitalising', 're.vital.ising', 'to give new life, energy or success to something')],
         [('rex-lassalle.webp', 'Rex Lassalle, Shiatsu Master'), ('image-1024x499-1.webp', 'Shiatsu self-care techniques illustrated'), ('kidney27.webp', 'Acupressure point chart')],
-        {'Wellbeing'})
-    page('shiatsu.html', 'Shiatsu therapy in Ilford & Epping (invite only)', 'Shiatsu (Japanese acupressure) for wellbeing, self-care and rehabilitation. Free 15-minute consultation. Registered with the Shiatsu Society.', body, 'shiatsu', over_hero=True)
+        {'Wellbeing'}, h1='Shiatsu therapy sessions', faq=faq_html('Shiatsu sessions: your questions', FAQS['shiatsu']))
+    page('shiatsu.html', 'Shiatsu Therapy Sessions · Ilford & Epping', 'Shiatsu (Japanese acupressure) sessions for wellbeing, back problems, sports injuries and rehabilitation with a Shiatsu Society registered practitioner. Free 15-minute consultation.', body, 'shiatsu', over_hero=True,
+         schema=service_schema('shiatsu', 'Shiatsu therapy sessions', 'Shiatsu therapy', 'Shiatsu (Japanese acupressure) treatment for wellbeing, self-care and rehabilitation.', '100', 'Per treatment (15-minute consultation free)', FAQS['shiatsu']),
+         crumb=[('Classes', 'index.html#classes'), ('Shiatsu therapy sessions', None)])
 
     body = discipline_page(
         'coaching', '指導', 'Coaching', 'Person-centred coaching · in person or on Teams',
@@ -758,8 +875,10 @@ def build_disciplines():
         [('Consultation', 'Free 15 minutes, in person or on Teams'), ('Sessions', '£25 per hour'), ('Approach', 'Person-centred'), ('Focus', 'Self-development, rehabilitation, wellbeing'), ('Coach', 'Azeem Mushtaq, MA Coaching')],
         [('create', 'cre.ate', 'bring something into existence'), ('extraordinary', 'extra.ordinary', 'unusual or remarkable act'), ('moments', 'mo.ments', 'brief period of time'), ('grow', 'gr.ow', 'to become better or advanced')],
         [('coaching.webp', 'A butterfly silhouetted against the setting sun'), ('coaching-1.webp', 'A butterfly resting on grass at sunset')],
-        {'Wellbeing', 'Dojo life'})
-    page('coaching.html', 'Coaching in Ilford & Epping (invite only)', 'Person-centred coaching for self-development, rehabilitation and wellbeing. Free 15-minute consultation in person or via Teams; £25 per hour.', body, 'coaching', over_hero=True)
+        {'Wellbeing', 'Dojo life'}, h1='Coaching sessions', faq=faq_html('Coaching sessions: your questions', FAQS['coaching']))
+    page('coaching.html', 'Coaching Sessions in Ilford & Online', 'Person-centred coaching sessions in Ilford or online via Teams, for self-development, rehabilitation and mental wellbeing. Free 15-minute consultation, then £25 per hour.', body, 'coaching', over_hero=True,
+         schema=service_schema('coaching', 'Coaching sessions', 'Life and wellbeing coaching', 'Person-centred coaching for self-development, rehabilitation and wellbeing, in Ilford or online.', '25', 'Per hour (15-minute consultation free)', FAQS['coaching']),
+         crumb=[('Classes', 'index.html#classes'), ('Coaching sessions', None)])
 
 
 def build_about():
@@ -834,7 +953,7 @@ def build_about():
                         ('develop', 'de.vel.op', 'to grow or transform into a new state')]),
         'cta': cta_band(),
     }
-    page('about.html', 'About us', 'Founded in 2006 by Azeem Mushtaq Sensei, EmptyHands provides a safe, inclusive space to learn Martial Arts, Healing and Bodywork in Ilford and Epping (invite only).', body, 'about', over_hero=True)
+    page('about.html', 'About us', 'Founded in 2006 by Azeem Mushtaq Sensei, EmptyHands provides a safe, inclusive space to learn Martial Arts, Healing and Bodywork in Ilford and Epping (invite only).', body, 'about', over_hero=True, crumb=[('About us', None)])
 
 
 def build_instructors():
@@ -874,7 +993,7 @@ def build_instructors():
 </section>
 %s
 %s''' % (profiles, mentor_cards, MODAL, cta_band())
-    page('instructors.html', 'Instructors & mentors', 'Meet Azeem Mushtaq Sensei (GoDan, MA), Irm Mushtaq Sensei (SanDan) and the senior students who teach and mentor at EmptyHands.', body, 'instructors')
+    page('instructors.html', 'Instructors & mentors', 'Meet Azeem Mushtaq Sensei (GoDan, MA), Irm Mushtaq Sensei (SanDan) and the senior students who teach and mentor at EmptyHands.', body, 'instructors', crumb=[('Instructors & mentors', None)])
 
 
 MODAL = '''<dialog class="modal" id="person-modal" aria-label="Profile">
@@ -974,7 +1093,7 @@ def build_fees():
     <div class="reveal reveal-d1">%s</div>
   </div>
 </section>''' % (tabs, bodies, WHATSAPP, ICON['whatsapp'], downloads())
-    page('fees.html', 'Fees', 'EmptyHands fees for Karate, Yoga, Tai Chi, Shiatsu, Coaching and gradings. New Karate starters pay £10 per lesson for their first few weeks.', body, 'fees')
+    page('fees.html', 'Fees', 'EmptyHands fees for Karate, Yoga, Tai Chi, Shiatsu, Coaching and gradings. New Karate starters pay £10 per lesson for their first few weeks.', body, 'fees', crumb=[('Fees', None)])
 
 
 STUDENT_APP = 'https://rauf-mushtaq.github.io/emptyhands.student/'
@@ -1062,7 +1181,7 @@ def build_contact():
         'locations': locations(), 'syl': DOCS['syllabus'], 'cal': DOCS['calendar'],
         'social': ''.join('<a href="%s" target="_blank" rel="noopener" aria-label="%s">%s</a>' % (u, n.title(), ICON[n]) for n, u in SOCIAL.items()),
     }
-    page('contact.html', 'Contact', 'Contact EmptyHands Karate School: +44 7931 300470, info@emptyhands.co.uk. Dojos at St Andrew’s Church Hall, Ilford IG1 3PE and Jack Silley Pavilion, Epping (invite only).', body, 'contact')
+    page('contact.html', 'Contact', 'Contact EmptyHands Karate School: +44 7931 300470, info@emptyhands.co.uk. Dojos at St Andrew’s Church Hall, Ilford IG1 3PE and Jack Silley Pavilion, Epping (invite only).', body, 'contact', schema=[business_schema()], crumb=[('Contact', None)])
 
 
 def build_join():
@@ -1101,7 +1220,7 @@ def build_join():
     </aside>
   </div>
 </section>''' % {'email': EMAIL, 'checks': checks, 'iwa': ICON['whatsapp'], 'tel': PHONE_HREF, 'phone': PHONE, 'wa': WHATSAPP}
-    page('join.html', 'Join — book a trial class', 'Register for a trial Karate, Yoga, Tai Chi, Shiatsu or Coaching session at EmptyHands in Ilford or Epping (invite only).', body, 'join')
+    page('join.html', 'Book a Trial Karate, Tai Chi or Yoga Class in Ilford', 'Book a trial Karate, Tai Chi or Yoga class in Ilford, or a Shiatsu or Coaching consultation, at EmptyHands. New Karate starters pay £10 per lesson.', body, 'join', crumb=[('Book a trial class', None)])
 
 
 GALLERY = [
@@ -1209,7 +1328,11 @@ def build_blog():
                         % (e(p['category'].lower()), ''.join(post_card(q) for q in related))) if related else '',
             'cta': cta_band(),
         }
-        page('blog/%s.html' % p['slug'], p['title'], p['excerpt'], body, 'blog')
+        art = {'@type': 'BlogPosting', 'headline': p['title'], 'description': p['excerpt'], 'datePublished': p['date'],
+               'author': {'@type': 'Person', 'name': 'Azeem Mushtaq'}, 'publisher': {'@id': BUSINESS_ID}, 'mainEntityOfPage': page_url('blog/%s.html' % p['slug'])}
+        if p['cover']:
+            art['image'] = BASE_URL + 'assets/img/' + p['cover']['file']
+        page('blog/%s.html' % p['slug'], p['title'], p['excerpt'], body, 'blog', schema=[art], crumb=[('Journal', 'blog/index.html'), (p['title'], None)])
 
 
 def build_404():
@@ -1219,18 +1342,19 @@ def build_404():
 <p class="lead">The page you were looking for has moved or no longer exists.</p>
 <div class="btn-row" style="justify-content:center"><a class="btn" href="{{p}}index.html">Back to the dojo</a><a class="btn btn--ghost" href="{{p}}blog/index.html">Read the journal</a></div>
 </div></section>'''
-    page('404.html', 'Page not found', 'This page could not be found.', body)
+    page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True)
 
 
 def build_sitemap():
-    base = 'https://emptyhands.co.uk/'
+    base = BASE_URL
+    today = date.today().isoformat()
     pages = ['index.html', 'karate.html', 'yoga.html', 'tai-chi.html', 'shiatsu.html', 'coaching.html', 'about.html', 'instructors.html',
              'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'blog/index.html']
     pages += ['blog/%s.html' % p['slug'] for p in POSTS]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % ''.join(
-        '  <url><loc>%s%s</loc></url>\n' % (base, p) for p in pages)
+        '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (page_url(p), today) for p in pages)
     open(os.path.join(OUT, 'sitemap.xml'), 'w').write(xml)
-    open(os.path.join(OUT, 'robots.txt'), 'w').write('User-agent: *\nAllow: /\nSitemap: %ssitemap.xml\n' % base)
+    open(os.path.join(OUT, 'robots.txt'), 'w').write('User-agent: *\nAllow: /\nDisallow: /_build/\nSitemap: %ssitemap.xml\n' % base)
 
 
 def write_headers():

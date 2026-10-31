@@ -841,3 +841,12 @@ html { -webkit-tap-highlight-color: transparent; }
 }
 .lead, .prose { color: var(--ink); }
 .prose > p:first-child::first-letter { float: none; font: inherit; color: inherit; margin: 0; }
+
+/* ------------------------------------------------------------------ FAQ (discipline pages) */
+.faq { border-top: 1px solid var(--line); }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; font: 600 1.15rem/1.35 var(--serif); color: var(--ink); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font: 400 1.6rem/1 var(--sans); color: var(--seal); transition: transform .2s; flex-shrink: 0; }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item p { margin: 0 0 22px; max-width: 65ch; }

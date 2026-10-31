@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /_build/
 Sitemap: https://emptyhands.co.uk/sitemap.xml
