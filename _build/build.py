@@ -1345,6 +1345,33 @@ def build_404():
     page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True)
 
 
+# Old WordPress addresses -> new pages, so old Google results, ads, bookmarks and shared links still work.
+OLD_URLS = {
+    'karate': 'karate.html', 'yoga-classes-in-ilford-redbridge-epping': 'yoga.html', 'tai-chi-chuan-in-ilford-redbridge-epping': 'tai-chi.html',
+    'shiatsu-in-ilford-epping': 'shiatsu.html', 'ilford-coaching': 'coaching.html', 'aboutus': 'about.html', 'instructors': 'instructors.html',
+    'mentors': 'instructors.html#mentors', 'trainee-instructors': 'instructors.html', 'yudansha-wall': 'yudansha.html', 'testimonials': 'testimonials.html',
+    'fees': 'fees.html', 'contact': 'contact.html', 'register-for-classes': 'join.html', 'syllabus': DOCS['syllabus'], 'terms-conditions': 'fees.html',
+    'products': 'fees.html', 'my-account': 'our-app.html', 'checkout': 'fees.html', 'cart': 'fees.html', 'testing': '',
+    'chi-2': 'blog/chi.html', 'blog-3': 'blog/index.html', 'blog-5': 'blog/index.html',
+}
+
+
+def build_redirects():
+    """Tiny forwarding pages at the old WordPress addresses (an instant refresh counts as a permanent redirect for Google)."""
+    targets = dict(OLD_URLS)
+    for p in POSTS:
+        targets.setdefault(p['slug'], 'blog/%s.html' % p['slug'])
+    for old, new in targets.items():
+        url = BASE_URL + new
+        doc = ('<!doctype html>\n<html lang="en-GB"><head><meta charset="utf-8"><title>Moved · EmptyHands</title>\n'
+               '<link rel="canonical" href="%s">\n<meta http-equiv="refresh" content="0; url=%s">\n</head>\n'
+               '<body><p>This page has moved: <a href="%s">%s</a></p></body></html>\n') % (url, url, url, url)
+        dest = os.path.join(OUT, old, 'index.html')
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        with open(dest, 'w') as f:
+            f.write(doc)
+
+
 def build_sitemap():
     base = BASE_URL
     today = date.today().isoformat()
@@ -1379,5 +1406,6 @@ if __name__ == '__main__':
     build_blog()
     build_404()
     build_sitemap()
+    build_redirects()
     write_headers()
     print('built %d posts + pages into %s' % (len(POSTS), OUT))
