@@ -607,10 +607,10 @@ def build_home():
       <p class="lead">Person-centred teaching, built on the fundamentals every karateka returns to - from white belt to Sensei.</p>
     </div>
     <div class="pillars">
-      <div class="pillar reveal"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks repeated until they become second nature.</p></div>
-      <div class="pillar reveal reveal-d1"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Choreographed sequences that carry the techniques and spirit of the masters.</p></div>
-      <div class="pillar reveal reveal-d2"><div class="k">分解</div><h3>Bunkai</h3><span class="romaji">Application</span><p>Unlocking what each movement of a kata really means - and how to use it.</p></div>
-      <div class="pillar reveal reveal-d3"><div class="k">組手</div><h3>Kumite</h3><span class="romaji">Sparring</span><p>Safe, controlled partner work that develops timing, distance and composure.</p></div>
+      <a class="pillar reveal" href="{{p}}kihon.html"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks repeated until they become second nature.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d1" href="{{p}}kata.html"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Choreographed sequences that carry the techniques and spirit of the masters.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d2" href="{{p}}bunkai.html"><div class="k">分解</div><h3>Bunkai</h3><span class="romaji">Application</span><p>Unlocking what each movement of a kata really means - and how to use it.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d3" href="{{p}}kumite.html"><div class="k">組手</div><h3>Kumite</h3><span class="romaji">Sparring</span><p>Safe, controlled partner work that develops timing, distance and composure.</p><span class="link-arrow">Learn more</span></a>
     </div>
   </div>
 </section>
@@ -773,10 +773,10 @@ def build_disciplines():
     <div class="section-head reveal"><div><span class="eyebrow">The fundamentals</span><h2>How every class is built</h2></div>
     <p class="lead">Every lesson works through the four fundamentals of Karate-Dō and closes with the Dojo Kun.</p></div>
     <div class="pillars">
-      <div class="pillar reveal"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks - the alphabet of Karate.</p></div>
-      <div class="pillar reveal reveal-d1"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Shotokan kata from Heian Shodan upwards, as set out in the EmptyHands syllabus.</p></div>
-      <div class="pillar reveal reveal-d2"><div class="k">分解</div><h3>Bunkai</h3><span class="romaji">Application</span><p>Practical application of kata, including self-defence scenarios.</p></div>
-      <div class="pillar reveal reveal-d3"><div class="k">組手</div><h3>Kumite</h3><span class="romaji">Sparring</span><p>From pre-arranged gohon kumite to controlled free sparring.</p></div>
+      <a class="pillar reveal" href="{{p}}kihon.html"><div class="k">基本</div><h3>Kihon</h3><span class="romaji">Basics</span><p>Stances, blocks, strikes and kicks - the alphabet of Karate.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d1" href="{{p}}kata.html"><div class="k">型</div><h3>Kata</h3><span class="romaji">Form</span><p>Shotokan kata from Heian Shodan upwards, as set out in the EmptyHands syllabus.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d2" href="{{p}}bunkai.html"><div class="k">分解</div><h3>Bunkai</h3><span class="romaji">Application</span><p>Practical application of kata, including self-defence scenarios.</p><span class="link-arrow">Learn more</span></a>
+      <a class="pillar reveal reveal-d3" href="{{p}}kumite.html"><div class="k">組手</div><h3>Kumite</h3><span class="romaji">Sparring</span><p>From pre-arranged gohon kumite to controlled free sparring.</p><span class="link-arrow">Learn more</span></a>
     </div>
     <div class="mt-l reveal">%s</div>
   </div>
@@ -1227,6 +1227,125 @@ def build_join():
     page('join.html', 'Book a Trial Karate, Tai Chi or Yoga Class in Ilford', 'Book a trial Karate, Tai Chi or Yoga class in Ilford, or a Shiatsu or Coaching consultation, at EmptyHands. New Karate starters pay £10 per lesson.', body, 'join', crumb=[('Book a trial class', None)])
 
 
+PILLARS = [
+    {
+        'slug': 'kihon', 'k': '基本', 'name': 'Kihon', 'en': 'Basics',
+        'title': 'Kihon - Karate Basics', 'h1': 'Kihon: the basics',
+        'desc': 'Kihon, the basics of karate: stances, blocks, strikes and kicks, practised in every class at EmptyHands Karate School in Ilford.',
+        'lead': 'The building blocks of karate: stances, blocks, strikes and kicks, practised until they become second nature.',
+        'h2': 'The foundation of every technique',
+        'body': ['Kihon means “basics” or “foundation”. Every class at EmptyHands works through kihon, with techniques practised in lines, moving forward and back, so that each movement becomes precise, relaxed and powerful.',
+                 'Good kihon is what makes kata and kumite work. The strength of a punch or block comes from the stance beneath it, so students return to the basics at every grade, from white belt to Sensei.'],
+        'list_title': 'Kihon in the EmptyHands syllabus',
+        'items': [('Oi-zuki and Sanbon-zuki', 'Lunge punch and triple lunge punch'),
+                  ('Gyaku-zuki and Kizami-zuki', 'Reverse punch and jab'),
+                  ('Tate teisho-uchi and Haito-uchi', 'Palm-heel strike and ridge-hand strike'),
+                  ('Age-uke, Mae-geri, Gyaku-zuki', 'Rising block, front snap kick, reverse punch'),
+                  ('Ude-uke, Juji-uke, Empi-uchi, Uraken-uchi', 'Inside block, cross block, elbow strike in horse-riding stance, backfist'),
+                  ('Uchi-uke, Kizami-zuki, Gyaku-zuki', 'Outside block, jab to the face, reverse punch'),
+                  ('Gedan-barai and Gyaku-zuki', 'Lower block and reverse punch'),
+                  ('Shuto-uke, Mae-geri, Nukite', 'Knife-hand block in back stance, front kick, spear-hand strike'),
+                  ('Kake-uke, Haiwan-uke, Morote-uke', 'Hook block, forearm block, augmented forearm block'),
+                  ('Mae-geri, Keage-geri, Ren-mae-geri', 'Front snap kicks and triple front kicks'),
+                  ('Mawashi-geri and Yoko kekomi-geri', 'Roundhouse kick and side thrust kick'),
+                  ('Mikazuki-geri and Ushiro-geri', 'Crescent kick and back kick')],
+        'note': 'Advanced students perform kihon moving forward, back and in four directions. For black belt, every kick is performed without putting the foot down.',
+    },
+    {
+        'slug': 'kata', 'k': '型', 'name': 'Kata', 'en': 'Form',
+        'title': 'Kata - Shotokan Karate Forms', 'h1': 'Kata: the forms',
+        'desc': 'Kata, the forms of Shotokan karate, from Taikyoku and the Heian kata to Bassai Dai and Kanku Dai, taught at EmptyHands Karate School in Ilford.',
+        'lead': 'Choreographed sequences that carry the techniques and spirit of the masters.',
+        'h2': 'Movement handed down through generations',
+        'body': ['A kata is a set pattern of movements against imaginary opponents, passed down from teacher to student over generations. Practising kata trains balance, breathing, timing and focus, and keeps the fighting principles of the art alive.',
+                 'At EmptyHands, kata are taught in the classical Shotokan tradition, following a syllabus inspired by the late Hirokazu Kanazawa Sōke. Each grade adds a new kata, building from simple patterns to the advanced forms needed for black belt.'],
+        'list_title': 'Kata in the EmptyHands syllabus',
+        'items': [('Taikyoku Shodan, Nidan and Sandan', 'The first, second and third basic kata'),
+                  ('Heian Shodan to Godan', 'The five “peaceful mind” kata'),
+                  ('Tekki Shodan', 'Iron horse riding, level one'),
+                  ('Bassai Dai', 'To storm the fortress'),
+                  ('Kanku Dai', 'Gazing at the sky'),
+                  ('Optional: Enpi, Koryu Shaolin kata, Tensho', 'Flying swallow, the old monastery form, revolving hands')],
+        'note': 'Every kata is studied alongside its bunkai, so students understand what each movement is for.',
+    },
+    {
+        'slug': 'bunkai', 'k': '分解', 'name': 'Bunkai', 'en': 'Application',
+        'title': 'Bunkai - Kata Application & Self-Defence', 'h1': 'Bunkai: applying the kata',
+        'desc': 'Bunkai, the practical application of karate kata, including self-defence scenarios, taught at EmptyHands Karate School in Ilford.',
+        'lead': 'Unlocking what each movement of a kata really means, and how to use it.',
+        'h2': 'Where kata becomes self-defence',
+        'body': ['Bunkai means “analysis” or “taking apart”. Students break a kata down into its movements and practise them with a partner, discovering the blocks, strikes and counters hidden inside each sequence.',
+                 'Working slowly and with control, students learn the distance, timing and angles that make a technique effective. Bunkai links kata to kumite and to real-life self-defence, and is explored further in the EmptyHands Self-Defence Scenarios workshops.'],
+        'list_title': 'How bunkai is practised',
+        'items': [('Start from your kata', 'Each student works on the kata for their grade'),
+                  ('Partner work', 'Movements are tried against a partner’s attack, slowly at first'),
+                  ('Distance and timing', 'Learning where to stand and when to move'),
+                  ('Control and respect', 'Techniques are practised safely, with care for your partner'),
+                  ('Self-Defence Scenarios', 'Workshops that put bunkai into realistic situations')],
+        'note': 'Understanding bunkai is part of every grading, and essential on the path to black belt.',
+    },
+    {
+        'slug': 'kumite', 'k': '組手', 'name': 'Kumite', 'en': 'Sparring',
+        'title': 'Kumite - Karate Sparring', 'h1': 'Kumite: sparring',
+        'desc': 'Kumite, karate sparring, from five-step and one-step drills to controlled free sparring, taught safely at EmptyHands Karate School in Ilford.',
+        'lead': 'Safe, controlled partner work that develops timing, distance and composure.',
+        'h2': 'From set drills to free sparring',
+        'body': ['Kumite means “meeting of hands”. Students progress step by step, from drills where the attack and defence are agreed in advance to free sparring, always with control and respect for a partner.',
+                 'Kumite builds timing, distance, confidence and calm under pressure. Each stage is introduced only when a student is ready, so beginners can enjoy partner work safely from their very first classes.'],
+        'list_title': 'Kumite in the EmptyHands syllabus',
+        'items': [('Gohon kumite', 'Five-step sparring'),
+                  ('Sanbon kumite', 'Three-step sparring'),
+                  ('Kihon ippon kumite', 'Basic one-step sparring, with set combinations against punches and kicks'),
+                  ('Kaeshi ippon kumite', 'Return one-step sparring'),
+                  ('Jiyu ippon kumite', 'Free one-step sparring'),
+                  ('Jiyu kumite', 'Free sparring, one-on-one and, at higher grades, against two or three partners')],
+        'note': 'All sparring is supervised and controlled, with the emphasis on technique and respect rather than winning.',
+    },
+]
+
+
+def pillar_cards(current=None, prefix='{{p}}'):
+    out = []
+    for i, p in enumerate(PILLARS):
+        cur = ' aria-current="page"' if p['slug'] == current else ''
+        out.append('<a class="pillar reveal%s" href="%s%s.html"%s><div class="k">%s</div><h3>%s</h3><span class="romaji">%s</span><p>%s</p><span class="link-arrow">%s</span></a>'
+                   % (' reveal-d%d' % i if i else '', prefix, p['slug'], cur, p['k'], p['name'], p['en'], p['lead'], 'You are here' if cur else 'Learn more'))
+    return '<div class="pillars">%s</div>' % ''.join(out)
+
+
+def build_pillars():
+    for p in PILLARS:
+        items = ''.join('<li><strong>%s</strong><span>%s</span></li>' % (e(a), e(b)) for a, b in p['items'])
+        body = page_hero('%s · The four pillars of Karate-Dō' % p['k'], p['h1'], p['lead'], p['k'], None,
+                         crumbs='<a href="{{p}}karate.html">Karate</a>') + '''
+<section class="section">
+  <div class="wrap split split--wide-left" style="align-items:start">
+    <div class="reveal prose-lite">
+      <span class="eyebrow">%(name)s · %(en)s</span>
+      <h2>%(h2)s</h2>
+      %(body)s
+      <div class="btn-row" style="margin-top:30px"><a class="btn btn--seal" href="{{p}}join.html">Book a trial class</a><a class="btn btn--ghost" href="{{p}}karate.html">Karate classes</a></div>
+    </div>
+    <aside class="panel reveal reveal-d1">
+      <h3>%(list_title)s</h3>
+      <ul class="syllabus-list">%(items)s</ul>
+      <p class="muted">%(note)s</p>
+      <a class="link-arrow" href="{{p}}%(syllabus)s" target="_blank" rel="noopener">Full syllabus (PDF)</a>
+    </aside>
+  </div>
+</section>
+<section class="section section--dark">
+  <div class="wrap">
+    <div class="section-head reveal"><div><span class="eyebrow">The fundamentals</span><h2>The four pillars of Karate-Dō</h2></div>
+    <p class="lead">Every class works through all four, closing with the Dojo Kun.</p></div>
+    %(cards)s
+  </div>
+</section>
+%(cta)s''' % {'name': p['name'], 'en': p['en'], 'h2': p['h2'], 'body': ''.join('<p%s>%s</p>' % (' class="lead"' if i == 0 else '', t) for i, t in enumerate(p['body'])),
+              'list_title': p['list_title'], 'items': items, 'note': p['note'], 'syllabus': DOCS['syllabus'], 'cards': pillar_cards(p['slug']), 'cta': cta_band()}
+        page(p['slug'] + '.html', p['title'], p['desc'], body, 'karate', crumb=[('Karate', 'karate.html'), (p['name'], None)])
+
+
 GALLERY = [
     ('homekarate.webp', 'Students training at EmptyHands'), ('azeem-mushtaq-sensei.webp', 'Sensei Azeem leading the class'),
     ('eh-students-q.webp', 'Students practising in pairs'), ('shotokan-tigers.webp', 'EmptyHands students outdoors'),
@@ -1380,7 +1499,7 @@ def build_sitemap():
     base = BASE_URL
     today = date.today().isoformat()
     pages = ['index.html', 'karate.html', 'yoga.html', 'tai-chi.html', 'shiatsu.html', 'coaching.html', 'about.html', 'instructors.html',
-             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'blog/index.html']
+             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'kihon.html', 'kata.html', 'bunkai.html', 'kumite.html', 'blog/index.html']
     pages += ['blog/%s.html' % p['slug'] for p in POSTS]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % ''.join(
         '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (page_url(p), today) for p in pages)
@@ -1398,6 +1517,7 @@ def write_headers():
 if __name__ == '__main__':
     build_home()
     build_disciplines()
+    build_pillars()
     build_about()
     build_instructors()
     build_yudansha()

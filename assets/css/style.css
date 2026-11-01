@@ -857,3 +857,16 @@ html { -webkit-tap-highlight-color: transparent; }
 .faq-item summary::after { content: "+"; font: 400 1.6rem/1 var(--sans); color: var(--seal); transition: transform .2s; flex-shrink: 0; }
 .faq-item[open] summary::after { transform: rotate(45deg); }
 .faq-item p { margin: 0 0 22px; max-width: 65ch; }
+
+/* ------------------------------------------------------------------ pillars as links + pillar pages */
+a.pillar { display: block; text-decoration: none; color: inherit; }
+a.pillar h3 { color: var(--paper); }
+a.pillar .link-arrow { color: var(--bronze-3); margin: 4px 0 24px; }
+a.pillar:hover .k, a.pillar:focus-visible .k { color: var(--paper); }
+a.pillar:hover h3 { color: var(--bronze-3); }
+a.pillar[aria-current="page"] .k { color: var(--seal); }
+a.pillar[aria-current="page"] .link-arrow::after { content: none; }
+.syllabus-list { list-style: none; padding: 0; margin: 0 0 18px; }
+.syllabus-list li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.syllabus-list strong { display: block; color: var(--ink); }
+.syllabus-list span { display: block; color: var(--ink-3); font-size: .92em; }
