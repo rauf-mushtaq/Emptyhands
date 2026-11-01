@@ -71,9 +71,18 @@ def tidy_heading(text):
     return ' '.join(out).replace('new year', 'New Year')
 
 
+# Replacement cover photos for imported articles: slug -> (file, width, height)
+POST_COVERS = {
+    'coronavirus-online-karate-training': ('azeem-mushtaq.webp', 480, 371),
+}
+
+
 def tidy_post(p):
     import re
     p['title'] = POST_TITLES.get(p['slug'], p['title'])
+    if p['slug'] in POST_COVERS:
+        f, w, h = POST_COVERS[p['slug']]
+        p['cover'] = {'file': f, 'w': w, 'h': h}
     for k in ('title', 'excerpt', 'html'):   # plain hyphens instead of long dashes
         p[k] = re.sub(r'\s*\u2014\s*', ' - ', p[k])
         p[k] = re.sub(r'\s+\u2013\s+', ' - ', p[k]).replace('\u2013', '-')
