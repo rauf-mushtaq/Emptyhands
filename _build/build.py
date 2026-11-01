@@ -354,9 +354,10 @@ def faq_html(title, faqs):
 </section>""" % (title, items)
 
 
-def page(path, title, description, body, active='', over_hero=False, extra_head='', schema=None, noindex=False, crumb=None):
+def page(path, title, description, body, active='', over_hero=False, extra_head='', schema=None, noindex=False, crumb=None, prefix=None):
     depth = path.count('/')
-    prefix = '../' * depth
+    if prefix is None:
+        prefix = '../' * depth
     full_title = '%s · %s' % (title, SITE) if title != SITE else 'Karate Classes in Ilford · Tai Chi, Yoga & Shiatsu · EmptyHands'
     url = page_url(path)
     graph = list(schema or [])
@@ -1478,7 +1479,8 @@ def build_404():
 <p class="lead">The page you were looking for has moved or no longer exists.</p>
 <div class="btn-row" style="justify-content:center"><a class="btn" href="{{p}}index.html">Back to the dojo</a><a class="btn btn--ghost" href="{{p}}blog/index.html">Read the journal</a></div>
 </div></section>'''
-    page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True)
+    # GitHub Pages serves this page at whatever address was missing (e.g. /old/blog/path/), so it links from the site root
+    page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True, prefix='/')
 
 
 # Old WordPress addresses -> new pages, so old Google results, ads, bookmarks and shared links still work.
@@ -1500,8 +1502,9 @@ def build_redirects():
     for old, new in targets.items():
         url = BASE_URL + new
         doc = ('<!doctype html>\n<html lang="en-GB"><head><meta charset="utf-8"><title>Moved · EmptyHands</title>\n'
-               '<link rel="canonical" href="%s">\n<meta http-equiv="refresh" content="0; url=%s">\n</head>\n'
-               '<body><p>This page has moved: <a href="%s">%s</a></p></body></html>\n') % (url, url, url, url)
+               '<link rel="canonical" href="%s">\n<script src="/assets/js/forward.js" data-to="%s"></script>\n'
+               '<meta http-equiv="refresh" content="0; url=%s">\n</head>\n'
+               '<body><p>This page has moved: <a href="%s">%s</a></p></body></html>\n') % (url, url, url, url, url)
         dest = os.path.join(OUT, old, 'index.html')
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         with open(dest, 'w') as f:
