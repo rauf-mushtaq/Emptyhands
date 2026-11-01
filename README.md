@@ -1,6 +1,6 @@
 # EmptyHands website
 
-A rebuilt, static version of [emptyhands.co.uk](https://emptyhands.co.uk) — the EmptyHands traditional Karate, Tai Chi, Yoga, Shiatsu & Coaching school in Ilford and Epping.
+A rebuilt, static version of [emptyhands.co.uk](https://emptyhands.co.uk) - the EmptyHands traditional Karate, Tai Chi, Yoga, Shiatsu & Coaching school in Ilford and Epping.
 
 All text, photos, videos and PDFs come from the original site. No framework, no server: plain HTML, one stylesheet and one small script, so it can be hosted anywhere (GitHub Pages, Netlify, any web host).
 
@@ -24,7 +24,7 @@ python3 -m http.server 8000   # then visit http://localhost:8000
 | `yudansha.html` | All 15 black belts with full profiles (click a card) |
 | `fees.html` | Tabbed fees for every discipline and grading |
 | `testimonials.html`, `gallery.html` | All reviews; photo gallery with lightbox + the full dojo film |
-| `contact.html`, `join.html` | Both dojos with maps; contact and trial-class forms (open the visitor's email app or WhatsApp — nothing is stored) |
+| `contact.html`, `join.html` | Both dojos with maps; contact and trial-class forms (open the visitor's email app or WhatsApp - nothing is stored) |
 | `blog/` | All 26 journal articles with category filter and search |
 
 ## Editing

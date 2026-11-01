@@ -1,4 +1,4 @@
-/* EmptyHands — small progressive enhancements. Every page works without this file. */
+/* EmptyHands - small progressive enhancements. Every page works without this file. */
 (function () {
   'use strict';
   var doc = document.documentElement;
@@ -308,7 +308,7 @@
     });
   });
 
-  /* Forms: no server — compose an email (or WhatsApp) from the fields */
+  /* Forms: no server - compose an email (or WhatsApp) from the fields */
   $$('form[data-mailto]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();

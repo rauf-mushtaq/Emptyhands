@@ -1,7 +1,7 @@
-/* EmptyHands — Google Ads conversion tracking with cookie consent.
+/* EmptyHands - Google Ads conversion tracking with cookie consent.
    Only included on pages when a Google Ads tag ID is set in _build/build.py (GOOGLE_ADS).
    Google Consent Mode v2 (advanced): the Google tag loads on every page so Google Ads can detect it,
-   but with all storage denied — no cookies are set and ad data is redacted until the visitor
+   but with all storage denied - no cookies are set and ad data is redacted until the visitor
    clicks Accept. Rejecting keeps everything denied. */
 (function () {
   'use strict';
@@ -64,7 +64,7 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-label', 'Cookie choice');
     banner.innerHTML =
-      '<p><strong>Cookies</strong> — Google cookies show which adverts help people find the dojo. ' +
+      '<p><strong>Cookies</strong> - Google cookies show which adverts help people find the dojo. ' +
       'No cookies are set unless you accept.</p>' +
       '<div class="consent-actions"><button type="button" class="btn btn--ghost" data-choice="denied">Reject</button>' +
       '<button type="button" class="btn btn--seal" data-choice="granted">Accept</button></div>';

@@ -1,4 +1,4 @@
-/* EmptyHands — traditional karate, healing & wellbeing school
+/* EmptyHands - traditional karate, healing & wellbeing school
    Palette: rice paper, sumi ink, bronze (from the logo) and a hanko-seal red. */
 
 /* Fonts are self-hosted (SIL Open Font Licence, see assets/fonts) so no visitor data goes to Google.
@@ -735,7 +735,7 @@ dialog.modal::backdrop { background: rgba(20, 18, 15, .7); backdrop-filter: blur
 .img-round { border-radius: 6px; width: 100%; object-fit: cover; }
 
 /* ------------------------------------------------------------------ phones (iPhone & Android)
-   Tuned at 360–430px wide. Covers the notch / home bar, keeps controls clear of the
+   Tuned at 360-430px wide. Covers the notch / home bar, keeps controls clear of the
    WhatsApp button, and turns long lists into denser grids so pages don't scroll forever. */
 html { -webkit-tap-highlight-color: transparent; }
 .site-header .wrap { padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
