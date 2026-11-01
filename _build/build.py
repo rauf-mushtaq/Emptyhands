@@ -384,8 +384,10 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <meta property="og:description" content="%(desc)s">
 <meta property="og:image" content="%(base)sassets/img/hero-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="%(p)sassets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="%(p)sfavicon.ico" sizes="48x48">
+<link rel="icon" href="%(p)sassets/img/favicon-96.png" sizes="96x96" type="image/png">
 <link rel="icon" href="%(p)sassets/img/home-icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="%(p)sassets/img/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="%(p)sassets/img/home-icon-180.png">
 <link rel="manifest" href="%(p)ssite.webmanifest">
 <meta name="apple-mobile-web-app-title" content="EmptyHands">
