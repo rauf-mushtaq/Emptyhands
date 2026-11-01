@@ -179,7 +179,14 @@ p { margin: 0 0 1.1em; }
     overflow-y: auto; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s;
   }
   .menu-open .nav { opacity: 1; visibility: visible; }
-  .menu-open .site-header { color: var(--ink); }
+  /* The frosted-glass header (backdrop-filter) would trap the full-screen menu inside the 70px bar,
+     so it is switched off while the menu is open. */
+  .menu-open .site-header { color: var(--ink); background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .nav { height: 100vh; height: 100dvh; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  /* Nothing floats over the open menu (cookie banner, WhatsApp button); they come back when it closes. */
+  .menu-open .consent, .menu-open .wa-float { visibility: hidden; }
+  /* Solid bar behind the logo and close button, so menu items scroll underneath it cleanly */
+  .menu-open .site-header::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--paper); box-shadow: 0 1px 0 var(--line); z-index: 1; }
   .menu-open .brand .logo-dark { display: block !important; }
   .menu-open .brand .logo-light { display: none !important; }
   .nav > a:not(.btn), .nav-group > button { height: auto; padding: 16px 4px; border-bottom: 1px solid var(--line); border-radius: 0; font-size: .9rem; width: 100%; justify-content: space-between; }
