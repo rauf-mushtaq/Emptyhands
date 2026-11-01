@@ -703,7 +703,7 @@ def discipline_page(slug, kanji, name, eyebrow, lead, media, intro_html, facts, 
 <section class="section">
   <div class="wrap split split--wide-left">
     <div class="reveal prose-lite">%s
-      <div class="btn-row" style="margin-top:30px"><a class="btn btn--seal" href="{{p}}join.html">Register</a><a class="btn btn--ghost" href="{{p}}fees.html#%s">See fees</a></div>
+      <div class="btn-row" style="margin-top:30px"><a class="btn btn--seal" href="{{p}}join.html">Register</a><a class="btn btn--ghost" href="{{p}}fees.html#%s">Fees</a></div>
     </div>
     <div class="reveal reveal-d1">%s</div>
   </div>
@@ -1217,7 +1217,7 @@ def build_join():
         <li>When you’re ready, join as a member and start your journey to black belt.</li>
       </ol>
       <p style="margin-top:24px;color:rgba(246,242,234,.75)">Prefer to talk? Call <a href="%(tel)s">%(phone)s</a> or <a href="%(wa)s" target="_blank" rel="noopener">WhatsApp us</a>.</p>
-      <p style="color:rgba(246,242,234,.75)"><a href="fees.html">See all fees →</a></p>
+      <p style="color:rgba(246,242,234,.75)"><a href="fees.html">Fees →</a></p>
     </aside>
   </div>
 </section>''' % {'email': EMAIL, 'checks': checks, 'iwa': ICON['whatsapp'], 'tel': PHONE_HREF, 'phone': PHONE, 'wa': WHATSAPP}
