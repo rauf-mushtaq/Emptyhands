@@ -1480,7 +1480,8 @@ def build_404():
 <div class="btn-row" style="justify-content:center"><a class="btn" href="{{p}}index.html">Back to the dojo</a><a class="btn btn--ghost" href="{{p}}blog/index.html">Read the journal</a></div>
 </div></section>'''
     # GitHub Pages serves this page at whatever address was missing (e.g. /old/blog/path/), so it links from the site root
-    page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True, prefix='/')
+    finder = '<script src="/assets/js/notfound.js" data-posts="%s"></script>\n' % ' '.join(p['slug'] for p in POSTS)
+    page('404.html', 'Page not found', 'This page could not be found.', body, noindex=True, prefix='/', extra_head=finder)
 
 
 # Old WordPress addresses -> new pages, so old Google results, ads, bookmarks and shared links still work.
