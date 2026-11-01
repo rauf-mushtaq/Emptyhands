@@ -870,3 +870,12 @@ a.pillar[aria-current="page"] .link-arrow::after { content: none; }
 .syllabus-list li { padding: 10px 0; border-bottom: 1px solid var(--line); }
 .syllabus-list strong { display: block; color: var(--ink); }
 .syllabus-list span { display: block; color: var(--ink-3); font-size: .92em; }
+
+/* ------------------------------------------------------------------ pictures are shown whole, never cut off */
+.post-card .thumb { position: relative; isolation: isolate; }
+.post-card .thumb img { object-fit: contain; }
+.thumb-bg { position: absolute; inset: -24px; z-index: -1; background-size: cover; background-position: center; filter: blur(18px) saturate(1.05); opacity: .55; }
+.article-cover img { object-fit: contain; }
+@media (max-width: 600px) {
+  .figure-stack .main, .founder-photo img { aspect-ratio: auto; }
+}

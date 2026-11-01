@@ -15,6 +15,14 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  /* Journal cards: once a cover has loaded, reuse it as the soft blurred backdrop around it */
+  $$('.thumb-bg').forEach(function (bg) {
+    var im = bg.nextElementSibling;
+    if (!im || im.tagName !== 'IMG') return;
+    var set = function () { bg.style.backgroundImage = 'url("' + (im.currentSrc || im.src) + '")'; };
+    if (im.complete && im.naturalWidth) set(); else im.addEventListener('load', set, { once: true });
+  });
+
   /* Mobile menu */
   var toggle = $('.menu-toggle');
   if (toggle) {

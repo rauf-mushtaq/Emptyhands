@@ -507,7 +507,9 @@ def quote_html(name, role, text, stars=True):
 
 def post_card(p, prefix='{{p}}', feature=False):
     cover = p['cover']
-    thumb = '<img src="%sassets/img/%s" alt="" loading="lazy" width="%d" height="%d">' % (prefix, cover['file'], cover['w'], cover['h']) if cover else ''
+    # The whole picture is shown (never cropped); a soft blurred copy fills any space around it.
+    thumb = ('<span class="thumb-bg" aria-hidden="true"></span><img src="%sassets/img/%s" alt="" loading="lazy" width="%d" height="%d">'
+             % (prefix, cover['file'], cover['w'], cover['h'])) if cover else ''
     d = date.fromisoformat(p['date']).strftime('%-d %b %Y')
     return '''<a class="post-card%s reveal" href="%sblog/%s.html" data-cat="%s">
   <div class="thumb">%s</div>
