@@ -65,7 +65,7 @@
     banner.setAttribute('aria-label', 'Cookie choice');
     banner.innerHTML =
       '<p><strong>Cookies</strong> - Google cookies show which adverts help people find the dojo. ' +
-      'No cookies are set unless you accept.</p>' +
+      'No cookies are set unless you accept. <a href="' + (cfg.getAttribute('data-privacy') || '/privacy.html') + '">Privacy &amp; cookies</a></p>' +
       '<div class="consent-actions"><button type="button" class="btn btn--ghost" data-choice="denied">Reject</button>' +
       '<button type="button" class="btn btn--seal" data-choice="granted">Accept</button></div>';
     banner.addEventListener('click', function (e) {

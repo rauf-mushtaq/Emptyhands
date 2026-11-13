@@ -833,6 +833,8 @@ html { -webkit-tap-highlight-color: transparent; }
 .consent[hidden] { display: none; }
 .consent p { margin: 0; font-size: .95rem; color: rgba(246, 242, 234, .85); }
 .consent strong { color: var(--paper); }
+.consent a { color: var(--paper); text-underline-offset: 3px; }
+.footer-bottom a.link-btn { text-decoration: underline; }
 .consent-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
 .consent .btn { min-height: 44px; }
 .consent .btn--ghost { --bg: var(--paper); color: var(--paper); }

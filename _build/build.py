@@ -110,10 +110,11 @@ def csp():
     """Content-Security-Policy for every page; opens up to Google only when Google Ads is switched on."""
     script, img, connect, frame = ["'self'"], ["'self'", 'data:'], ["'self'"], ['https://www.google.com']
     if GOOGLE_ADS['id']:
-        g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://ad.doubleclick.net', 'https://www.google.com']
+        g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://ad.doubleclick.net',
+             'https://pagead2.googlesyndication.com', 'https://www.google.com']
         script += g
         img += g + ['https://www.google.co.uk']
-        connect += g + ['https://*.google-analytics.com', 'https://www.google.co.uk', 'https://pagead2.googlesyndication.com']
+        connect += g + ['https://*.google-analytics.com', 'https://www.google.co.uk']
         frame += ['https://www.googletagmanager.com', 'https://td.doubleclick.net', 'https://bid.g.doubleclick.net']
     return ("default-src 'self'; script-src %s; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src %s; media-src 'self'; "
             "frame-src %s; connect-src %s; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; upgrade-insecure-requests"
@@ -124,7 +125,7 @@ def ads_tags(prefix):
     if not GOOGLE_ADS['id']:
         return ''
     labels = ''.join(' data-%s="%s"' % (k, e(v)) for k, v in GOOGLE_ADS['labels'].items() if v)
-    return '<meta name="google-ads" content="%s"%s>\n<script src="%sassets/js/ads.js" defer></script>\n' % (e(GOOGLE_ADS['id']), labels, prefix)
+    return '<meta name="google-ads" content="%s"%s data-privacy="%sprivacy.html">\n<script src="%sassets/js/ads.js" defer></script>\n' % (e(GOOGLE_ADS['id']), labels, prefix, prefix)
 
 
 SOCIAL = {
@@ -142,13 +143,13 @@ DOJOS = [
         'name': 'Ilford Dojo', 'k': '道場', 'address': 'Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE',
         'map': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2479.911952490874!2d0.05531907609409833!3d51.569847606140094!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a6e571c6255d%3A0x4fbe36703a646aeb!2sEmptyhands%20Karate%20School!5e0!3m2!1sen!2s!4v1707932577567!5m2!1sen!2s',
         'directions': 'https://www.google.com/maps/dir/?api=1&destination=Emptyhands+Karate+School+The+Drive+Ilford+IG1+3PE',
-        'classes': ['Karate - Thursdays 7pm-9pm', 'Tai Chi - Thursdays 6pm-7pm', 'Yoga - Thursdays 8pm-9pm'],
+        'classes': ['Karate - Thursdays 7pm-9pm', 'Tai Chi - Thursdays 6pm-7pm', 'Yoga - Thursdays 8pm-9pm', 'Shiatsu & Coaching - by appointment'],
     },
     {
         'name': 'Epping Dojo (invite only)', 'k': '本部', 'address': 'Jack Silley Pavilion, Epping (invite only)',
         'map': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2472.6607334141377!2d0.1160950876519874!3d51.70265332387034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d89896bb52877f%3A0x84ade7537c849d8f!2sJack%20Silley%20Pavilion!5e0!3m2!1sen!2s!4v1714126428360!5m2!1sen!2s',
         'directions': 'https://www.google.com/maps/dir/?api=1&destination=Jack+Silley+Pavilion+Epping',
-        'classes': ['Advanced Karate - for developed students', 'Shiatsu clinic - by appointment'],
+        'classes': ['Advanced Karate - for developed students'],
     },
 ]
 
@@ -253,7 +254,7 @@ def footer(prefix):
     <div class="footer-grid">
       <div>
         <a class="brand" href="%(p)sindex.html"><img src="%(p)sassets/img/logo-light.png" alt="EmptyHands KaraTe School" width="600" height="600" loading="lazy"></a>
-        <p>A traditional Karate and wellbeing school, teaching Karate, Tai Chi, Yoga and Shiatsu since 2006. Classes run in Ilford and Woodford, with an invite-only dojo in Epping.</p>
+        <p>A traditional Karate and wellbeing school, teaching Karate, Tai Chi, Yoga and Shiatsu in Ilford since 2006. Classes run every Thursday, with Shiatsu and Coaching by appointment.</p>
         <div class="socials">%(social)s</div>
       </div>
       <div>
@@ -285,7 +286,7 @@ def footer(prefix):
     </div>
     <div class="footer-bottom">
       <span>© <span id="year">%(year)d</span> EmptyHands Karate School. All rights reserved.</span>
-      <span><button type="button" class="link-btn js-cookie-settings" hidden>Cookie settings</button> Website by <a href="https://bespokevista.co.uk/" target="_blank" rel="noopener">Bespoke Vista</a></span>
+      <span><a class="link-btn" href="%(p)sprivacy.html">Privacy &amp; cookies</a><button type="button" class="link-btn js-cookie-settings" hidden>Cookie settings</button> Website by <a href="https://bespokevista.co.uk/" target="_blank" rel="noopener">Bespoke Vista</a></span>
     </div>
   </div>
 </footer>
@@ -298,7 +299,9 @@ def footer(prefix):
 
 BASE_URL = 'https://emptyhands.co.uk/'
 BUSINESS_ID = BASE_URL + '#dojo'
-AREAS = ['Ilford', 'Redbridge', 'Gants Hill', 'Barkingside', 'Seven Kings', 'Newbury Park', 'Woodford', 'Wanstead', 'Epping', 'East London', 'Essex']
+SERVICES = [('karate', 'Karate classes in Ilford'), ('tai-chi', 'Tai Chi classes in Ilford'), ('yoga', 'Yoga classes in Ilford'),
+            ('shiatsu', 'Shiatsu in Ilford'), ('coaching', 'Coaching sessions in Ilford')]
+AREAS = ['Ilford', 'Redbridge', 'Gants Hill', 'Barkingside', 'Seven Kings', 'Newbury Park', 'Woodford', 'Wanstead', 'Goodmayes', 'Chadwell Heath', 'East London', 'Essex']
 
 
 def page_url(path):
@@ -328,7 +331,9 @@ def business_schema():
         'openingHoursSpecification': [{'@type': 'OpeningHoursSpecification', 'dayOfWeek': 'https://schema.org/Thursday', 'opens': '18:00', 'closes': '21:00'}],
         'areaServed': [{'@type': 'Place', 'name': a} for a in AREAS],
         'sameAs': list(SOCIAL.values()),
-        'makesOffer': [{'@type': 'Offer', 'itemOffered': {'@id': BASE_URL + s + '.html#service'}} for s in ('karate', 'tai-chi', 'yoga', 'shiatsu', 'coaching')],
+        'makesOffer': [{'@type': 'Offer', 'itemOffered': {'@type': 'Service', '@id': BASE_URL + s + '.html#service', 'name': n, 'url': BASE_URL + s + '.html'}}
+                       for s, n in SERVICES],
+        'knowsAbout': ['Karate', 'Shotokan Karate', 'Kids karate', 'Self-defence', 'Tai Chi', 'Yoga', 'Shiatsu', 'Acupressure', 'Coaching'],
     }
 
 
@@ -490,7 +495,7 @@ TIMETABLE = [
     ('Thursday', 'karate', 'Karate-Dō', 'All grades, children & adults', '7:00pm - 9:00pm', 'Ilford', 'Weekly'),
     ('Thursday', 'taichi', 'Tai Chi Chuan', 'Yang family style', '6:00pm - 7:00pm', 'Ilford', 'Book ahead'),
     ('Thursday', 'yoga', 'Yoga', 'Himalayan Hatha - drop-in', '8:00pm - 9:00pm', 'Ilford', 'Drop-in'),
-    ('Any day', 'shiatsu', 'Shiatsu & Coaching', 'One-to-one sessions & workshops', 'By appointment', '', 'Free 15-min consult'),
+    ('Any day', 'shiatsu', 'Shiatsu & Coaching', 'One-to-one sessions & workshops', 'By appointment', 'Ilford', 'Free 15-min consult'),
 ]
 
 
@@ -576,7 +581,7 @@ def build_home():
   <div class="wrap">
     <span class="eyebrow">Karate, Tai Chi, Yoga &amp; Shiatsu in Ilford · Est. 2006</span>
     <h1>The way of the empty hand</h1>
-    <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford and Epping (invite only). Patient teaching, rooted in tradition and open to every age and ability.</p>
+    <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford. Patient teaching, rooted in tradition and open to every age and ability.</p>
     <div class="btn-row"><a class="btn btn--seal" href="join.html">Book a trial class</a><a class="btn btn--ghost btn--light" href="#classes">Explore classes</a></div>
     <div class="hero-stats">
       <div><strong>2006</strong><span>Founded</span></div>
@@ -746,7 +751,7 @@ def discipline_page(slug, kanji, name, eyebrow, lead, media, intro_html, facts, 
 FAQS = {
     'karate': [
         ('How old do you need to be to start karate?', 'Children can start from the age of 4, and adults of any age are welcome. Classes cover all grades, from complete beginners to black belts.'),
-        ('When and where are the karate classes in Ilford?', 'Every Thursday from 7pm to 9pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE - easy to reach from Gants Hill, Barkingside, Seven Kings and across Redbridge. Advanced students also train at the Epping dojo (invite only).'),
+        ('When and where are the karate classes in Ilford?', 'Every Thursday from 7pm to 9pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE - easy to reach from Gants Hill, Barkingside, Seven Kings and across Redbridge.'),
         ('How much do karate classes cost?', 'New starters pay as they go at £10 per lesson for their first few weeks. After that, monthly fees run from £30 (Beginner) to £40 (Advanced), plus a £40 annual membership that covers the dojo licence and insurance. Families with three or more students get a 10% discount.'),
         ('What should I wear to my first karate class?', 'Just comfortable clothes - there is no need to buy a karate suit (gi) before your first class.'),
         ('What style of karate is taught?', 'Traditional Shotokan Karate with influences from Goju Ryu, following a syllabus inspired by the late Hirokazu Kanazawa Sōke. Students grade from 10th Kyu (white belt) to Shodan (black belt).'),
@@ -767,7 +772,7 @@ FAQS = {
         ('What is shiatsu?', 'Shiatsu is a Japanese healing therapy whose name means “finger pressure”. It is a form of acupressure based on Traditional Oriental Medicine, without needles or herbs.'),
         ('What can a shiatsu session help with?', 'Sessions focus on mental wellbeing, self-care and rehabilitation, including sports injuries, back problems and trauma.'),
         ('How much does a shiatsu treatment cost?', 'A 15-minute consultation is free, and a treatment costs £100.'),
-        ('Where are shiatsu sessions held?', 'Treatments take place at the EmptyHands clinic in Epping (invite only), by appointment. Book a free consultation by phone, WhatsApp or email.'),
+        ('Where are shiatsu sessions held?', 'In Ilford, by appointment. Book a free 15-minute consultation by phone, WhatsApp or email to arrange a time.'),
         ('Is the practitioner qualified?', 'Yes. Azeem Mushtaq graduated from the British School of Shiatsu-Dō in 2003, is registered with the Shiatsu Society and serves on its board.'),
     ],
     'coaching': [
@@ -816,8 +821,8 @@ def build_disciplines():
 <p class="lead">Classical Shotokan Karate with influences from Goju Ryu, Shiatsu (acupressure) and Tai Chi Chuan - taught the traditional way, to children and adults alike.</p>
 <p>EmptyHands was founded in 2006 on the ideals of Gichin Funakoshi Hanshi, the father of modern Karate. The syllabus is inspired by the work of the late Hirokazu Kanazawa Sōke, with a few adaptations.</p>
 <p>Teaching is person-centred and built on the four fundamentals of Karate-Dō: Kihon (basics), Kata (form), Bunkai (application) and Kumite (sparring). Just as important are the values of Karate, explored through the Dojo Kun.</p>
-<p>Classes run every Thursday from 7pm to 9pm in Ilford, with advanced training for experienced students at the Epping dojo (invite only). A full calendar is published at the end of each year, so everyone can plan ahead.</p>''',
-        [('When', 'Thursdays, 7pm - 9pm'), ('Where', 'Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE'), ('Advanced', 'Extra classes at the Epping dojo (invite only)'),
+<p>Classes run every Thursday from 7pm to 9pm in Ilford. A full calendar is published at the end of each year, so everyone can plan ahead.</p>''',
+        [('When', 'Thursdays, 7pm - 9pm'), ('Where', 'Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE'),
          ('Style', 'Shotokan, with Goju Ryu influences'), ('Ages', 'Children (from 4) and adults'), ('Try it', '£10 pay-as-you-go for new starters')],
         [('fist', 'f.ist', 'hand and fingers clenched, a gesture'), ('learn', 'le.arn', 'to gain or acquire knowledge or skill'),
          ('develop', 'de.vel.op', 'to grow or transform into a new state'), ('empower', 'em.pow.er', 'to give ability, freedom - to enable'),
@@ -864,7 +869,7 @@ def build_disciplines():
          crumb=[('Classes', 'index.html#classes'), ('Tai Chi classes in Ilford', None)])
 
     body = discipline_page(
-        'shiatsu', '指圧', 'Shiatsu', 'Japanese healing therapy · Epping clinic (invite only)',
+        'shiatsu', '指圧', 'Shiatsu', 'Japanese healing therapy · Ilford',
         'Finger-pressure therapy grounded in Traditional Oriental Medicine - no needles, no herbs.',
         ('video', 'shiatsu.mp4', 'shiatsu-poster.jpg'),
         '''<span class="eyebrow">Information</span>
@@ -872,14 +877,14 @@ def build_disciplines():
 <p class="lead">Shiatsu is a powerful Japanese healing therapy. The name literally means “finger pressure” - a form of acupressure.</p>
 <p>Rooted in Traditional Oriental Medicine, it works without needles or herbs. The clinic specialises in mental wellbeing, self-care and rehabilitation, through workshops and one-to-one sessions.</p>
 <p>Azeem Mushtaq Sensei founded the EmptyHands clinic in 2003 after graduating from the British School of Shiatsu-Dō, and it is registered with the Shiatsu Society. Treatments offer advice, support and rehabilitation for sports injuries, back problems and trauma. Azeem’s development was supported by the late Shiatsu Master Rex Lassalle.</p>''',
-        [('Clinic', 'Epping (invite only) - by appointment'), ('Consultation', 'Free 15-minute consultation'), ('Treatment', '£100 per treatment'), ('Specialisms', 'Mental wellbeing, self-care, rehabilitation, sports injuries'), ('Registered', 'The Shiatsu Society')],
+        [('Where', 'Ilford - by appointment'), ('Consultation', 'Free 15-minute consultation'), ('Treatment', '£100 per treatment'), ('Specialisms', 'Mental wellbeing, self-care, rehabilitation, sports injuries'), ('Registered', 'The Shiatsu Society')],
         [('therapy', 'thera.py', 'treatment intended to relieve or heal a disorder'), ('acupressure', 'acu.pressure', 'a therapy in which manual pressure is used to stimulate specific points on the body'),
          ('rehabilitation', 're.hab.ilitation', 'supporting the restoration of good health through interventions'), ('revitalising', 're.vital.ising', 'to give new life, energy or success to something')],
         [('rex-lassalle.webp', 'Rex Lassalle, Shiatsu Master'), ('image-1024x499-1.webp', 'Shiatsu self-care techniques illustrated'), ('kidney27.webp', 'Acupressure point chart')],
-        {'Wellbeing'}, h1='Shiatsu therapy sessions', faq=faq_html('Shiatsu sessions: your questions', FAQS['shiatsu']))
-    page('shiatsu.html', 'Shiatsu Therapy Sessions · Ilford & Epping', 'Shiatsu (Japanese acupressure) sessions for wellbeing, back problems, sports injuries and rehabilitation with a Shiatsu Society registered practitioner. Free 15-minute consultation.', body, 'shiatsu', over_hero=True,
-         schema=service_schema('shiatsu', 'Shiatsu therapy sessions', 'Shiatsu therapy', 'Shiatsu (Japanese acupressure) treatment for wellbeing, self-care and rehabilitation.', '100', 'Per treatment (15-minute consultation free)', FAQS['shiatsu']),
-         crumb=[('Classes', 'index.html#classes'), ('Shiatsu therapy sessions', None)])
+        {'Wellbeing'}, h1='Shiatsu in Ilford', faq=faq_html('Shiatsu sessions: your questions', FAQS['shiatsu']))
+    page('shiatsu.html', 'Shiatsu in Ilford · Japanese Acupressure Therapy', 'Shiatsu (Japanese acupressure) treatments in Ilford for wellbeing, back pain, sports injuries and rehabilitation, with a Shiatsu Society registered practitioner. Free 15-minute consultation.', body, 'shiatsu', over_hero=True,
+         schema=service_schema('shiatsu', 'Shiatsu in Ilford', 'Shiatsu therapy', 'Shiatsu (Japanese acupressure) treatment in Ilford for wellbeing, self-care and rehabilitation.', '100', 'Per treatment (15-minute consultation free)', FAQS['shiatsu']),
+         crumb=[('Classes', 'index.html#classes'), ('Shiatsu in Ilford', None)])
 
     body = discipline_page(
         'coaching', '指導', 'Coaching', 'Person-centred coaching · in person or on Teams',
@@ -923,7 +928,7 @@ def build_about():
         <li><strong>2011</strong><span>First Yudansha (black belt) awarded.</span></li>
         <li><strong>2013</strong><span>MA in Coaching (Oxford Brookes) - the first Karate Coaching Model.</span></li>
         <li><strong>2020</strong><span>The Virtual Dojo keeps students training together through lockdown.</span></li>
-        <li><strong>Today</strong><span>Karate, Tai Chi, Yoga, Shiatsu &amp; Coaching across Ilford and Epping (invite only).</span></li>
+        <li><strong>Today</strong><span>Karate, Tai Chi, Yoga, Shiatsu &amp; Coaching in Ilford.</span></li>
       </ol>
     </div>
   </div>
@@ -971,7 +976,7 @@ def build_about():
                         ('develop', 'de.vel.op', 'to grow or transform into a new state')]),
         'cta': cta_band(),
     }
-    page('about.html', 'About us', 'Founded in 2006 by Azeem Mushtaq Sensei, EmptyHands provides a safe, inclusive space to learn Martial Arts, Healing and Bodywork in Ilford and Epping (invite only).', body, 'about', over_hero=True, crumb=[('About us', None)])
+    page('about.html', 'About us', 'Founded in 2006 by Azeem Mushtaq Sensei, EmptyHands provides a safe, inclusive space to learn Martial Arts, Healing and Bodywork in Ilford.', body, 'about', over_hero=True, crumb=[('About us', None)])
 
 
 def build_instructors():
@@ -979,7 +984,7 @@ def build_instructors():
         ('Azeem Mushtaq', 'Sensei - GoDan', 'amushtaqsensei.webp', ['GoDan', 'MA', 'BA (Hons)', 'Dip Shiatsu-Do (FWSS)'], '''
 <p class="lead">Azeem founded EmptyHands in March 2006 to create a Dojo grounded in the principles of Bushidō - discipline, respect and purpose - while embracing thoughtful, modern interpretation. This vision grew naturally from his lifelong journey through the martial, healing and coaching arts.</p>
 <p>Inspired by a family tradition of wrestling, Azeem’s passion began in childhood and expanded in his teens through kickboxing at the Gold Steel Gym in Walthamstow. His formal Karate path started in 1994 as a founding member of an East London Dojo. He trained widely across local Dojos and travelled to learn from multiple Sensei, deepening his Shotokan practice and exploring Tai Chi Chuan and Shiatsu. He also launched the first online Karate magazine (ZenKarate), sharing knowledge with a growing community. Years of dedication led him to earn the title Sensei, guided by masters including Hirokazu Kanazawa Sōke, Chris Rowen Shihan, Yoshinobu Ohta Sensei and Nobuaki Kanazawa Kanchō.</p>
-<p>In 1999 Azeem began studying internal arts with Master John Ding at the International Academy of Tai Chi Chuan, training until 2005 and returning in 2014. He graduated from the British School of Shiatsu-Do in 2003 and continues client work and research in Epping (invite only). His Shiatsu development was supported by the late Rex Lassalle (Shiatsu Master), whose guidance helped shape Azeem’s integrated approach.</p>
+<p>In 1999 Azeem began studying internal arts with Master John Ding at the International Academy of Tai Chi Chuan, training until 2005 and returning in 2014. He graduated from the British School of Shiatsu-Do in 2003 and continues his Shiatsu client work and research in Ilford. His Shiatsu development was supported by the late Rex Lassalle (Shiatsu Master), whose guidance helped shape Azeem’s integrated approach.</p>
 <p>Azeem holds an M.A. in Coaching (Oxford Brookes, 2013), where he developed the first Karate Coaching Model, and he actively promotes coaching in Martial Arts through talks and publications. He also serves as a board member of the Shiatsu Society, helping raise awareness of Shiatsu and wellbeing.</p>
 <p>Alongside teaching, Azeem has 30+ years’ experience in Business Architecture and IT Transformation as a Senior Business Consultant (Bespoke Vista Ltd), working with major organisations and maintaining current safeguarding checks.</p>
 <p>EmptyHands brings this journey together - Karate-Do, Tai Chi Chuan, Shiatsu, Yoga and Coaching - to inspire disciplined practice, personal insight and real-world transformation.</p>'''),
@@ -1199,7 +1204,7 @@ def build_contact():
         'locations': locations(), 'syl': DOCS['syllabus'], 'cal': DOCS['calendar'],
         'social': ''.join('<a href="%s" target="_blank" rel="noopener" aria-label="%s">%s</a>' % (u, n.title(), ICON[n]) for n, u in SOCIAL.items()),
     }
-    page('contact.html', 'Contact', 'Contact EmptyHands Karate School: +44 7931 300470, info@emptyhands.co.uk. Dojos at St Andrew’s Church Hall, Ilford IG1 3PE and Jack Silley Pavilion, Epping (invite only).', body, 'contact', schema=[business_schema()], crumb=[('Contact', None)])
+    page('contact.html', 'Contact', 'Contact EmptyHands Karate School in Ilford: +44 7931 300470, info@emptyhands.co.uk. Karate, Tai Chi and Yoga at St Andrew’s Church Hall, The Drive, Ilford IG1 3PE.', body, 'contact', schema=[business_schema()], crumb=[('Contact', None)])
 
 
 def build_join():
@@ -1472,6 +1477,37 @@ def build_blog():
         page('blog/%s.html' % p['slug'], p['title'], p['excerpt'], body, 'blog', schema=[art], crumb=[('Journal', 'blog/index.html'), (p['title'], None)])
 
 
+def build_privacy():
+    body = page_hero('Privacy', 'Privacy &amp; cookies',
+                     'What this website does with your information, the cookies it uses and how to change your choice.', '秘密', None, 'Privacy') + """
+<section class="section">
+  <div class="wrap narrow">
+    <div class="prose">
+<p><em>Last updated 13 November 2026</em></p>
+<h2>Who we are</h2>
+<p>This website is run by EmptyHands Karate School, Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE. Contact us at <a href="mailto:%(email)s">%(email)s</a> or on <a href="%(tel)s">%(phone)s</a>.</p>
+<h2>Forms on this website</h2>
+<p>The website has no accounts and does not store anything you type. The booking and contact forms open your email app or WhatsApp with your message filled in, and we only receive it if you send it. We use what you send to reply, arrange classes and keep in touch about your training, and we keep it only while it is needed for that. Our lawful basis is our legitimate interest in answering enquiries and running classes.</p>
+<h2>Cookies and Google Ads</h2>
+<p>We advertise with Google Ads. To see which adverts lead people to get in touch, the website uses the Google tag, and it asks for your choice the first time you visit.</p>
+<ul>
+<li><strong>Before you choose, or if you click Reject:</strong> no cookies are set. Google receives only cookie-free signals, such as that a page was viewed or a form was sent, with advertising identifiers removed.</li>
+<li><strong>If you click Accept:</strong> Google may set cookies (for example <code>_gcl_au</code>) to measure which adverts work and to show EmptyHands adverts to people who have visited the website (remarketing) on Google and its partner sites. Our lawful basis is your consent.</li>
+</ul>
+<p>You can change your choice at any time with <strong>Cookie settings</strong> at the bottom of every page. Your choice is saved in your browser (as <code>eh-ads-consent</code>) so we don’t ask again. Read <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">how Google uses information from sites that use its services</a>, and turn off personalised adverts in <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">My Ad Center</a>.</p>
+<h2>Maps and links</h2>
+<p>Google Maps only loads on the Contact page when you click <strong>Show map</strong>, and Google may then set its own cookies. Links to Facebook, Instagram, YouTube and WhatsApp take you to those services, whose own privacy policies apply.</p>
+<h2>The student app</h2>
+<p>The EmptyHands Student app has its own <a href="%(app)sprivacy.html">privacy policy</a>.</p>
+<h2>Your rights</h2>
+<p>You can ask for a copy of the information we hold about you, or ask us to correct or delete it, by emailing <a href="mailto:%(email)s">%(email)s</a>. If you’re unhappy with how we handle your information you can complain to the Information Commissioner’s Office (<a href="https://ico.org.uk/" target="_blank" rel="noopener">ico.org.uk</a>).</p>
+<p><button type="button" class="btn js-cookie-settings" hidden>Change cookie settings</button></p>
+    </div>
+  </div>
+</section>""" % {'email': EMAIL, 'tel': PHONE_HREF, 'phone': PHONE, 'app': STUDENT_APP}
+    page('privacy.html', 'Privacy & cookies', 'How the EmptyHands Karate School website handles your information, the Google Ads cookies it uses and how to change your cookie choice.', body, 'privacy', crumb=[('Privacy & cookies', None)])
+
+
 def build_404():
     body = '''<section class="page-hero" style="min-height:80vh;display:flex;align-items:center"><div class="wrap center">
 <div class="kanji" style="font-size:clamp(6rem,20vw,12rem);line-height:1;color:var(--seal)">空</div>
@@ -1516,7 +1552,7 @@ def build_sitemap():
     base = BASE_URL
     today = date.today().isoformat()
     pages = ['index.html', 'karate.html', 'yoga.html', 'tai-chi.html', 'shiatsu.html', 'coaching.html', 'about.html', 'instructors.html',
-             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'kihon.html', 'kata.html', 'bunkai.html', 'kumite.html', 'blog/index.html']
+             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'privacy.html', 'kihon.html', 'kata.html', 'bunkai.html', 'kumite.html', 'blog/index.html']
     pages += ['blog/%s.html' % p['slug'] for p in POSTS]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % ''.join(
         '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (page_url(p), today) for p in pages)
@@ -1545,6 +1581,7 @@ if __name__ == '__main__':
     build_join()
     build_gallery()
     build_blog()
+    build_privacy()
     build_404()
     build_sitemap()
     build_redirects()
