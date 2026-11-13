@@ -514,12 +514,11 @@ def post_card(p, prefix='{{p}}', feature=False):
     # The whole picture is shown (never cropped); a soft blurred copy fills any space around it.
     thumb = ('<span class="thumb-bg" aria-hidden="true"></span><img src="%sassets/img/%s" alt="" loading="lazy" width="%d" height="%d">'
              % (prefix, cover['file'], cover['w'], cover['h'])) if cover else ''
-    d = date.fromisoformat(p['date']).strftime('%-d %b %Y')
     return '''<a class="post-card%s reveal" href="%sblog/%s.html" data-cat="%s">
   <div class="thumb">%s</div>
-  <div><div class="meta"><span class="cat">%s</span><span>%s</span><span>%d min read</span></div>
+  <div><div class="meta"><span class="cat">%s</span><span>%d min read</span></div>
   <h3>%s</h3><p>%s</p></div>
-</a>''' % (' post-card--feature' if feature else '', prefix, p['slug'], e(p['category']), thumb, e(p['category']), d, p['minutes'], e(p['title']), e(p['excerpt']))
+</a>''' % (' post-card--feature' if feature else '', prefix, p['slug'], e(p['category']), thumb, e(p['category']), p['minutes'], e(p['title']), e(p['excerpt']))
 
 
 def locations():
@@ -1423,7 +1422,6 @@ def build_blog():
     page('blog/index.html', 'Journal', 'Articles from EmptyHands on Karate, Budō culture, Tai Chi, Shiatsu, Yoga, wellbeing and life in the dojo.', body, 'blog')
 
     for i, p in enumerate(POSTS):
-        d = date.fromisoformat(p['date']).strftime('%-d %B %Y')
         cover = ''
         if p['cover']:
             c = p['cover']
@@ -1437,7 +1435,7 @@ def build_blog():
   <header class="article-hero">
     <div class="wrap narrow">
       <div class="crumbs"><a href="../index.html">Home</a> / <a href="index.html">Journal</a></div>
-      <div class="article-meta"><span class="cat">%(cat)s</span><span>%(date)s</span><span>%(min)d min read</span></div>
+      <div class="article-meta"><span class="cat">%(cat)s</span><span>%(min)d min read</span></div>
       <h1 style="margin-top:.4em">%(title)s</h1>
       <p class="muted" style="margin:0">By Azeem Mushtaq Sensei &amp; the EmptyHands team</p>
     </div>
@@ -1459,14 +1457,14 @@ def build_blog():
 </article>
 %(related)s
 %(cta)s''' % {
-            'cat': e(p['category']), 'date': d, 'min': p['minutes'], 'title': e(p['title']), 'cover': cover, 'html': p['html'],
+            'cat': e(p['category']), 'min': p['minutes'], 'title': e(p['title']), 'cover': cover, 'html': p['html'],
             'url': share_url, 'title_q': e(p['title']).replace(' ', '%20'), 'fb': ICON['facebook'], 'wa': ICON['whatsapp'], 'link': ICON['link'],
             'next_slug': nxt['slug'], 'next_title': e(nxt['title']),
             'related': ('<section class="section section--alt"><div class="wrap"><div class="section-head reveal"><div><span class="eyebrow">Keep reading</span><h2>More on %s</h2></div><a class="link-arrow" href="index.html">All articles</a></div><div class="posts">%s</div></div></section>'
                         % (e(p['category'].lower()), ''.join(post_card(q) for q in related))) if related else '',
             'cta': cta_band(),
         }
-        art = {'@type': 'BlogPosting', 'headline': p['title'], 'description': p['excerpt'], 'datePublished': p['date'],
+        art = {'@type': 'BlogPosting', 'headline': p['title'], 'description': p['excerpt'],
                'author': {'@type': 'Person', 'name': 'Azeem Mushtaq'}, 'publisher': {'@id': BUSINESS_ID}, 'mainEntityOfPage': page_url('blog/%s.html' % p['slug'])}
         if p['cover']:
             art['image'] = BASE_URL + 'assets/img/' + p['cover']['file']
