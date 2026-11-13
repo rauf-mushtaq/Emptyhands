@@ -633,6 +633,10 @@ dialog.modal::backdrop { background: rgba(20, 18, 15, .7); backdrop-filter: blur
 .location ul { list-style: none; padding: 0; margin: 0 0 18px; color: var(--ink-2); }
 .location li { padding: 4px 0; }
 @media (max-width: 760px) { .locations { grid-template-columns: 1fr; } }
+.locations--one { grid-template-columns: 1fr; }
+.locations--one .location { display: grid; grid-template-columns: 1.3fr 1fr; }
+.locations--one .location iframe, .locations--one .map-consent { height: 100%; min-height: 300px; }
+@media (max-width: 760px) { .locations--one .location { grid-template-columns: 1fr; } .locations--one .location iframe, .locations--one .map-consent { min-height: 260px; } }
 
 .contact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .contact-card { display: flex; gap: 16px; align-items: flex-start; padding: 24px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; background: var(--paper); transition: border-color .2s, transform .3s var(--ease); }

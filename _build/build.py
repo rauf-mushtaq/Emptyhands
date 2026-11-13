@@ -86,6 +86,8 @@ def tidy_post(p):
     for k in ('title', 'excerpt', 'html'):   # plain hyphens instead of long dashes
         p[k] = re.sub(r'\s*\u2014\s*', ' - ', p[k])
         p[k] = re.sub(r'\s+\u2013\s+', ' - ', p[k]).replace('\u2013', '-')
+    if p.get('native'):
+        return p
     p['html'] = re.sub(r'<(h[1-6])([^>]*)>(.*?)</\1>', lambda m: '<%s%s>%s</%s>' % (m.group(1), m.group(2), tidy_heading(m.group(3)), m.group(1)), p['html'], flags=re.S)
     return p
 
@@ -144,12 +146,6 @@ DOJOS = [
         'map': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2479.911952490874!2d0.05531907609409833!3d51.569847606140094!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a6e571c6255d%3A0x4fbe36703a646aeb!2sEmptyhands%20Karate%20School!5e0!3m2!1sen!2s!4v1707932577567!5m2!1sen!2s',
         'directions': 'https://www.google.com/maps/dir/?api=1&destination=Emptyhands+Karate+School+The+Drive+Ilford+IG1+3PE',
         'classes': ['Karate - Thursdays 7pm-9pm', 'Tai Chi - Thursdays 6pm-7pm', 'Yoga - Thursdays 8pm-9pm', 'Shiatsu & Coaching - by appointment'],
-    },
-    {
-        'name': 'Epping Dojo (invite only)', 'k': '本部', 'address': 'Jack Silley Pavilion, Epping (invite only)',
-        'map': 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2472.6607334141377!2d0.1160950876519874!3d51.70265332387034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d89896bb52877f%3A0x84ade7537c849d8f!2sJack%20Silley%20Pavilion!5e0!3m2!1sen!2s!4v1714126428360!5m2!1sen!2s',
-        'directions': 'https://www.google.com/maps/dir/?api=1&destination=Jack+Silley+Pavilion+Epping',
-        'classes': ['Advanced Karate - for developed students'],
     },
 ]
 
@@ -534,7 +530,7 @@ def locations():
   <div class="body"><h3>%s <span class="k kanji">%s</span></h3><p class="muted">%s</p><ul>%s</ul>
   <a class="link-arrow" href="%s" target="_blank" rel="noopener noreferrer">Get directions</a></div>
 </article>''' % (d['map'], d['name'], d['name'], d['k'], d['address'], ''.join('<li>%s</li>' % c for c in d['classes']), d['directions']))
-    return '<div class="locations">%s</div>' % ''.join(out)
+    return '<div class="locations%s">%s</div>' % (' locations--one' if len(DOJOS) == 1 else '', ''.join(out))
 
 
 def words(items):
@@ -1219,7 +1215,7 @@ def build_join():
         <div class="field"><label for="j-name">Student’s full name</label><input id="j-name" name="Student name" required></div>
         <div class="field"><label for="j-age">Student’s age</label><input id="j-age" name="Age" type="number" min="3" max="99" inputmode="numeric" required></div>
         <div class="field"><label for="j-parent">Parent / guardian (if under 18)</label><input id="j-parent" name="Parent or guardian" autocomplete="name"></div>
-        <div class="field"><label for="j-dojo">Preferred dojo</label><select id="j-dojo" name="Preferred dojo"><option>Ilford</option><option>Epping (invite only)</option><option>Either</option><option>Online / Teams</option></select></div>
+        <div class="field"><label for="j-dojo">Where would you like to train?</label><select id="j-dojo" name="Where"><option>Ilford dojo</option><option>Online / Teams</option></select></div>
         <div class="field"><label for="j-email">Email</label><input id="j-email" name="Email" type="email" autocomplete="email" required></div>
         <div class="field"><label for="j-phone">Phone</label><input id="j-phone" name="Phone" type="tel" autocomplete="tel" required></div>
         <div class="field full"><label for="j-exp">Previous martial arts or yoga experience</label><input id="j-exp" name="Experience" placeholder="e.g. none, or 2 years of judo"></div>
@@ -1535,7 +1531,8 @@ def build_redirects():
     """Tiny forwarding pages at the old WordPress addresses (an instant refresh counts as a permanent redirect for Google)."""
     targets = dict(OLD_URLS)
     for p in POSTS:
-        targets.setdefault(p['slug'], 'blog/%s.html' % p['slug'])
+        if not p.get('native'):
+            targets.setdefault(p['slug'], 'blog/%s.html' % p['slug'])
     for old, new in targets.items():
         url = BASE_URL + new
         doc = ('<!doctype html>\n<html lang="en-GB"><head><meta charset="utf-8"><title>Moved · EmptyHands</title>\n'
