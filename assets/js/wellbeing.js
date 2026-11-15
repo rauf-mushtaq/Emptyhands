@@ -248,6 +248,16 @@
   function joinList(a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
   function lc(t) { return t.charAt(0).toLowerCase() + t.slice(1); }
   function phraseOf(list, goal) { for (var i = 0; i < list.length; i++) if (list[i][0] === goal) return list[i][2]; return lc(goal); }
+  // Several goals in one sentence: 'to feel calmer, sleep better and build your confidence'.
+  function goalsText(list, goals) { return joinList(goals.map(function (g, i) { var p = phraseOf(list, g); return i ? p.replace(/^to /, '') : p; })); }
+  // Results saved before goals and preferences allowed more than one answer.
+  function norm(a) {
+    a.goals = a.goals || (a.goal ? [a.goal] : []);
+    a.formats = a.formats || (a.format ? [a.format] : []);
+    a.paces = a.paces || (a.pace ? [a.pace] : []);
+    a.appeals = a.appeals || []; a.challenges = a.challenges || [];
+    return a;
+  }
   function ul(items, cls) { return '<ul class="' + (cls || 'wb-list') + '">' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; }
   function scrollToTop() {
     var y = root.getBoundingClientRect().top + window.scrollY - 110;
@@ -272,7 +282,10 @@
   var answers, steps, step;
 
   /* ================================================================== the questions, one screen at a time */
-  function fresh(who) { return { who: who || '', scores: {}, challenges: [], goal: '', format: '', pace: '', appeals: [] }; }
+  function fresh(who) { return { who: who || '', scores: {}, challenges: [], goals: [], formats: [], paces: [], appeals: [] }; }
+  // Questions where any number of answers can be chosen: which answers list each one fills.
+  var MULTI = { ch: 'challenges', goal: 'goals', format: 'formats', pace: 'paces', ap: 'appeals' };
+  var EXCLUSIVE = ['No preference', 'Not sure'];  // choosing one of these clears the others, and the other way round
   function stepsFor(who) {
     var s = [{ t: 'who' }];
     if (!who) return s;
@@ -292,6 +305,10 @@
   function legend(sec, q) { return '<legend tabindex="-1"><span class="wb-sec">' + esc(sec) + '</span><span class="wb-qtext">' + esc(q) + '</span></legend>'; }
   function radioCard(name, value, checked, inner) {
     return '<label class="wb-goal"><input type="radio" name="' + name + '" value="' + esc(value) + '"' + (checked ? ' checked' : '') + '><span>' + inner + '</span></label>';
+  }
+  function multiCard(k, value, inner) {
+    var on = answers[MULTI[k]].indexOf(value) >= 0;
+    return '<label class="wb-goal is-multi"><input type="checkbox" data-k="' + k + '" value="' + esc(value) + '"' + (on ? ' checked' : '') + '><span>' + inner + '</span></label>';
   }
 
   function stepHTML() {
@@ -321,32 +338,30 @@
       var body = kid ? '<div class="choices wb-kidch">' + C.challenges.map(function (c) { return box(c[0], c[1]); }).join('') + '</div>'
         : '<div class="wb-groups">' + A.challenges.map(function (g) { return '<div class="wb-group"><h3>' + esc(g[0]) + '</h3><div class="choices">' + g[1].map(function (c) { return box(c); }).join('') + '</div></div>'; }).join('') + '</div>';
       return '<fieldset class="wb-q">' + legend(kid ? 'Part 2 of 3 · Things you’d like help with' : 'Section 2 of 4 · What’s holding you back', kid ? 'Is anything a bit tricky for you?' : 'What would you most like help with?') +
-        '<p class="wb-hint">Choose up to three' + (kid ? ', or skip.' : '.') + ' <span class="wb-count" aria-live="polite"></span></p>' + body + '</fieldset>';
+        '<p class="wb-hint">Choose as many as you like' + (kid ? ', or skip.' : '.') + ' <span class="wb-count" aria-live="polite"></span></p>' + body + '</fieldset>';
     }
     if (st.t === 'goal') {
-      var goals = kid ? C.goals.map(function (g) { return radioCard('wb-goal', g[0], answers.goal === g[0], '<b class="wb-emoji" aria-hidden="true">' + g[1] + '</b><strong>' + esc(g[0]) + '</strong>'); })
-        : A.goals.map(function (g) { return radioCard('wb-goal', g[0], answers.goal === g[0], '<strong>' + esc(g[0]) + '</strong><small>' + esc(g[1]) + '</small>'); });
-      return '<fieldset class="wb-q">' + legend(kid ? 'Part 3 of 3 · Your big goal' : 'Section 3 of 4 · Your main goal', kid ? 'What would you most like?' : 'What would you most like to achieve?') +
-        '<p class="wb-hint">Choose one.</p><div class="wb-goals' + (kid ? ' wb-goals--kid' : '') + '">' + goals.join('') + '</div></fieldset>';
+      var goals = kid ? C.goals.map(function (g) { return multiCard('goal', g[0], '<b class="wb-emoji" aria-hidden="true">' + g[1] + '</b><strong>' + esc(g[0]) + '</strong>'); })
+        : A.goals.map(function (g) { return multiCard('goal', g[0], '<strong>' + esc(g[0]) + '</strong><small>' + esc(g[1]) + '</small>'); });
+      return '<fieldset class="wb-q">' + legend(kid ? 'Part 3 of 3 · Your big goals' : 'Section 3 of 4 · Your goals', kid ? 'What would you like?' : 'What would you like to achieve?') +
+        '<p class="wb-hint">Choose as many as you like. <span class="wb-count" aria-live="polite"></span></p><div class="wb-goals' + (kid ? ' wb-goals--kid' : '') + '">' + goals.join('') + '</div></fieldset>';
     }
     if (st.t === 'prefs') {
       var pref = function (k, q, opts) {
-        return '<fieldset class="wb-pref"><legend class="wb-qtext">' + esc(q) + '</legend><div class="wb-opts">' + opts.map(function (o) { return radioCard('wb-' + k, o, answers[k] === o, '<strong>' + esc(o) + '</strong>'); }).join('') + '</div></fieldset>';
+        return '<fieldset class="wb-pref"><legend class="wb-qtext">' + esc(q) + '</legend><p class="wb-hint">Choose as many as you like.</p><div class="wb-opts">' + opts.map(function (o) { return multiCard(k, o, '<strong>' + esc(o) + '</strong>'); }).join('') + '</div></fieldset>';
       };
       return '<div class="wb-q"><p class="wb-sec wb-sec-h" tabindex="-1">Section 4 of 4 · How you like to train</p>' + pref('format', 'How would you like to practise?', A.formats) + pref('pace', 'What pace suits you?', A.paces) + '</div>';
     }
-    return '<fieldset class="wb-q">' + legend('Section 4 of 4 · How you like to train', 'Which of these appeal to you?') + '<p class="wb-hint">Choose any, or skip.</p><div class="wb-opts">' +
-      A.appeals.map(function (p) {
-        return '<label class="wb-goal"><input type="checkbox" data-k="ap" value="' + esc(p[0]) + '"' + (answers.appeals.indexOf(p[0]) >= 0 ? ' checked' : '') + '><span><strong>' + esc(p[0]) + '</strong></span></label>';
-      }).join('') + '</div></fieldset>';
+    return '<fieldset class="wb-q">' + legend('Section 4 of 4 · How you like to train', 'Which of these appeal to you?') + '<p class="wb-hint">Choose as many as you like, or skip.</p><div class="wb-opts">' +
+      A.appeals.map(function (p) { return multiCard('ap', p[0], '<strong>' + esc(p[0]) + '</strong>'); }).join('') + '</div></fieldset>';
   }
 
   function canGoOn() {
     var st = steps[step];
     if (st.t === 'who') return !!answers.who;
     if (st.t === 'scale') return !!answers.scores[st.q.id];
-    if (st.t === 'goal') return !!answers.goal;
-    if (st.t === 'prefs') return !!(answers.format && answers.pace);
+    if (st.t === 'goal') return answers.goals.length > 0;
+    if (st.t === 'prefs') return answers.formats.length > 0 && answers.paces.length > 0;
     return true;
   }
 
@@ -371,10 +386,10 @@
   }
 
   function updateChecks() {
-    var boxes = $$('input[data-k="ch"]', quiz), n = answers.challenges.length;
-    boxes.forEach(function (b) { b.disabled = !b.checked && n >= 3; });
-    var c = $('.wb-count', quiz);
-    if (c) c.textContent = n ? n + ' of 3 chosen' : '';
+    var c = $('.wb-count', quiz), st = steps[step];
+    if (!c) return;
+    var n = st.t === 'goal' ? answers.goals.length : answers.challenges.length;
+    c.textContent = n ? n + ' chosen' : '';
   }
 
   function next() {
@@ -389,21 +404,15 @@
       if (t.value !== answers.who) answers = fresh(t.value);
       steps = stepsFor(answers.who);
     } else if (st.t === 'scale' && t.type === 'radio') answers.scores[st.q.id] = Number(t.value);
-    else if (t.getAttribute('data-k') === 'ch') { answers.challenges = $$('input[data-k="ch"]:checked', quiz).map(function (b) { return b.value; }); updateChecks(); }
-    else if (t.getAttribute('data-k') === 'ap') answers.appeals = $$('input[data-k="ap"]:checked', quiz).map(function (b) { return b.value; });
-    else if (t.name === 'wb-goal') answers.goal = t.value;
-    else if (t.name === 'wb-format' || t.name === 'wb-pace') answers[t.name.slice(3)] = t.value;
+    else if (MULTI[t.getAttribute('data-k')]) {
+      var k = t.getAttribute('data-k'), group = $$('input[data-k="' + k + '"]', quiz);
+      if (t.checked) group.forEach(function (b) { if (b !== t && (EXCLUSIVE.indexOf(t.value) >= 0 || EXCLUSIVE.indexOf(b.value) >= 0)) b.checked = false; });
+      answers[MULTI[k]] = group.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      updateChecks();
+    }
     updateNext();
   });
-  // Tapping an answer moves straight on (keyboard users choose with the arrow keys, then press Next).
-  var autoTimer;
-  quiz.addEventListener('pointerup', function (e) {
-    var label = e.target.closest && e.target.closest('.wb-scale label, .wb-faces label, .wb-who label');
-    if (!label) return;
-    clearTimeout(autoTimer);
-    var at = step;
-    autoTimer = setTimeout(function () { if (step === at && canGoOn()) next(); }, 280);
-  });
+  // Choosing an answer only selects it: Next moves on.
   quiz.addEventListener('click', function (e) {
     var b = e.target.closest('[data-act]');
     if (!b) return;
@@ -435,8 +444,10 @@
     }
     A.scaleRules.forEach(function (r) { var v = a.scores[r[0]]; if (r[1](v)) add(r[2], r[3].replace('{v}', v)); });
     a.challenges.forEach(function (c) { add(A.challengeRules[c] || {}, 'You’d like help with ' + lc(c)); });
-    add(A.goalRules[a.goal] || {}, 'You want ' + phraseOf(A.goals, a.goal), 1.5);
-    [a.format, a.pace].forEach(function (p) { var r = A.prefRules[p]; if (r) add(r[0], r[1]); });
+    // Goals count most; when many are chosen, each counts for a little less.
+    var gw = a.goals.length <= 2 ? 1.5 : 3 / a.goals.length;
+    a.goals.forEach(function (g) { add(A.goalRules[g] || {}, 'You want ' + phraseOf(A.goals, g), gw); });
+    a.formats.concat(a.paces).forEach(function (p) { var r = A.prefRules[p]; if (r) add(r[0], r[1]); });
     A.appeals.forEach(function (p) { if (a.appeals.indexOf(p[0]) >= 0) add(p[1], p[2]); });
     ORDER.forEach(function (k) { why[k] = why[k].sort(function (x, y) { return y.w - x.w; }).map(function (x) { return x.t; }); });
     var ranked = ORDER.slice().sort(function (x, y) { return pts[y] - pts[x] || ORDER.indexOf(x) - ORDER.indexOf(y); })
@@ -450,7 +461,7 @@
     var focus = byGood.slice().reverse().filter(function (d) { return d.g <= 5; }).slice(0, 3);
 
     var signals = {};
-    signals[a.goal] = 3;
+    a.goals.forEach(function (g) { signals[g] = a.goals.length <= 2 ? 3 : Math.max(1, 6 / a.goals.length); });
     a.challenges.forEach(function (c) { signals[c] = (signals[c] || 0) + 2; });
     a.appeals.forEach(function (c) { signals[c] = (signals[c] || 0) + 1; });
     dims.forEach(function (d) { if (d.g <= 4) signals[d.s.id] = (signals[d.s.id] || 0) + (d.g <= 2 ? 2 : 1); });
@@ -469,13 +480,13 @@
     var grow = dims.filter(function (d) { return d.v <= 2; }).sort(function (x, y) { return x.v - y.v; }).slice(0, 3);
     if (!grow.length) grow = dims.filter(function (d) { return d.v === 3; }).slice(0, 2);
     // Why Karate suits this child: their goal first, then what they find tricky, then their lowest answers.
-    var why = ['You want ' + phraseOf(C.goals, a.goal)];
+    var why = ['You want ' + goalsText(C.goals, a.goals.slice(0, 2))];
     var byId = {};
     C.scales.forEach(function (s) { byId[s.id] = s; });
     a.challenges.forEach(function (c) { C.challenges.forEach(function (x) { if (x[0] === c && why.indexOf(byId[x[2]].why) < 0) why.push(byId[x[2]].why); }); });
     grow.forEach(function (d) { if (why.indexOf(d.s.why) < 0) why.push(d.s.why); });
     var signals = {};
-    signals[a.goal] = 3;
+    a.goals.forEach(function (g) { signals[g] = a.goals.length <= 2 ? 3 : Math.max(1, 6 / a.goals.length); });
     a.challenges.forEach(function (c) { signals[c] = (signals[c] || 0) + 2; });
     dims.forEach(function (d) { if (d.v <= 3) signals[d.s.id] = (signals[d.s.id] || 0) + (d.v <= 2 ? 2 : 1); });
     var worry = a.scores.safe <= 2 || a.scores.happy <= 1 || a.challenges.indexOf('Someone being unkind to me') >= 0 || (a.scores.calm <= 1 && a.scores.happy <= 2);
@@ -494,7 +505,8 @@
     }
     var main = SERVICES[r.ranked[0]], second = r.ranked[1] ? SERVICES[r.ranked[1]] : null;
     var p = r.practices.map(function (x) { return A.practices[x]; });
-    var tips = A.tips[a.goal] || ['', ''];
+    var g1 = A.tips[a.goals[0]] || ['', ''], g2 = a.goals[1] && A.tips[a.goals[1]];
+    var tips = [g1[0], g2 ? g2[0] : g1[1]];
     return [
       ['Begin', [p[0].todo + ' every day (' + p[0].min + ' minute' + (p[0].min > 1 ? 's' : '') + ').', 'Book ' + main.first + '.']],
       ['Build', [p[1] ? p[1].todo + ' on at least four days.' : 'Keep up your daily practice.', tips[0]]],
@@ -566,7 +578,7 @@
       return '<li class="wb-dim wb-dim--' + lvl + '"><span class="wb-dim-name">' + esc(d.s.name) + '</span><span class="wb-dim-bar"><i style="width:' + (d.v * 10) + '%"></i></span><span class="wb-dim-v">' + d.v + '<small>/10</small>' + change + '</span></li>';
     }).join('');
     var also = r.ranked.slice(1).map(function (k) { return '<a class="wb-also-link" href="' + SERVICES[k].page + '"><span class="kanji">' + SERVICES[k].k + '</span>' + esc(SERVICES[k].name) + '</a>'; }).join('');
-    var share = 'Hello, I’ve just done the EmptyHands wellbeing assessment. My suggested path is ' + joinList(r.ranked.map(function (k) { return SERVICES[k].name; })) + ', and I want ' + phraseOf(A.goals, a.goal) + '. Could we arrange a first session?';
+    var share = 'Hello, I’ve just done the EmptyHands wellbeing assessment. My suggested path is ' + joinList(r.ranked.map(function (k) { return SERVICES[k].name; })) + ', and I want ' + goalsText(A.goals, a.goals) + '. Could we arrange a first session?';
     return '<div class="wb-top">' + ring(score) + '<div><span class="eyebrow">Your results · ' + fmtDate(rec.at) + '</span><h2 tabindex="-1">' + esc(r.band[0]) + '</h2><p>' + esc(r.band[1]) + '</p></div></div>' +
       (r.worry ? ALERT_ADULT : '') +
       '<section class="wb-block"><h2 class="wb-h">Your best match</h2>' + matchCard(main, r.why[main].slice(0, 3), r.ranked, 'Best match') +
@@ -601,6 +613,7 @@
   }
 
   function showResults(rec) {
+    norm(rec.a);
     results.innerHTML = rec.a.who === 'child' ? childResults(rec) : adultResults(rec);
     results.classList.toggle('is-kid', rec.a.who === 'child');
     intro.hidden = true; quiz.hidden = true; results.hidden = false;
@@ -651,7 +664,7 @@
     box.classList.add('is-busy');
     var tick = setInterval(function () { i = Math.min(i + 1, lines.length - 1); status.textContent = lines[i]; }, 6000);
     var a = rec.a;
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consent: true, scores: a.scores, challenges: a.challenges, goal: a.goal, format: a.format, pace: a.pace, appeals: a.appeals }) })
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consent: true, scores: a.scores, challenges: a.challenges, goals: a.goals, formats: a.formats, paces: a.paces, appeals: a.appeals }) })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, code: r.status, d: d }; }); })
       .then(function (res) {
         clearInterval(tick); box.classList.remove('is-busy');
