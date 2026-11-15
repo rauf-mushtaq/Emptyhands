@@ -1264,7 +1264,7 @@ PILLARS = [
                   ('Gyaku-zuki and Kizami-zuki', 'Reverse punch and jab'),
                   ('Tate teisho-uchi and Haito-uchi', 'Palm-heel strike and ridge-hand strike'),
                   ('Age-uke, Mae-geri, Gyaku-zuki', 'Rising block, front snap kick, reverse punch'),
-                  ('Ude-uke, Juji-uke, Empi-uchi, Uraken-uchi', 'Inside block, cross block, elbow strike in horse-riding stance, backfist'),
+                  ('Ude-uke, Juji-uke, Empi-uchi, Uraken-uchi', 'Inside block, cross block, elbow strike in horse riding stance, backfist'),
                   ('Uchi-uke, Kizami-zuki, Gyaku-zuki', 'Outside block, jab to the face, reverse punch'),
                   ('Gedan-barai and Gyaku-zuki', 'Lower block and reverse punch'),
                   ('Shuto-uke, Mae-geri, Nukite', 'Knife-hand block in back stance, front kick, spear-hand strike'),
