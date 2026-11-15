@@ -885,3 +885,11 @@ a.pillar[aria-current="page"] .link-arrow::after { content: none; }
 @media (max-width: 600px) {
   .figure-stack .main, .founder-photo img { aspect-ratio: auto; }
 }
+
+/* ------------------------------------------------------------------ wellbeing check promo (home page) */
+.wb-promo { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 28px; margin-top: 28px; padding: 24px clamp(20px, 3vw, 32px); border-radius: 12px; background: var(--night); color: var(--paper); text-decoration: none; transition: transform .3s var(--ease); }
+.wb-promo:hover { transform: translateY(-3px); }
+.wb-promo > .k { font: 700 2.6rem/1 var(--serif); color: var(--bronze-3); }
+.wb-promo > span:nth-child(2) { flex: 1 1 320px; }
+.wb-promo strong { display: block; font: 600 1.3rem/1.3 var(--serif); margin-bottom: 4px; }
+.wb-promo > span:nth-child(2) span { color: rgba(246, 242, 234, .75); }

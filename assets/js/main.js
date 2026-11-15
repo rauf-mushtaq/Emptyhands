@@ -316,6 +316,21 @@
     });
   });
 
+  /* Join form: tick the classes the wellbeing check suggested (join.html?interest=Yoga|Shiatsu&from=wellbeing) */
+  var params = new URLSearchParams(location.search), wanted = (params.get('interest') || '').split('|');
+  var joinForm = $('form[data-mailto]');
+  if (joinForm) {
+    var boxes = $$('input[name="Interested in"]', joinForm);
+    if (boxes.some(function (b) { return wanted.indexOf(b.value) >= 0; })) {
+      boxes.forEach(function (b) { b.checked = wanted.indexOf(b.value) >= 0; });
+    }
+    if (params.get('from') === 'wellbeing') {
+      var src = document.createElement('input');
+      src.type = 'hidden'; src.name = 'Came from'; src.value = 'Wellbeing check';
+      joinForm.appendChild(src);
+    }
+  }
+
   /* Forms: no server - compose an email (or WhatsApp) from the fields */
   $$('form[data-mailto]').forEach(function (form) {
     form.addEventListener('submit', function (e) {

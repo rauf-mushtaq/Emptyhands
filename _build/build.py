@@ -106,11 +106,16 @@ GOOGLE_ADS = {
     'id': 'AW-1066885133',
     'labels': {'lead': '0yW_CO7uv64dEI3A3fwD', 'contact': '', 'whatsapp': '', 'call': ''},
 }
+# The optional AI-written report on the wellbeing check (a Cloud Function in the emptyhands.control.panel repository).
+# It only appears once the function says it's ready (the ANTHROPIC_API_KEY secret is set there). '' removes it entirely.
+WELLBEING_AI = 'https://europe-west2-emptyhands-student-portal.cloudfunctions.net/wellbeingReport'
 
 
 def csp():
     """Content-Security-Policy for every page; opens up to Google only when Google Ads is switched on."""
     script, img, connect, frame = ["'self'"], ["'self'", 'data:'], ["'self'"], ['https://www.google.com']
+    if WELLBEING_AI:
+        connect.append('/'.join(WELLBEING_AI.split('/')[:3]))
     if GOOGLE_ADS['id']:
         g = ['https://*.googletagmanager.com', 'https://www.googleadservices.com', 'https://googleads.g.doubleclick.net', 'https://ad.doubleclick.net',
              'https://pagead2.googlesyndication.com', 'https://www.google.com']
@@ -224,7 +229,7 @@ def header(active, prefix, over_hero):
     </a>
     <button class="menu-toggle" aria-label="Menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
     <nav class="nav" id="site-nav" aria-label="Main">
-      <div class="nav-group"><button aria-expanded="false" aria-haspopup="true">Classes %(chev)s</button><div class="nav-menu">%(classes)s</div></div>
+      <div class="nav-group"><button aria-expanded="false" aria-haspopup="true">Classes %(chev)s</button><div class="nav-menu">%(classes)s%(wellbeing)s</div></div>
       <div class="nav-group"><button aria-expanded="false" aria-haspopup="true">The Dojo %(chev)s</button><div class="nav-menu">%(dojo)s</div></div>
       %(fees)s
       %(blog)s
@@ -235,6 +240,7 @@ def header(active, prefix, over_hero):
   </div>
 </header>''' % {
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
+        'wellbeing': menu([('wellbeing', '心', 'Wellbeing check', 'Find your path in 3 minutes')]),
         'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
         'contact': top('contact', 'Contact'), 'app': top('our-app', 'Student app'),
     }
@@ -255,7 +261,7 @@ def footer(prefix):
       </div>
       <div>
         <h4>Classes</h4>
-        <ul>%(classes)s<li><a href="%(p)sfees.html">Fees</a></li></ul>
+        <ul>%(classes)s<li><a href="%(p)swellbeing.html">Wellbeing check</a></li><li><a href="%(p)sfees.html">Fees</a></li></ul>
       </div>
       <div>
         <h4>Dojo</h4>
@@ -611,6 +617,7 @@ def build_home():
       <p class="lead">From the first bow on the dojo floor to one-to-one healing, each discipline strengthens the others.</p>
     </div>
     <div class="disciplines">%(cards)s</div>
+    <a class="wb-promo reveal" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span><strong>Not sure which path is yours?</strong><span>Take our free three-minute wellbeing check for a personal recommendation, daily practices and a 30-day plan.</span></span><span class="btn btn--light">Start the check</span></a>
   </div>
 </section>
 
@@ -1471,17 +1478,94 @@ def build_blog():
         page('blog/%s.html' % p['slug'], p['title'], p['excerpt'], body, 'blog', schema=[art], crumb=[('Journal', 'blog/index.html'), (p['title'], None)])
 
 
+def _version(*files):
+    import hashlib
+    h = hashlib.sha1()
+    for f in files:
+        h.update(open(os.path.join(OUT, f), 'rb').read())
+    return h.hexdigest()[:8]
+
+
+WELLBEING_FAQS = [
+    ('Is this a medical assessment?', 'No. The wellbeing check is a quick guide to how you feel today and which classes, therapies and practices may suit you. It can’t diagnose anything. If you’re worried about your physical or mental health, please talk to your GP.'),
+    ('What happens to my answers?', 'They stay in your browser on this device, so you can come back to your results and tick off your 30-day plan. We never see them unless you choose to send them to us or ask for a personal report.'),
+    ('How are my recommendations worked out?', 'Each answer points towards the classes and therapies that help most with it: high stress towards Tai Chi and Yoga, poor sleep towards Yoga and Shiatsu, low confidence towards Karate and coaching, and so on. What you’re looking for counts most.'),
+    ('Do you teach meditation, mindfulness and breathwork?', 'Yes, as part of our classes: Tai Chi is often called meditation in motion, and Yoga works with breath, posture and stillness. The check also gives you simple practices to start at home, including guided breathing.'),
+    ('What does it cost?', 'The check is free. Shiatsu and coaching start with a free 15-minute consultation, and Tai Chi, Yoga and Karate classes are £10 to try.'),
+]
+
+
+def build_wellbeing():
+    lock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'
+    paths = [('tai-chi', '太極拳', 'Tai Chi Chuan', 'Calm, balance and meditation in motion'), ('yoga', 'ヨガ', 'Yoga', 'Breath, posture and stillness'),
+             ('shiatsu', '指圧', 'Shiatsu', 'Hands-on healing and deep relaxation'), ('coaching', '指導', 'Wellbeing coaching', 'Confidence, purpose and mental health'),
+             ('karate', '空手', 'Karate-Dō', 'Confidence, focus and discipline')]
+    path_html = ''.join('<a class="wb-path reveal" href="%s.html"><span class="k">%s</span><strong>%s</strong><span>%s</span></a>' % x for x in paths)
+    body = page_hero('Wellbeing check · free · 3 minutes', 'Discover your path to wellbeing',
+                     'A short personal check that shows where you are today and suggests the classes, therapies and daily practices that suit you best.',
+                     '心', None, 'Wellbeing check') + """
+<section class="section section--alt wb-section">
+  <div class="wrap narrow">
+    <div id="wb" class="wb" data-ai="%(ai)s">
+      <div class="wb-card wb-intro">
+        <span class="eyebrow">10 questions · about 3 minutes</span>
+        <h2>Where are you today?</h2>
+        <p class="lead">Rate how you feel, choose what’s weighing on you and what you’re looking for. You’ll get a personal path through Tai Chi, Yoga, Shiatsu, coaching and Karate, three daily practices and a 30-day plan.</p>
+        <ol class="wb-steps">
+          <li><b>1</b><span><strong>Your wellbeing today</strong>Eight quick ratings from 1 to 10.</span></li>
+          <li><b>2</b><span><strong>Your main challenges</strong>Choose up to three.</span></li>
+          <li><b>3</b><span><strong>What you’re looking for</strong>Pick the one that matters most.</span></li>
+        </ol>
+        <div class="btn-row"><button class="btn btn--seal btn--lg" type="button" data-act="start">Start the check</button><button class="btn btn--ghost" type="button" data-act="last" hidden>See my last results</button></div>
+        <noscript><p>The wellbeing check needs JavaScript switched on. You can also <a href="join.html">get in touch</a> and we’ll help you choose.</p></noscript>
+        <p class="wb-private">%(lock)s Private: your answers stay on this device.</p>
+      </div>
+      <div class="wb-quiz" hidden></div>
+      <div class="wb-results" hidden></div>
+    </div>
+  </div>
+</section>
+<section class="section wb-after">
+  <div class="wrap">
+    <div class="section-head reveal"><div><span class="eyebrow">Five paths</span><h2>Where your check can lead</h2></div>
+    <p class="lead">Every path starts gently: a £10 class or a free 15-minute consultation, in Ilford or online.</p></div>
+    <div class="wb-paths">%(paths)s</div>
+  </div>
+</section>
+%(faq)s
+%(cta)s
+<dialog class="wb-breath" id="wb-breath" aria-labelledby="wb-breath-h"><div class="wb-breath-in">
+  <h2 id="wb-breath-h">Breathe</h2><p class="wb-breath-round"></p>
+  <div class="wb-orb-wrap"><div class="wb-orb"></div><div class="wb-orb-text"><span class="wb-orb-word" aria-live="polite"></span><span class="wb-orb-count"></span></div></div>
+  <button class="btn btn--light" type="button" data-act="close">Finish</button>
+</div></dialog>""" % {'ai': e(WELLBEING_AI), 'lock': lock, 'paths': path_html, 'faq': faq_html('The wellbeing check: your questions', WELLBEING_FAQS),
+                      'cta': cta_band('Ready to take the first step?', 'Book a trial class or a free consultation. We’ll help you find the right path.')}
+    v = _version('assets/js/wellbeing.js', 'assets/css/wellbeing.css')
+    head = '<link rel="stylesheet" href="assets/css/wellbeing.css?v=%s">\n<script src="assets/js/wellbeing.js?v=%s" defer></script>\n' % (v, v)
+    url = page_url('wellbeing.html')
+    schema = [{'@type': 'WebApplication', '@id': url + '#check', 'name': 'Discover your path to wellbeing', 'url': url, 'applicationCategory': 'HealthApplication',
+               'operatingSystem': 'Any', 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP'}, 'provider': {'@id': BUSINESS_ID},
+               'description': 'A free three-minute wellbeing check that recommends Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, with daily practices and a 30-day plan.'},
+              {'@type': 'FAQPage', '@id': url + '#faq', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in WELLBEING_FAQS]}]
+    page('wellbeing.html', 'Free Wellbeing Check · Discover Your Path to Wellbeing',
+         'Take our free three-minute wellbeing check: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
+         body, 'wellbeing', extra_head=head, schema=schema, crumb=[('Wellbeing check', None)])
+
+
 def build_privacy():
     body = page_hero('Privacy', 'Privacy &amp; cookies',
                      'What this website does with your information, the cookies it uses and how to change your choice.', '秘密', None, 'Privacy') + """
 <section class="section">
   <div class="wrap narrow">
     <div class="prose">
-<p><em>Last updated 13 November 2026</em></p>
+<p><em>Last updated 15 November 2026</em></p>
 <h2>Who we are</h2>
 <p>This website is run by EmptyHands Karate School, Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE. Contact us at <a href="mailto:%(email)s">%(email)s</a> or on <a href="%(tel)s">%(phone)s</a>.</p>
 <h2>Forms on this website</h2>
 <p>The website has no accounts and does not store anything you type. The booking and contact forms open your email app or WhatsApp with your message filled in, and we only receive it if you send it. We use what you send to reply, arrange classes and keep in touch about your training, and we keep it only while it is needed for that. Our lawful basis is our legitimate interest in answering enquiries and running classes.</p>
+<h2 id="wellbeing">The wellbeing check</h2>
+<p>Your answers to the <a href="wellbeing.html">wellbeing check</a> are worked out in your browser and saved only on your device (as <code>eh-wellbeing</code>), so you can come back to your results and plan. You can clear them by clearing this website’s data in your browser. We never receive them unless you choose to send them to us.</p>
+<p><strong>Personal report (optional):</strong> if you tick the box and ask for a report written by AI, your answers (the numbers and choices only, never your name or contact details) are sent to our server and to Anthropic, the company that makes the AI Claude, to write it. We don’t store your answers or your report; we only count how many reports are written each day, using a code made from your internet address that changes every day. Anthropic processes the answers on our behalf under its commercial terms and doesn’t use them to train its models. Because answers about how you feel can count as health information, we only send them with your explicit consent, which is our lawful basis.</p>
 <h2>Cookies and Google Ads</h2>
 <p>We advertise with Google Ads. To see which adverts lead people to get in touch, the website uses the Google tag, and it asks for your choice the first time you visit.</p>
 <ul>
@@ -1547,7 +1631,7 @@ def build_sitemap():
     base = BASE_URL
     today = date.today().isoformat()
     pages = ['index.html', 'karate.html', 'yoga.html', 'tai-chi.html', 'shiatsu.html', 'coaching.html', 'about.html', 'instructors.html',
-             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'our-app.html', 'privacy.html', 'kihon.html', 'kata.html', 'bunkai.html', 'kumite.html', 'blog/index.html']
+             'yudansha.html', 'testimonials.html', 'gallery.html', 'fees.html', 'contact.html', 'join.html', 'wellbeing.html', 'our-app.html', 'privacy.html', 'kihon.html', 'kata.html', 'bunkai.html', 'kumite.html', 'blog/index.html']
     pages += ['blog/%s.html' % p['slug'] for p in POSTS]
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % ''.join(
         '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (page_url(p), today) for p in pages)
@@ -1574,6 +1658,7 @@ if __name__ == '__main__':
     build_contact()
     build_app()
     build_join()
+    build_wellbeing()
     build_gallery()
     build_blog()
     build_privacy()
