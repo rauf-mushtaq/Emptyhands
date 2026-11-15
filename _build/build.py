@@ -241,7 +241,7 @@ def header(active, prefix, over_hero):
   </div>
 </header>''' % {
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
-        'wellbeing': menu([('wellbeing', '心', 'Wellbeing assessment', 'Find your path in 3 minutes')]),
+        'wellbeing': menu([('wellbeing', '心', 'Wellbeing assessment', 'For adults and children')]),
         'wb': top('wellbeing', 'Wellbeing assessment'), 'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
         'contact': top('contact', 'Contact'), 'app': top('our-app', 'Student app'),
     }
@@ -585,7 +585,7 @@ def build_home():
     <h1>The way of the empty hand</h1>
     <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford. Patient teaching, rooted in tradition and open to every age and ability.</p>
     <div class="btn-row"><a class="btn btn--seal" href="join.html">Book a trial class</a><a class="btn btn--ghost btn--light" href="#classes">Explore classes</a></div>
-    <a class="hero-wb" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span>Not sure where to start? <strong>Take the free 3-minute wellbeing assessment</strong></span><span aria-hidden="true">→</span></a>
+    <a class="hero-wb" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span>Not sure where to start? <strong>Take the free wellbeing assessment, for adults and children</strong></span><span aria-hidden="true">→</span></a>
     <div class="hero-stats">
       <div><strong>2006</strong><span>Founded</span></div>
       <div><strong>15</strong><span>Black belts awarded</span></div>
@@ -619,7 +619,7 @@ def build_home():
       <p class="lead">From the first bow on the dojo floor to one-to-one healing, each discipline strengthens the others.</p>
     </div>
     <div class="disciplines">%(cards)s</div>
-    <a class="wb-promo reveal" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span><strong>Not sure which path is yours?</strong><span>Take our free three-minute wellbeing assessment for a personal recommendation, daily practices and a 30-day plan.</span></span><span class="btn btn--light">Start the assessment</span></a>
+    <a class="wb-promo reveal" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span><strong>Not sure which path is yours?</strong><span>Take our free wellbeing assessment, for grown-ups and children aged 4 to 11, for a personal recommendation, things to practise at home and a plan to follow.</span></span><span class="btn btn--light">Start the assessment</span></a>
   </div>
 </section>
 
@@ -1490,10 +1490,10 @@ def _version(*files):
 
 WELLBEING_FAQS = [
     ('Is this a medical assessment?', 'No. The wellbeing assessment is a quick guide to how you feel today and which of our classes, therapies and practices may suit you. It can’t diagnose anything. If you’re worried about your physical or mental health, please talk to your GP.'),
-    ('What happens to my answers?', 'They stay in your browser on this device, so you can come back to your results and tick off your 30-day plan. We never see them unless you choose to send them to us or ask for a personal report.'),
+    ('What happens to my answers?', 'They stay in your browser on this device, so you can come back to your results and tick off your plan. We never see them unless you choose to send them to us or, in the grown-ups’ version, ask for a personal report. Children’s answers are never sent anywhere.'),
     ('How are my recommendations worked out?', 'Each answer points towards the classes and therapies that help most with it: stress and balance towards Tai Chi, stiffness and sleep towards Yoga, aches, pain and injuries towards Shiatsu, fitness, confidence and self-defence towards Karate, and direction and purpose towards coaching. Your main goal and how you like to train count too.'),
     ('Do you teach meditation, mindfulness and breathwork?', 'Yes, as part of our classes: Tai Chi is often called meditation in motion, and Yoga works with breath, posture and stillness. The assessment also gives you simple practices to start at home, including guided breathing.'),
-    ('Can I do it for my child?', 'The questions are written for adults. Children can start Karate from the age of 4, and we’re happy to talk about what would suit your child.'),
+    ('Can children use it?', 'Yes. Choose “A child aged 4 to 11” at the start for a version with short yes-or-no questions answered with smiley faces. Younger children can do it with a grown-up reading the questions aloud. Their results suggest our children’s Karate classes (from age 4), fun things to practise at home and a 4-week challenge to tick off.'),
     ('What does it cost?', 'The assessment is free. Shiatsu and coaching start with a free 15-minute consultation, and Tai Chi, Yoga and Karate classes are £10 to try.'),
 ]
 
@@ -1504,25 +1504,24 @@ def build_wellbeing():
              ('shiatsu', '指圧', 'Shiatsu', 'Hands-on healing and deep relaxation'), ('coaching', '指導', 'Wellbeing coaching', 'Confidence, purpose and mental health'),
              ('karate', '空手', 'Karate-Dō', 'Confidence, focus and discipline')]
     path_html = ''.join('<a class="wb-path reveal" href="%s.html"><span class="k">%s</span><strong>%s</strong><span>%s</span></a>' % x for x in paths)
-    body = page_hero('Wellbeing assessment · free · 3 minutes', 'Discover your wellbeing practice',
-                     'A short personal assessment that shows where you are today and suggests the classes, therapies and daily practices that suit you best.',
+    body = page_hero('Wellbeing assessment · free · for adults and children', 'Discover your wellbeing practice',
+                     'A short personal assessment for grown-ups and children that shows where you are today and suggests the classes, therapies and daily practices that suit you best.',
                      '心', None, 'Wellbeing assessment') + """
 <section class="section section--alt wb-section">
   <div class="wrap narrow">
     <div id="wb" class="wb" data-ai="%(ai)s">
       <div class="wb-card wb-intro">
         <h2>Wellbeing assessment</h2>
-        <p class="lead">Tell us how your mind and body feel, what you’d like help with and how you like to train. You’ll get a personal path through Tai Chi, Yoga, Shiatsu, coaching and Karate, three daily practices and a 30-day plan.</p>
+        <p class="lead">Answer a few quick questions about your mind, body and confidence. You’ll get the practice that suits you best, simple things to do at home and a plan for the next few weeks.</p>
         <ol class="wb-steps">
-          <li><b>1</b><span><strong>Your wellbeing today</strong>Ten quick ratings from 1 to 10: stress, sleep, energy, aches, flexibility, balance, fitness, confidence, focus and direction.</span></li>
-          <li><b>2</b><span><strong>What’s holding you back</strong>Choose up to three.</span></li>
-          <li><b>3</b><span><strong>Your main goal</strong>From feeling calmer to learning self-defence.</span></li>
-          <li><b>4</b><span><strong>How you like to train</strong>Group or one to one, gentle or energetic.</span></li>
+          <li><b>1</b><span><strong>Choose who it’s for</strong>You, or a child aged 4 to 11.</span></li>
+          <li><b>2</b><span><strong>Answer the questions</strong>About 3 minutes for grown-ups. Children answer with smiley faces.</span></li>
+          <li><b>3</b><span><strong>Get your results</strong>Your best match, home practices and a plan you can tick off.</span></li>
         </ol>
+        <p class="wb-kids-note"><b aria-hidden="true">🧒</b><span><strong>Children can use this too.</strong> There’s a version for ages 4 to 11 with simple questions and smiley-face answers. Younger children can do it with a grown-up reading the questions aloud.</span></p>
         <div class="btn-row"><button class="btn btn--seal btn--lg" type="button" data-act="start">Start the assessment</button><button class="btn btn--ghost" type="button" data-act="last" hidden>See my last results</button></div>
         <noscript><p>The wellbeing assessment needs JavaScript switched on. You can also <a href="join.html">get in touch</a> and we’ll help you choose.</p></noscript>
         <p class="wb-private">%(lock)s Private: your answers stay on this device.</p>
-        <p class="wb-child">Looking for something for your child? <a href="karate.html">Karate classes</a> welcome children from age 4.</p>
       </div>
       <div class="wb-quiz" hidden></div>
       <div class="wb-results" hidden></div>
@@ -1531,7 +1530,7 @@ def build_wellbeing():
 </section>
 <section class="section wb-after">
   <div class="wrap">
-    <div class="section-head reveal"><div><span class="eyebrow">Five paths</span><h2>Where your check can lead</h2></div>
+    <div class="section-head reveal"><div><span class="eyebrow">Five paths</span><h2>Where your assessment can lead</h2></div>
     <p class="lead">Every path starts gently: a £10 class or a free 15-minute consultation, in Ilford or online.</p></div>
     <div class="wb-paths">%(paths)s</div>
   </div>
@@ -1549,10 +1548,10 @@ def build_wellbeing():
     url = page_url('wellbeing.html')
     schema = [{'@type': 'WebApplication', '@id': url + '#check', 'name': 'Discover your wellbeing practice: wellbeing assessment', 'url': url, 'applicationCategory': 'HealthApplication',
                'operatingSystem': 'Any', 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP'}, 'provider': {'@id': BUSINESS_ID},
-               'description': 'A free three-minute wellbeing assessment that recommends Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, with daily practices and a 30-day plan.'},
+               'description': 'A free three-minute wellbeing assessment for adults and children that recommends Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, with daily practices and a 30-day plan.'},
               {'@type': 'FAQPage', '@id': url + '#faq', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in WELLBEING_FAQS]}]
     page('wellbeing.html', 'Free Wellbeing Assessment · Discover Your Wellbeing Practice',
-         'Take our free three-minute wellbeing assessment: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
+         'Take our free wellbeing assessment, for adults and children aged 4 to 11: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
          body, 'wellbeing', extra_head=head, schema=schema, crumb=[('Wellbeing assessment', None)])
 
 
@@ -1568,8 +1567,8 @@ def build_privacy():
 <h2>Forms on this website</h2>
 <p>The website has no accounts and does not store anything you type. The booking and contact forms open your email app or WhatsApp with your message filled in, and we only receive it if you send it. We use what you send to reply, arrange classes and keep in touch about your training, and we keep it only while it is needed for that. Our lawful basis is our legitimate interest in answering enquiries and running classes.</p>
 <h2 id="wellbeing">The wellbeing assessment</h2>
-<p>Your answers to the <a href="wellbeing.html">wellbeing assessment</a> are worked out in your browser and saved only on your device (as <code>eh-wellbeing-2</code>), so you can come back to your results and plan. You can clear them by clearing this website’s data in your browser. We never receive them unless you choose to send them to us.</p>
-<p><strong>Personal report (optional):</strong> if you tick the box and ask for a report written by AI, your answers (the numbers and choices only, never your name or contact details) are sent to our server and to Anthropic, the company that makes the AI Claude, to write it. We don’t store your answers or your report; we only count how many reports are written each day, using a code made from your internet address that changes every day. Anthropic processes the answers on our behalf under its commercial terms and doesn’t use them to train its models. Because answers about how you feel can count as health information, we only send them with your explicit consent, which is our lawful basis.</p>
+<p>Your answers to the <a href="wellbeing.html">wellbeing assessment</a>, including the children’s version, are worked out in your browser and saved only on your device (as <code>eh-wellbeing-3</code>), so you can come back to your results and plan. You can clear them by clearing this website’s data in your browser. We never receive them unless you choose to send them to us.</p>
+<p><strong>Personal report (optional, grown-ups only):</strong> if you tick the box and ask for a report written by AI, your answers (the numbers and choices only, never your name or contact details) are sent to our server and to Anthropic, the company that makes the AI Claude, to write it. We don’t store your answers or your report; we only count how many reports are written each day, using a code made from your internet address that changes every day. Anthropic processes the answers on our behalf under its commercial terms and doesn’t use them to train its models. Because answers about how you feel can count as health information, we only send them with your explicit consent, which is our lawful basis.</p>
 <h2>Cookies and Google Ads</h2>
 <p>We advertise with Google Ads. To see which adverts lead people to get in touch, the website uses the Google tag, and it asks for your choice the first time you visit.</p>
 <ul>

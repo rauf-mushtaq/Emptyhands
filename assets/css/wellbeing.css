@@ -119,27 +119,27 @@
 .wb-others { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
 @media (max-width: 700px) { .wb-others { grid-template-columns: 1fr; } }
 
-.wb-pracs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-@media (max-width: 860px) { .wb-pracs { grid-template-columns: 1fr; } }
-.wb-prac { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--paper); display: flex; flex-direction: column; }
-.wb-prac-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.wb-prac-head h3 { font-size: 1.1rem; margin: 0; flex: 1; }
+.wb-pracs { display: grid; gap: 10px; }
+.wb-prac { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 0 18px; }
+.wb-prac summary { display: flex; align-items: center; gap: 12px; padding: 14px 0; cursor: pointer; list-style: none; }
+.wb-prac summary::-webkit-details-marker { display: none; }
+.wb-prac summary::after { content: "+"; margin-left: 6px; font: 400 1.4rem/1 var(--sans); color: var(--bronze); }
+.wb-prac[open] summary::after { content: "−"; }
+.wb-prac-name { flex: 1; font: 600 1.08rem/1.3 var(--serif); }
 .wb-num { width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font: 700 .85rem/1 var(--sans); }
 .wb-min { font: 700 .72rem/1 var(--sans); color: var(--ink-3); white-space: nowrap; }
 .wb-prac ol { margin: 0 0 10px; padding-left: 1.2em; font-size: .95rem; }
 .wb-prac ol li { margin-bottom: .35em; }
-.wb-prac .muted { font-size: .9rem; margin-bottom: 12px; }
-.wb-breathe { margin-top: auto; min-height: 44px; font-size: .74rem; align-self: flex-start; }
+.wb-prac .muted { font-size: .9rem; margin-bottom: 14px; }
+.wb-breathe { min-height: 44px; font-size: .74rem; margin-bottom: 16px; }
 
-.wb-weeks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media (max-width: 640px) { .wb-weeks { grid-template-columns: 1fr; } }
-.wb-week { border-left: 3px solid var(--bronze-3); padding: 4px 0 4px 16px; }
-.wb-week-h { font: 600 1.15rem/1.3 var(--serif); margin: 0 0 8px; }
+.wb-plan { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+@media (max-width: 640px) { .wb-plan { grid-template-columns: 1fr; } }
+.wb-plan li { border-left: 3px solid var(--bronze-3); padding: 2px 0 2px 14px; }
+.wb-plan .check { font-size: .95rem; margin-bottom: 6px; }
+.wb-plan .check input:checked + span { text-decoration: line-through; color: var(--ink-3); }
+.wb-week-h { font: 600 1.08rem/1.3 var(--serif); margin: 0 0 6px; }
 .wb-week-h span { display: block; font: 700 .7rem/1.4 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--bronze); }
-.wb-week ul { list-style: none; margin: 0; padding: 0; }
-.wb-week li { margin-bottom: 8px; }
-.wb-week .check { font-size: .95rem; }
-.wb-week .check input:checked + span { text-decoration: line-through; color: var(--ink-3); }
 
 .wb-ai-offer .check { margin: 16px 0 18px; font-size: .92rem; }
 .wb-ai-status { margin: 14px 0 0; color: var(--ink-2); font-weight: 700; min-height: 1.5em; }
@@ -192,7 +192,7 @@
 @media (max-width: 480px) { .wb-paths { grid-template-columns: 1fr; } }
 
 /* section 4: how you like to train (two questions on one screen) */
-#wb-pref-h { outline: none; margin-bottom: 18px; }
+.wb-sec-h { outline: none; margin-bottom: 18px; }
 .wb-pref { border: 0; padding: 0; margin: 0 0 26px; min-width: 0; }
 .wb-pref:last-child { margin-bottom: 0; }
 .wb-pref legend { padding: 0; margin-bottom: 14px; font-size: clamp(1.3rem, 3.8vw, 1.7rem); }
@@ -201,3 +201,53 @@
 .wb-opts .wb-goal strong { font-size: 1.02rem; }
 @media (max-width: 360px) { .wb-opts { grid-template-columns: 1fr; } }
 .wb-child { margin: 18px 0 0; font-size: .92rem; color: var(--ink-2); }
+
+/* who it's for */
+.wb-who { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .wb-who { grid-template-columns: 1fr; } }
+.wb-who .wb-goal span { padding: 22px 20px; }
+.wb-who .wb-goal strong { font-size: 1.3rem; }
+.wb-emoji { display: block; font-size: 2rem; line-height: 1; margin-bottom: 10px; font-weight: 400; }
+.wb-goals--kid .wb-goal span { display: flex; align-items: center; gap: 14px; }
+.wb-goals--kid .wb-emoji { margin: 0; font-size: 1.7rem; }
+
+/* children's smiley-face answers */
+.wb-faces { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.wb-faces label { position: relative; cursor: pointer; }
+.wb-faces input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.wb-faces span { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 4px 12px; border: 1px solid rgba(28, 26, 22, .2); border-radius: 14px; background: var(--paper); text-align: center; transition: background .15s, border-color .15s, transform .15s; }
+.wb-faces b { font-size: clamp(2rem, 8vw, 2.8rem); line-height: 1; font-weight: 400; }
+.wb-faces small { font: 700 .78rem/1.2 var(--sans); color: var(--ink-2); }
+.wb-faces label:hover span { border-color: var(--bronze); }
+.wb-faces input:checked + span { background: var(--paper-2); border: 2px solid var(--ink); transform: scale(1.05); }
+.wb-faces input:focus-visible + span { outline: 2px solid var(--seal); outline-offset: 2px; }
+.wb-quiz.is-kid .wb-qtext { font-size: clamp(1.6rem, 5vw, 2.2rem); }
+.wb-kidch span b { font-weight: 400; font-size: 1.1rem; }
+
+/* results: short, with details folded away */
+.wb-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.wb-chip { display: inline-block; padding: 7px 14px; border-radius: 999px; font: 700 .88rem/1.2 var(--sans); }
+.wb-chip.is-good { background: #e5eedd; color: #2f4a22; }
+.wb-chip.is-care { background: #f6e3dc; color: #7a2a20; }
+.wb-two h3 { font: 700 .74rem/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 10px; }
+.wb-more { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 14px; }
+.wb-more summary { cursor: pointer; font-weight: 700; color: var(--bronze); }
+.wb-more[open] summary { margin-bottom: 16px; }
+.wb-also { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 16px 0 0; }
+.wb-also > span { font-weight: 700; color: var(--ink-2); margin-right: 4px; }
+.wb-also-link { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; font-weight: 700; font-size: .92rem; transition: border-color .2s; }
+.wb-also-link:hover { border-color: var(--bronze); }
+.wb-also-link .kanji { color: var(--seal); font-size: .95em; }
+.wb-svc .wb-why { margin: 4px 0 0; }
+.wb-top--kid { grid-template-columns: auto 1fr; }
+.wb-star { font-size: clamp(3.4rem, 12vw, 5rem); line-height: 1; }
+.wb-face-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.wb-face-list li { display: flex; justify-content: space-between; gap: 14px; align-items: center; font-size: .94rem; border-bottom: 1px dashed var(--line); padding-bottom: 8px; }
+.wb-face-a { white-space: nowrap; font-weight: 700; }
+.wb-face-a b { font-weight: 400; font-size: 1.2rem; }
+.wb-grownup { background: var(--paper-2); border-radius: 12px; padding: 16px 20px; margin: 0; }
+.wb-grownup .link-btn { font-weight: 700; color: var(--seal); }
+.wb-fine .link-btn { margin: 0 0 0 4px; }
+.wb-kids-note { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 26px; padding: 16px 18px; border-radius: 12px; background: #fdf4e3; border: 1px solid #efd9ac; font-size: .97rem; line-height: 1.55; }
+.wb-kids-note b { font-size: 1.8rem; line-height: 1; font-weight: 400; }
+.wb-kids-note strong { color: var(--ink); }
