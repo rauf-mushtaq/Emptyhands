@@ -231,6 +231,7 @@ def header(active, prefix, over_hero):
     <nav class="nav" id="site-nav" aria-label="Main">
       <div class="nav-group"><button aria-expanded="false" aria-haspopup="true">Classes %(chev)s</button><div class="nav-menu">%(classes)s%(wellbeing)s</div></div>
       <div class="nav-group"><button aria-expanded="false" aria-haspopup="true">The Dojo %(chev)s</button><div class="nav-menu">%(dojo)s</div></div>
+      %(wb)s
       %(fees)s
       %(blog)s
       %(contact)s
@@ -241,7 +242,7 @@ def header(active, prefix, over_hero):
 </header>''' % {
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
         'wellbeing': menu([('wellbeing', '心', 'Wellbeing check', 'Find your path in 3 minutes')]),
-        'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
+        'wb': top('wellbeing', 'Wellbeing check'), 'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
         'contact': top('contact', 'Contact'), 'app': top('our-app', 'Student app'),
     }
 
@@ -584,6 +585,7 @@ def build_home():
     <h1>The way of the empty hand</h1>
     <p class="lead">Classical Shotokan Karate, Tai Chi Chuan, Yoga and Shiatsu in Ilford. Patient teaching, rooted in tradition and open to every age and ability.</p>
     <div class="btn-row"><a class="btn btn--seal" href="join.html">Book a trial class</a><a class="btn btn--ghost btn--light" href="#classes">Explore classes</a></div>
+    <a class="hero-wb" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span>Not sure where to start? <strong>Take the free 3-minute wellbeing check</strong></span><span aria-hidden="true">→</span></a>
     <div class="hero-stats">
       <div><strong>2006</strong><span>Founded</span></div>
       <div><strong>15</strong><span>Black belts awarded</span></div>
