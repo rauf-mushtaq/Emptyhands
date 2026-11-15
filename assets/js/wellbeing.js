@@ -1,5 +1,5 @@
 /* EmptyHands wellbeing assessment ("Discover your wellbeing practice", wellbeing.html).
-   Two versions: grown-ups (and teenagers), and children aged 4 to 11 with simple questions and
+   Two versions: teens and adults, and children aged 6 to 11 with simple questions and
    smiley-face answers. Everything is worked out in the browser and kept only on this device.
    The optional AI report (grown-ups only) sends the answers, numbers and choices only, to the
    wellbeingReport Cloud Function. */
@@ -175,7 +175,7 @@
     'Find direction and purpose': ['Write a paragraph about who you want to be a year from now.', 'Read your paragraph each Sunday and choose next week’s small step.']
   };
 
-  /* ================================================================== children's questions (ages 4 to 11)
+  /* ================================================================== children's questions (ages 6 to 11)
      Short yes-or-no questions, answered with faces. A grown-up can read them aloud. */
   var C = {};
   C.faces = [['😢', 'No'], ['🙁', 'Not really'], ['😐', 'Sort of'], ['🙂', 'Yes'], ['😄', 'Yes, lots!']];
@@ -315,8 +315,8 @@
     var st = steps[step], kid = answers.who === 'child';
     if (st.t === 'who') {
       return '<fieldset class="wb-q">' + legend('Before you start', 'Who is this assessment for?') + '<div class="wb-who">' +
-        radioCard('wb-who', 'adult', answers.who === 'adult', '<b class="wb-emoji" aria-hidden="true">🧑</b><strong>Me</strong><small>For grown-ups and teenagers</small>') +
-        radioCard('wb-who', 'child', answers.who === 'child', '<b class="wb-emoji" aria-hidden="true">🧒</b><strong>A child aged 4 to 11</strong><small>Simple questions with smiley faces. Younger children can answer with a grown-up.</small>') +
+        radioCard('wb-who', 'adult', answers.who === 'adult', '<b class="wb-emoji" aria-hidden="true">🧑</b><strong>Teen or adult</strong><small>Ages 12 and up</small>') +
+        radioCard('wb-who', 'child', answers.who === 'child', '<b class="wb-emoji" aria-hidden="true">🧒</b><strong>A child aged 6 to 11</strong><small>Simple questions with smiley faces. Younger children can answer with a grown-up.</small>') +
         '</div></fieldset>';
     }
     if (st.t === 'scale') {

@@ -619,7 +619,7 @@ def build_home():
       <p class="lead">From the first bow on the dojo floor to one-to-one healing, each discipline strengthens the others.</p>
     </div>
     <div class="disciplines">%(cards)s</div>
-    <a class="wb-promo reveal" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span><strong>Not sure which path is yours?</strong><span>Take our free wellbeing assessment, for grown-ups and children aged 4 to 11, for a personal recommendation, things to practise at home and a plan to follow.</span></span><span class="btn btn--light">Start the assessment</span></a>
+    <a class="wb-promo reveal" href="wellbeing.html"><span class="k" aria-hidden="true">心</span><span><strong>Not sure which path is yours?</strong><span>Take our free wellbeing assessment, for teens, adults and children aged 6 to 11, for a personal recommendation, things to practise at home and a plan to follow.</span></span><span class="btn btn--light">Start the assessment</span></a>
   </div>
 </section>
 
@@ -1493,7 +1493,7 @@ WELLBEING_FAQS = [
     ('What happens to my answers?', 'They stay in your browser on this device, so you can come back to your results and tick off your plan. We never see them unless you choose to send them to us or, in the grown-ups’ version, ask for a personal report. Children’s answers are never sent anywhere.'),
     ('How are my recommendations worked out?', 'Each answer points towards the classes and therapies that help most with it: stress and balance towards Tai Chi, stiffness and sleep towards Yoga, aches, pain and injuries towards Shiatsu, fitness, confidence and self-defence towards Karate, and direction and purpose towards coaching. Your main goal and how you like to train count too.'),
     ('Do you teach meditation, mindfulness and breathwork?', 'Yes, as part of our classes: Tai Chi is often called meditation in motion, and Yoga works with breath, posture and stillness. The assessment also gives you simple practices to start at home, including guided breathing.'),
-    ('Can children use it?', 'Yes. Choose “A child aged 4 to 11” at the start for a version with short yes-or-no questions answered with smiley faces. Younger children can do it with a grown-up reading the questions aloud. Their results suggest our children’s Karate classes (from age 4), fun things to practise at home and a 4-week challenge to tick off.'),
+    ('Can children use it?', 'Yes. Choose “A child aged 6 to 11” at the start for a version with short yes-or-no questions answered with smiley faces. Younger children can do it with a grown-up reading the questions aloud. Their results suggest our children’s Karate classes, fun things to practise at home and a 4-week challenge to tick off.'),
     ('What does it cost?', 'The assessment is free. Shiatsu and coaching start with a free 15-minute consultation, and Tai Chi, Yoga and Karate classes are £10 to try.'),
 ]
 
@@ -1514,11 +1514,11 @@ def build_wellbeing():
         <h2>Wellbeing assessment</h2>
         <p class="lead">Answer a few quick questions about your mind, body and confidence. You’ll get the practice that suits you best, simple things to do at home and a plan for the next few weeks.</p>
         <ol class="wb-steps">
-          <li><b>1</b><span><strong>Choose who it’s for</strong>You, or a child aged 4 to 11.</span></li>
+          <li><b>1</b><span><strong>Choose who it’s for</strong>A teen or adult, or a child aged 6 to 11.</span></li>
           <li><b>2</b><span><strong>Answer the questions</strong>About 3 minutes for grown-ups. Children answer with smiley faces.</span></li>
           <li><b>3</b><span><strong>Get your results</strong>Your best match, home practices and a plan you can tick off.</span></li>
         </ol>
-        <p class="wb-kids-note"><b aria-hidden="true">🧒</b><span><strong>Children can use this too.</strong> There’s a version for ages 4 to 11 with simple questions and smiley-face answers. Younger children can do it with a grown-up reading the questions aloud.</span></p>
+        <p class="wb-kids-note"><b aria-hidden="true">🧒</b><span><strong>Children can use this too.</strong> There’s a version for ages 6 to 11 with simple questions and smiley-face answers. Younger children can do it with a grown-up reading the questions aloud.</span></p>
         <div class="btn-row"><button class="btn btn--seal btn--lg" type="button" data-act="start">Start the assessment</button><button class="btn btn--ghost" type="button" data-act="last" hidden>See my last results</button></div>
         <noscript><p>The wellbeing assessment needs JavaScript switched on. You can also <a href="join.html">get in touch</a> and we’ll help you choose.</p></noscript>
         <p class="wb-private">%(lock)s Private: your answers stay on this device.</p>
@@ -1551,7 +1551,7 @@ def build_wellbeing():
                'description': 'A free three-minute wellbeing assessment for adults and children that recommends Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, with daily practices and a 30-day plan.'},
               {'@type': 'FAQPage', '@id': url + '#faq', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in WELLBEING_FAQS]}]
     page('wellbeing.html', 'Free Wellbeing Assessment · Discover Your Wellbeing Practice',
-         'Take our free wellbeing assessment, for adults and children aged 4 to 11: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
+         'Take our free wellbeing assessment, for teens, adults and children aged 6 to 11: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
          body, 'wellbeing', extra_head=head, schema=schema, crumb=[('Wellbeing assessment', None)])
 
 
