@@ -764,7 +764,7 @@ FAQS = {
         ('Is tai chi suitable for beginners and older people?', 'Yes. Tai Chi Chuan builds flexibility, balance and mindfulness, and is suitable for all ages and fitness levels.'),
         ('When and where are the tai chi classes in Ilford?', 'Every Thursday from 6pm to 7pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE. Places must be booked in advance.'),
         ('How much do tai chi classes cost?', '£10 per class, or £30 per month.'),
-        ('What style of tai chi do you teach?', 'Traditional Yang family T’ai Chi Ch’uan (tai chi chuan), taught according to the principles of the Master Ding Academy. Azeem Sensei has studied with Master John Ding since 1999.'),
+        ('What style of tai chi do you teach?', 'Traditional Yang family Tai Chi Chuan, taught according to the principles of the Master Ding Academy. Azeem Sensei has studied with Master John Ding since 1999.'),
     ],
     'yoga': [
         ('When and where are the yoga classes in Ilford?', 'Every Thursday from 8pm to 9pm at the Church Hall, St Andrew’s, The Drive, Ilford IG1 3PE.'),
@@ -868,7 +868,7 @@ def build_disciplines():
         [('grand', 'gr.and', 'magnificent and imposing'), ('ultimate', 'ulti.mate', 'the best or most extreme'), ('energise', 'ener.gise', 'achieving vitality and enthusiasm')],
         [('taichi-school.webp', 'Students practising Tai Chi in a sports hall'), ('wuchi.webp', 'Wu Chi - ink brush circle')],
         {'Wellbeing'}, h1='Tai Chi classes in Ilford', faq=faq_html('Tai Chi classes: your questions', FAQS['tai-chi']))
-    page('tai-chi.html', 'Tai Chi Classes in Ilford · Yang Style Tai Chi Chuan', 'Traditional Yang family Tai Chi Chuan (t’ai chi) classes in Ilford every Thursday 6-7pm at St Andrew’s Church Hall, IG1 3PE. For all ages and fitness levels - £10 a class.', body, 'tai-chi', over_hero=True,
+    page('tai-chi.html', 'Tai Chi Classes in Ilford · Yang Style Tai Chi Chuan', 'Traditional Yang family Tai Chi Chuan classes in Ilford every Thursday 6-7pm at St Andrew’s Church Hall, IG1 3PE. For all ages and fitness levels - £10 a class.', body, 'tai-chi', over_hero=True,
          schema=service_schema('tai-chi', 'Tai Chi classes in Ilford', 'Tai Chi classes', 'Traditional Yang family Tai Chi Chuan classes in Ilford.', '10', 'Per class', FAQS['tai-chi']),
          crumb=[('Classes', 'index.html#classes'), ('Tai Chi classes in Ilford', None)])
 
