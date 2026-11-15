@@ -1114,7 +1114,7 @@ def build_fees():
     page('fees.html', 'Fees', 'EmptyHands fees for Karate, Yoga, Tai Chi, Shiatsu, Coaching and gradings. New Karate starters pay £10 per lesson for their first few weeks.', body, 'fees', crumb=[('Fees', None)])
 
 
-STUDENT_APP = 'https://rauf-mushtaq.github.io/emptyhands.student/'
+STUDENT_APP = 'https://app.emptyhands.co.uk/'
 
 
 def build_app():
