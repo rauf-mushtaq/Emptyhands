@@ -285,6 +285,9 @@ p { margin: 0 0 1.1em; }
   font: 700 clamp(9rem, 26vw, 22rem)/1 var(--serif); color: rgba(122, 104, 74, .1); white-space: nowrap;
 }
 .page-hero.has-media .watermark { color: rgba(246, 242, 234, .1); }
+/* Plain page headers (no photo or video): tighter spacing, so the page starts sooner after the title */
+.page-hero:not(.has-media) { padding-bottom: clamp(24px, 3vw, 36px); }
+.page-hero:not(.has-media) + .section { padding-top: clamp(28px, 3.5vw, 44px); }
 .crumbs { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1.4rem; opacity: .75; }
 .crumbs a { text-decoration: none; }
 .crumbs a:hover { text-decoration: underline; }
