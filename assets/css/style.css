@@ -164,7 +164,7 @@ p { margin: 0 0 1.1em; }
 .nav-menu .k { font: 700 1.2rem/1 var(--serif); color: var(--bronze); width: 1.8em; text-align: center; }
 .nav-menu strong { display: block; font-size: .95rem; }
 .nav-menu small { display: block; color: var(--ink-3); font-size: .8rem; line-height: 1.3; }
-.nav .btn { margin-left: 10px; min-height: 42px; }
+.nav .btn { margin-left: 10px; min-height: 42px; white-space: nowrap; }
 
 .menu-toggle { display: none; width: 44px; height: 44px; border: 0; background: none; cursor: pointer; padding: 10px; }
 .menu-toggle span { display: block; height: 2px; background: currentColor; margin: 5px 0; transition: transform .3s, opacity .3s; }
@@ -172,7 +172,7 @@ p { margin: 0 0 1.1em; }
 .menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
 .menu-open .menu-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-@media (max-width: 1160px) {
+@media (max-width: 1240px) {
   .menu-toggle { display: block; position: relative; z-index: 2; }
   .nav {
     position: fixed; inset: 0; flex-direction: column; align-items: stretch; gap: 0;
@@ -898,4 +898,4 @@ a.pillar[aria-current="page"] .link-arrow::after { content: none; }
 .hero-wb:hover { background: rgba(246, 242, 234, .2); transform: translateY(-2px); }
 .hero-wb .k { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--seal); color: #fff; display: grid; place-items: center; font: 700 1.1rem/1 var(--serif); }
 .hero-wb strong { color: var(--bronze-3); }
-@media (max-width: 1160px) { .nav > a[href$="wellbeing.html"] { color: var(--seal); } }
+@media (max-width: 1240px) { .nav > a[href$="wellbeing.html"] { color: var(--seal); } }

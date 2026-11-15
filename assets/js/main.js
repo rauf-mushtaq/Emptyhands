@@ -316,7 +316,7 @@
     });
   });
 
-  /* Join form: tick the classes the wellbeing check suggested (join.html?interest=Yoga|Shiatsu&from=wellbeing) */
+  /* Join form: tick the classes the wellbeing assessment suggested (join.html?interest=Yoga|Shiatsu&from=wellbeing) */
   var params = new URLSearchParams(location.search), wanted = (params.get('interest') || '').split('|');
   var joinForm = $('form[data-mailto]');
   if (joinForm) {
@@ -326,7 +326,7 @@
     }
     if (params.get('from') === 'wellbeing') {
       var src = document.createElement('input');
-      src.type = 'hidden'; src.name = 'Came from'; src.value = 'Wellbeing check';
+      src.type = 'hidden'; src.name = 'Came from'; src.value = 'Wellbeing assessment';
       joinForm.appendChild(src);
     }
   }

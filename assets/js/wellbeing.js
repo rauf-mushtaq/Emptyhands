@@ -1,4 +1,4 @@
-/* EmptyHands wellbeing check ("Discover your path to wellbeing", wellbeing.html).
+/* EmptyHands wellbeing assessment ("Discover your path to wellbeing", wellbeing.html).
    Everything is worked out here in the browser and kept only on this device. The optional AI report
    sends the answers (numbers and choices only) to the wellbeingReport Cloud Function. */
 (function () {
@@ -6,51 +6,64 @@
   var root = document.getElementById('wb');
   if (!root) return;
   var API = root.getAttribute('data-ai') || '';
-  var KEY = 'eh-wellbeing';
+  var KEY = 'eh-wellbeing-2';  // answers from the first version of the questions are left alone
 
-  /* ------------------------------------------------------------------ the questions */
+  /* ------------------------------------------------------------------ the questions
+     Each one points towards something EmptyHands teaches: mind (Tai Chi, Yoga, coaching), body (Yoga,
+     Tai Chi, Shiatsu), strength and confidence (Karate, coaching) and direction (coaching). */
   var SCALES = [
-    { id: 'stress', q: 'How stressed do you feel?', lo: 'Not at all', hi: 'Extremely', invert: true, name: 'Stress', good: 'Stress in check', bad: 'High stress' },
-    { id: 'anxiety', q: 'How anxious do you feel?', lo: 'Not at all', hi: 'Extremely', invert: true, name: 'Anxiety', good: 'Anxiety in check', bad: 'Feeling anxious' },
-    { id: 'sleep', q: 'How well do you sleep?', lo: 'Very badly', hi: 'Very well', name: 'Sleep', good: 'Good sleep', bad: 'Poor sleep' },
-    { id: 'connection', q: 'How connected do you feel to yourself?', lo: 'Not at all', hi: 'Deeply', name: 'Connection', good: 'In touch with yourself', bad: 'Out of touch with yourself' },
+    { id: 'stress', q: 'How stressed or anxious do you feel?', lo: 'Not at all', hi: 'Extremely', invert: true, name: 'Stress', good: 'Stress in check', bad: 'Stress and worry' },
+    { id: 'sleep', q: 'How well do you sleep?', lo: 'Very badly', hi: 'Very well', name: 'Sleep', good: 'Sleeping well', bad: 'Poor sleep' },
     { id: 'energy', q: 'How much energy do you have?', lo: 'Very little', hi: 'Plenty', name: 'Energy', good: 'Good energy', bad: 'Low energy' },
-    { id: 'motivation', q: 'How motivated are you?', lo: 'Not at all', hi: 'Very', name: 'Motivation', good: 'Motivated', bad: 'Low motivation' },
-    { id: 'health', q: 'How physically healthy do you feel?', lo: 'Not at all', hi: 'Very', name: 'Physical health', good: 'Feeling physically well', bad: 'Physical health' },
-    { id: 'calm', q: 'How often do you feel calm?', lo: 'Rarely', hi: 'Most of the time', name: 'Calm', good: 'Often calm', bad: 'Rarely calm' }
+    { id: 'pain', q: 'How much pain, tension or stiffness do you carry in your body?', lo: 'None', hi: 'A lot', invert: true, name: 'Aches & tension', good: 'A body free of aches', bad: 'Aches and tension' },
+    { id: 'flexibility', q: 'How flexible and supple does your body feel?', lo: 'Very stiff', hi: 'Very supple', name: 'Flexibility', good: 'Flexible and supple', bad: 'Stiffness' },
+    { id: 'balance', q: 'How steady are your balance and posture?', lo: 'Very unsteady', hi: 'Very steady', name: 'Balance & posture', good: 'Good balance and posture', bad: 'Balance and posture' },
+    { id: 'fitness', q: 'How fit and strong do you feel?', lo: 'Not at all', hi: 'Very', name: 'Fitness', good: 'Fit and strong', bad: 'Fitness and strength' },
+    { id: 'confidence', q: 'How confident do you feel in yourself?', lo: 'Not at all', hi: 'Very', name: 'Confidence', good: 'Confident in yourself', bad: 'Confidence' },
+    { id: 'focus', q: 'How easily can you focus and concentrate?', lo: 'Hardly at all', hi: 'Very easily', name: 'Focus', good: 'Good focus', bad: 'Focus and concentration' },
+    { id: 'direction', q: 'How clear do you feel about your goals and direction in life?', lo: 'Not at all', hi: 'Very clear', name: 'Direction', good: 'A clear sense of direction', bad: 'Direction and purpose' }
   ];
   var CHALLENGES = [
-    ['Stress', ['Work pressure', 'Family commitments', 'Burnout', 'Overthinking']],
-    ['Mental wellbeing', ['Anxiety', 'Low confidence', 'Negative thoughts', 'Emotional overwhelm']],
-    ['Physical wellbeing', ['Chronic tension', 'Poor sleep', 'Lack of movement', 'Fatigue']],
-    ['Personal growth', ['Purpose', 'Confidence', 'Focus', 'Spiritual development']]
+    ['Mind', ['Stress', 'Anxiety or worry', 'Overthinking', 'Feeling low']],
+    ['Body', ['Back, neck or shoulder pain', 'Stiff joints or muscles', 'Recovering from an injury', 'Low fitness']],
+    ['Rest and energy', ['Poor sleep', 'Tiredness', 'Burnout', 'Work pressure']],
+    ['Personal growth', ['Low confidence', 'Lack of focus', 'Lack of direction', 'Wanting more discipline']]
   ];
+  // [goal, short description, how it reads in a sentence]
   var GOALS = [
-    ['Calmness', 'A quieter, steadier mind'],
-    ['Better sleep', 'Rest that leaves you refreshed'],
-    ['Increased confidence', 'Belief in yourself'],
-    ['Personal transformation', 'Real change in how you live'],
-    ['Physical wellbeing', 'A stronger, more supple body'],
-    ['Greater presence', 'Living in the here and now'],
-    ['Emotional healing', 'Easing what you’ve been carrying'],
-    ['Stress management', 'Handling pressure with less strain']
+    ['Feel calmer', 'Less stress, a quieter mind', 'to feel calmer'],
+    ['Sleep better', 'Rest that leaves you refreshed', 'to sleep better'],
+    ['Ease pain and tension', 'Including recovering from an injury', 'to ease pain and tension'],
+    ['Become more flexible', 'Move freely and easily', 'to become more flexible'],
+    ['Improve balance and posture', 'Stand and move with ease', 'to improve your balance and posture'],
+    ['Get fitter and stronger', 'Energy, strength and stamina', 'to get fitter and stronger'],
+    ['Learn self-defence', 'Skills and awareness to stay safe', 'to learn self-defence'],
+    ['Build confidence', 'Believe in yourself', 'to build your confidence'],
+    ['Sharpen focus and discipline', 'Get more done, with less effort', 'to sharpen your focus and discipline'],
+    ['Find direction and purpose', 'Know where you’re heading', 'to find direction and purpose']
   ];
-  var STEPS = SCALES.length + 2;
+  var GOAL_PHRASE = {};
+  GOALS.forEach(function (g) { GOAL_PHRASE[g[0]] = g[2]; });
+  var PREFS = {
+    format: { q: 'How would you like to practise?', opts: ['In a group class', 'One to one', 'Online, from home', 'No preference'] },
+    pace: { q: 'What pace suits you?', opts: ['Gentle and slow', 'Steady', 'Energetic', 'Not sure'] }
+  };
+  var STEPS = SCALES.length + 3;
 
   /* ------------------------------------------------------------------ what EmptyHands offers */
   var SERVICES = {
     taichi: { name: 'Tai Chi Chuan', k: '太極拳', page: 'tai-chi.html', interest: 'Tai Chi Chuan', cta: 'Book a trial class', first: 'your first Tai Chi class',
       when: 'Thursdays 6pm to 7pm in Ilford · £10 a class · book ahead',
       about: 'Slow, flowing Yang family Tai Chi with deep, steady breathing. Often called meditation in motion, it suits every age and fitness level.',
-      benefits: ['Calms a busy mind and body', 'Deeper, steadier breathing', 'Eases tension and improves balance and posture'] },
+      benefits: ['Calms a busy mind and body', 'Better balance and posture', 'Gentle strength and suppleness, with deeper breathing'] },
     yoga: { name: 'Yoga', k: 'ヨガ', page: 'yoga.html', interest: 'Yoga', cta: 'Book a first class', first: 'your first Yoga class',
       when: 'Thursdays 8pm to 9pm in Ilford · drop in · £10 a class',
       about: 'Himalayan Hatha Yoga with Irm Sensei: breath, posture and stillness to ease the stresses of everyday life.',
-      benefits: ['Breathing practice that quietens the mind', 'Gentle stretches that release tight muscles', 'Helps you wind down for better sleep'] },
+      benefits: ['Stretches for a more flexible, supple body', 'Breathing practice that quietens the mind', 'Helps you wind down for better sleep'] },
     shiatsu: { name: 'Shiatsu', k: '指圧', page: 'shiatsu.html', interest: 'Shiatsu', cta: 'Book a free consultation', first: 'your free Shiatsu consultation',
       when: 'One to one in Ilford, by appointment · free 15-minute consultation',
       about: 'Japanese finger-pressure therapy with a Shiatsu Society registered practitioner, for mental wellbeing, self-care and recovery.',
-      benefits: ['Deep, hands-on relaxation', 'Eases aches, tension and tiredness', 'Support for mental wellbeing and recovery'] },
+      benefits: ['Eases aches, pain and tension', 'Support for recovery from injury', 'Deep, hands-on relaxation'] },
     coaching: { name: 'Wellbeing coaching', k: '指導', page: 'coaching.html', interest: 'Coaching', cta: 'Book a free consultation', first: 'your free coaching consultation',
       when: 'One to one in Ilford or on Teams · free 15-minute consultation, then £25 an hour',
       about: 'Person-centred coaching, including Coaching for Mental Health sessions, with Azeem Sensei (MA Coaching).',
@@ -58,72 +71,92 @@
     karate: { name: 'Karate-Dō', k: '空手道', page: 'karate.html', interest: 'Karate-Dō', cta: 'Book a trial class', first: 'your first Karate class',
       when: 'Thursdays 7pm to 9pm in Ilford · children and adults · £10 a lesson to start',
       about: 'Traditional Shotokan Karate for children (from 4) and adults, taught patiently, with the Dojo Kun at the close of every class.',
-      benefits: ['Confidence and self-belief', 'Focus, discipline and energy', 'Fitness, with a friendly dojo family'] }
+      benefits: ['Fitness, strength and self-defence skills', 'Confidence and self-belief', 'Focus, discipline and respect, with a friendly dojo family'] }
   };
   var ORDER = ['taichi', 'yoga', 'coaching', 'shiatsu', 'karate'];
   var BY_NAME = {};
   ORDER.forEach(function (k) { BY_NAME[SERVICES[k].name] = k; });
 
-  /* How each answer points towards a service: [condition, points per service, reason shown to the visitor] */
+  /* How each answer points towards a service: [question, condition, points per service, reason shown to the visitor] */
   var SCALE_RULES = [
-    ['stress', function (v) { return v >= 7; }, { taichi: 3, yoga: 2, shiatsu: 1 }, 'You rated your stress {v} out of 10'],
+    ['stress', function (v) { return v >= 7; }, { taichi: 3, yoga: 2, shiatsu: 1, coaching: 1 }, 'You rated your stress {v} out of 10'],
     ['stress', function (v) { return v >= 9; }, { coaching: 1 }, ''],
-    ['anxiety', function (v) { return v >= 7; }, { taichi: 2, yoga: 2, coaching: 2, shiatsu: 1 }, 'You rated your anxiety {v} out of 10'],
     ['sleep', function (v) { return v <= 4; }, { yoga: 3, shiatsu: 2, taichi: 1 }, 'You rated your sleep {v} out of 10'],
-    ['connection', function (v) { return v <= 4; }, { taichi: 2, yoga: 2, coaching: 1 }, 'You feel only {v} out of 10 connected to yourself'],
     ['energy', function (v) { return v <= 4; }, { shiatsu: 2, taichi: 1, yoga: 1 }, 'Your energy is {v} out of 10'],
-    ['motivation', function (v) { return v <= 4; }, { coaching: 3, karate: 1 }, 'Your motivation is {v} out of 10'],
-    ['health', function (v) { return v <= 4; }, { taichi: 2, yoga: 2, shiatsu: 1 }, 'You rated your physical health {v} out of 10'],
-    ['health', function (v) { return v >= 7; }, { karate: 1 }, ''],
-    ['calm', function (v) { return v <= 4; }, { taichi: 2, yoga: 2 }, 'You feel calm only {v} out of 10']
+    ['pain', function (v) { return v >= 6; }, { shiatsu: 3, yoga: 1, taichi: 1 }, 'You carry pain or tension ({v} out of 10)'],
+    ['flexibility', function (v) { return v <= 4; }, { yoga: 3, taichi: 1 }, 'Your flexibility is {v} out of 10'],
+    ['balance', function (v) { return v <= 4; }, { taichi: 3, yoga: 1 }, 'Your balance and posture are {v} out of 10'],
+    ['fitness', function (v) { return v <= 4; }, { karate: 2, taichi: 1, yoga: 1 }, 'Your fitness is {v} out of 10'],
+    ['fitness', function (v) { return v >= 7; }, { karate: 1 }, ''],
+    ['confidence', function (v) { return v <= 4; }, { karate: 2, coaching: 2 }, 'Your confidence is {v} out of 10'],
+    ['focus', function (v) { return v <= 4; }, { karate: 2, taichi: 1, coaching: 1 }, 'Your focus is {v} out of 10'],
+    ['direction', function (v) { return v <= 4; }, { coaching: 3 }, 'Your sense of direction is {v} out of 10']
   ];
   var CHALLENGE_RULES = {
-    'Work pressure': { coaching: 2, taichi: 1 }, 'Family commitments': { coaching: 1, taichi: 1, yoga: 1 },
-    'Burnout': { shiatsu: 2, coaching: 2, yoga: 1 }, 'Overthinking': { taichi: 2, yoga: 1, coaching: 1 },
-    'Anxiety': { taichi: 2, coaching: 2, yoga: 1 }, 'Low confidence': { coaching: 2, karate: 2 },
-    'Negative thoughts': { coaching: 3 }, 'Emotional overwhelm': { coaching: 2, shiatsu: 2 },
-    'Chronic tension': { shiatsu: 3, taichi: 1, yoga: 1 }, 'Poor sleep': { yoga: 2, shiatsu: 2 },
-    'Lack of movement': { taichi: 2, karate: 2, yoga: 1 }, 'Fatigue': { shiatsu: 2, taichi: 1 },
-    'Purpose': { coaching: 3 }, 'Confidence': { karate: 2, coaching: 2 },
-    'Focus': { karate: 2, taichi: 1, coaching: 1 }, 'Spiritual development': { taichi: 2, yoga: 2 }
+    'Stress': { taichi: 2, yoga: 2, shiatsu: 1 }, 'Anxiety or worry': { taichi: 2, coaching: 2, yoga: 1 },
+    'Overthinking': { taichi: 2, yoga: 1, coaching: 1 }, 'Feeling low': { coaching: 3, shiatsu: 1, taichi: 1 },
+    'Back, neck or shoulder pain': { shiatsu: 3, yoga: 1, taichi: 1 }, 'Stiff joints or muscles': { yoga: 3, taichi: 2 },
+    'Recovering from an injury': { shiatsu: 3, taichi: 1 }, 'Low fitness': { karate: 2, taichi: 1, yoga: 1 },
+    'Poor sleep': { yoga: 2, shiatsu: 2 }, 'Tiredness': { shiatsu: 2, taichi: 1, yoga: 1 },
+    'Burnout': { shiatsu: 2, coaching: 2, yoga: 1 }, 'Work pressure': { coaching: 2, taichi: 1 },
+    'Low confidence': { karate: 2, coaching: 2 }, 'Lack of focus': { karate: 2, taichi: 1 },
+    'Lack of direction': { coaching: 3 }, 'Wanting more discipline': { karate: 3 }
   };
   var GOAL_RULES = {
-    'Calmness': { taichi: 4, yoga: 3 }, 'Better sleep': { yoga: 4, shiatsu: 3 },
-    'Increased confidence': { coaching: 4, karate: 4 }, 'Personal transformation': { coaching: 4, karate: 2 },
-    'Physical wellbeing': { taichi: 3, yoga: 3, karate: 2, shiatsu: 1 }, 'Greater presence': { taichi: 4, yoga: 3 },
-    'Emotional healing': { shiatsu: 4, coaching: 4 }, 'Stress management': { taichi: 4, yoga: 2, coaching: 2 }
+    'Feel calmer': { taichi: 4, yoga: 3 }, 'Sleep better': { yoga: 4, shiatsu: 3 },
+    'Ease pain and tension': { shiatsu: 4, yoga: 2, taichi: 1 }, 'Become more flexible': { yoga: 4, taichi: 2 },
+    'Improve balance and posture': { taichi: 4, yoga: 2 }, 'Get fitter and stronger': { karate: 4, taichi: 1, yoga: 1 },
+    'Learn self-defence': { karate: 5 }, 'Build confidence': { karate: 3, coaching: 3 },
+    'Sharpen focus and discipline': { karate: 4, taichi: 1 }, 'Find direction and purpose': { coaching: 4 }
+  };
+  var PREF_RULES = {
+    'In a group class': [{ taichi: 1, yoga: 1, karate: 1 }, ''],
+    'One to one': [{ shiatsu: 2, coaching: 2 }, 'You’d like one-to-one sessions'],
+    'Online, from home': [{ coaching: 3 }, 'You’d like to practise online'],
+    'Gentle and slow': [{ taichi: 2, yoga: 2, shiatsu: 1, karate: -2 }, 'You’d like a gentle pace'],
+    'Steady': [{ yoga: 1, taichi: 1 }, ''],
+    'Energetic': [{ karate: 3 }, 'You’d like something energetic']
   };
 
   /* Daily practices, chosen by matching their tags to the answers */
   var PRACTICES = {
-    box: { name: 'Box breathing', min: 3, breath: 'box', tags: ['stress', 'anxiety', 'calm', 'Overthinking', 'Work pressure', 'Stress management', 'Calmness', 'Focus'],
+    box: { name: 'Box breathing', min: 3, breath: 'box', tags: ['stress', 'Stress', 'Anxiety or worry', 'Overthinking', 'Work pressure', 'Feel calmer', 'focus'],
       steps: ['Sit tall and let your shoulders drop.', 'Breathe in through your nose for 4, hold for 4, breathe out for 4, hold for 4.', 'Repeat for 3 minutes. If holding feels uncomfortable, just breathe in for 4 and out for 4.'],
       why: 'Slowing your breath is one of the quickest ways to settle a racing mind.' },
-    sleep: { name: 'Wind-down breath', min: 5, breath: 'sleep', tags: ['sleep', 'Poor sleep', 'Better sleep', 'Fatigue'],
+    sleep: { name: 'Wind-down breath', min: 5, breath: 'sleep', tags: ['sleep', 'Poor sleep', 'Sleep better', 'Tiredness'],
       steps: ['In bed with the lights off, rest one hand on your belly.', 'Breathe in quietly through your nose for 4, hold for 7, then breathe out slowly through your mouth for 8.', 'Do 4 rounds, then let your breathing find its own rhythm. Skip the hold if it feels uncomfortable.'],
       why: 'A long, slow out-breath tells your body it’s safe to rest.' },
-    calm: { name: 'Calm breathing', min: 5, breath: 'calm', tags: ['anxiety', 'calm', 'Anxiety', 'Emotional overwhelm', 'Emotional healing', 'Negative thoughts'],
+    calm: { name: 'Calm breathing', min: 5, breath: 'calm', tags: ['stress', 'Anxiety or worry', 'Feeling low', 'Burnout', 'Feel calmer'],
       steps: ['Sit or lie comfortably.', 'Breathe in gently through your nose for 4, then out for 6.', 'Keep going for 5 minutes, letting each out-breath be a little softer.'],
       why: 'Breathing out for longer than you breathe in helps you settle when feelings run high.' },
-    wuchi: { name: 'Wu Chi standing', keepCase: true, min: 5, tags: ['connection', 'Spiritual development', 'Greater presence', 'Overthinking', 'Purpose', 'Calmness'],
+    wuchi: { name: 'Wu Chi standing', keepCase: true, min: 5, tags: ['balance', 'Improve balance and posture', 'Overthinking', 'Feel calmer', 'Find direction and purpose', 'focus'],
       steps: ['Stand with your feet shoulder-width apart, knees soft and arms hanging loosely.', 'Imagine a thread gently lifting the crown of your head, and let your weight sink into your feet.', 'Breathe slowly into your belly for 3 to 5 minutes, noticing your body without judging it.'],
-      why: 'The standing meditation that begins Tai Chi practice. It brings you back into your body and the present moment.' },
-    scan: { name: 'Body scan', min: 10, tags: ['Chronic tension', 'sleep', 'Emotional overwhelm', 'connection', 'health', 'Physical wellbeing', 'Emotional healing'],
+      why: 'The standing meditation that begins Tai Chi practice. It steadies your posture and brings you into the present moment.' },
+    oneleg: { name: 'One-leg balance', min: 3, tags: ['balance', 'Improve balance and posture', 'Recovering from an injury'],
+      steps: ['Stand next to a wall or the back of a chair, so you can steady yourself.', 'Lift one foot a little and hold for 30 seconds, eyes on a point in front of you, breathing slowly.', 'Swap legs, and do two rounds each side. As it gets easier, let go of the support.'],
+      why: 'A little balance practice every day builds steadiness, just as Tai Chi does.' },
+    stretch: { name: 'Gentle morning stretch', min: 5, tags: ['flexibility', 'pain', 'Stiff joints or muscles', 'Become more flexible', 'Back, neck or shoulder pain', 'Ease pain and tension'],
+      steps: ['Stand tall, breathe in and reach both arms up.', 'Breathe out and fold forward with soft knees, letting your head and arms hang. Roll up slowly.', 'Finish with five slow shoulder rolls and gentle neck turns each way. Move gently and stop if anything hurts.'],
+      why: 'A few minutes of easy movement each morning keeps your body supple.' },
+    scan: { name: 'Body scan', min: 10, tags: ['pain', 'sleep', 'Back, neck or shoulder pain', 'Ease pain and tension', 'Stiff joints or muscles', 'Feeling low'],
       steps: ['Lie down and close your eyes.', 'Move your attention slowly from your toes to the top of your head.', 'At each part of your body, notice any tightness and let it soften as you breathe out.'],
       why: 'Noticing where you hold tension is the first step to letting it go.' },
-    palms: { name: 'Warm palms (Shiatsu self-care)', min: 2, tags: ['energy', 'Fatigue', 'Burnout', 'Chronic tension', 'Work pressure'],
+    palms: { name: 'Warm palms (Shiatsu self-care)', min: 2, tags: ['energy', 'pain', 'Tiredness', 'Burnout', 'Work pressure', 'Back, neck or shoulder pain'],
       steps: ['Rub your palms together briskly until they feel warm.', 'Cup them gently over your closed eyes and breathe slowly for 30 seconds.', 'Then press and circle gently with your fingertips along your shoulders and the base of your skull.'],
       why: 'A two-minute reset for tired eyes and a tense neck.' },
-    walk: { name: 'Mindful walk', min: 15, tags: ['energy', 'health', 'motivation', 'Lack of movement', 'Fatigue', 'Physical wellbeing', 'Family commitments'],
-      steps: ['Take a 15-minute walk, outside if you can, with your phone in your pocket.', 'Notice five things you can see, four you can hear and three you can feel.', 'Let your breathing settle into the rhythm of your steps.'],
-      why: 'Gentle movement and fresh air lift your energy and mood.' },
-    good: { name: 'Three good things', min: 5, tags: ['motivation', 'Negative thoughts', 'Low confidence', 'Confidence', 'Increased confidence', 'Emotional healing'],
+    horse: { name: 'Horse stance', min: 3, tags: ['fitness', 'Low fitness', 'Get fitter and stronger', 'Learn self-defence', 'Wanting more discipline', 'Sharpen focus and discipline'],
+      steps: ['Stand with your feet about twice shoulder-width apart, toes pointing forward.', 'Bend your knees and sink down only as far as is comfortable, keeping your back straight.', 'Hold for 30 seconds while breathing steadily, rest, and repeat three times.'],
+      why: 'Kiba-dachi, the horse-riding stance of Karate, builds leg strength, stamina and determination.' },
+    walk: { name: 'Brisk mindful walk', min: 15, tags: ['energy', 'fitness', 'Low fitness', 'Tiredness', 'Feeling low', 'Get fitter and stronger'],
+      steps: ['Take a 15-minute walk, outside if you can, at a pace that warms you up.', 'Notice five things you can see, four you can hear and three you can feel.', 'Let your breathing settle into the rhythm of your steps.'],
+      why: 'Movement and fresh air lift your energy and mood.' },
+    good: { name: 'Three good things', min: 5, tags: ['confidence', 'Low confidence', 'Build confidence', 'Feeling low'],
       steps: ['Each evening, write down three things that went well today, however small.', 'Next to each one, note what you did to help it happen.', 'On Sunday, read back over your week.'],
       why: 'It trains your attention to notice what’s going right, and what you’re capable of.' },
-    mokuso: { name: 'One-minute mokuso', min: 1, tags: ['Focus', 'motivation', 'Personal transformation', 'Work pressure', 'Overthinking', 'Increased confidence'],
+    mokuso: { name: 'One-minute mokuso', min: 1, tags: ['focus', 'Lack of focus', 'Sharpen focus and discipline', 'Wanting more discipline', 'Work pressure', 'Learn self-defence'],
       steps: ['Before something important, sit tall and close your eyes, as karateka do before training.', 'Breathe slowly and let your thoughts settle, like sand sinking in still water.', 'Open your eyes, choose one thing to do next, and do it.'],
       why: 'Mokuso, the meditation of Karate, clears your head before you act.' },
-    step: { name: 'One small step', min: 5, tags: ['Purpose', 'Personal transformation', 'motivation', 'Low confidence', 'Confidence', 'Spiritual development'],
+    step: { name: 'One small step', min: 5, tags: ['direction', 'confidence', 'Lack of direction', 'Find direction and purpose', 'Build confidence', 'Wanting more discipline'],
       steps: ['Each morning, finish this sentence: “Today, one small step towards the life I want is…”.', 'Make it something you can do in under 15 minutes.', 'Tick it off in the evening.'],
       why: 'Confidence and purpose grow from small promises you keep to yourself.' }
   };
@@ -133,14 +166,16 @@
     calm: { name: 'Calm breathing', phases: [['in', 4], ['out', 6]], rounds: 30 }
   };
   var GOAL_TIPS = {
-    'Calmness': ['Choose a daily cue, like the kettle boiling, to take three slow breaths.', 'Spend ten minutes a day with no screens or noise.'],
-    'Better sleep': ['Put screens away 30 minutes before bed.', 'Get up at the same time every day, even at weekends.'],
-    'Increased confidence': ['Do one small thing each day that feels slightly outside your comfort zone, and note it down.', 'Notice how you speak to yourself, and swap one harsh thought for a kinder one.'],
-    'Personal transformation': ['Write a paragraph about who you want to be a year from now.', 'Read your paragraph each Sunday and choose next week’s small step.'],
-    'Physical wellbeing': ['Add ten minutes of movement to every day: walk, stretch or practise what you learned in class.', 'Drink a glass of water first thing each morning.'],
-    'Greater presence': ['Do one everyday task each day, like washing up, with your full attention.', 'Leave your phone in another room for the first 30 minutes of the day.'],
-    'Emotional healing': ['When a hard feeling comes, name it to yourself and breathe out slowly.', 'Talk to someone you trust about how you’ve been feeling.'],
-    'Stress management': ['List what’s pressing on you, circle what you can control, and take one step on one of them.', 'Plan one short break into every busy day, and protect it.']
+    'Feel calmer': ['Choose a daily cue, like the kettle boiling, to take three slow breaths.', 'Spend ten minutes a day with no screens or noise.'],
+    'Sleep better': ['Put screens away 30 minutes before bed.', 'Get up at the same time every day, even at weekends.'],
+    'Ease pain and tension': ['If you sit a lot, stand up every hour, roll your shoulders and stretch for a minute.', 'Notice when you clench your jaw or shoulders, and let them soften as you breathe out.'],
+    'Become more flexible': ['Stretch gently after a warm shower, when your muscles are warm.', 'Never force a stretch: ease into it on an out-breath and stop before it hurts.'],
+    'Improve balance and posture': ['Each time you sit down, check your posture: feet flat, back tall, shoulders relaxed.', 'Practise standing on one leg while you brush your teeth, near something to hold.'],
+    'Get fitter and stronger': ['Take the stairs and walk briskly whenever you can.', 'Add a few minutes to your daily movement each week.'],
+    'Learn self-defence': ['Walk with your head up and your phone away: awareness is the first rule of self-defence.', 'Practise a strong, calm voice. Saying “Stop!” clearly is a self-defence skill too.'],
+    'Build confidence': ['Do one small thing each day that feels slightly outside your comfort zone, and note it down.', 'Notice how you speak to yourself, and swap one harsh thought for a kinder one.'],
+    'Sharpen focus and discipline': ['Give one task a day 25 minutes of full attention, with your phone in another room.', 'Keep one small promise to yourself every day, like your practice time.'],
+    'Find direction and purpose': ['Write a paragraph about who you want to be a year from now.', 'Read your paragraph each Sunday and choose next week’s small step.']
   };
 
   /* ------------------------------------------------------------------ helpers */
@@ -162,7 +197,7 @@
 
   /* ------------------------------------------------------------------ the quiz */
   function start() {
-    answers = { scores: {}, challenges: [], goal: '' };
+    answers = { scores: {}, challenges: [], goal: '', format: '', pace: '' };
     step = 0;
     intro.hidden = true; results.hidden = true; quiz.hidden = false;
     showStep(true);
@@ -175,7 +210,7 @@
       for (var i = 1; i <= 10; i++) {
         pills += '<label><input type="radio" name="wb-' + s.id + '" value="' + i + '"' + (v === i ? ' checked' : '') + '><span>' + i + '</span></label>';
       }
-      return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 1 of 3 · Your wellbeing today</span><span class="wb-qtext">' + esc(s.q) + '</span></legend>' +
+      return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 1 of 4 · Your wellbeing today</span><span class="wb-qtext">' + esc(s.q) + '</span></legend>' +
         '<div class="wb-scale" role="radiogroup">' + pills + '</div>' +
         '<div class="wb-ends" aria-hidden="true"><span>1 · ' + esc(s.lo) + '</span><span>10 · ' + esc(s.hi) + '</span></div></fieldset>';
     }
@@ -185,20 +220,28 @@
           return '<label><input type="checkbox" value="' + esc(c) + '"' + (answers.challenges.indexOf(c) >= 0 ? ' checked' : '') + '><span>' + esc(c) + '</span></label>';
         }).join('') + '</div></div>';
       }).join('');
-      return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 2 of 3 · Your main challenges</span><span class="wb-qtext">What’s weighing on you most?</span></legend>' +
+      return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 2 of 4 · What’s holding you back</span><span class="wb-qtext">What would you most like help with?</span></legend>' +
         '<p class="wb-hint">Choose up to three. <span class="wb-count" aria-live="polite"></span></p><div class="wb-groups">' + groups + '</div></fieldset>';
     }
-    var goals = GOALS.map(function (g) {
-      return '<label class="wb-goal"><input type="radio" name="wb-goal" value="' + esc(g[0]) + '"' + (answers.goal === g[0] ? ' checked' : '') + '><span><strong>' + esc(g[0]) + '</strong><small>' + esc(g[1]) + '</small></span></label>';
-    }).join('');
-    return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 3 of 3 · What you’re looking for</span><span class="wb-qtext">What would you most like from your journey?</span></legend>' +
-      '<p class="wb-hint">Choose one.</p><div class="wb-goals">' + goals + '</div></fieldset>';
+    if (step === SCALES.length + 1) {
+      var goals = GOALS.map(function (g) {
+        return '<label class="wb-goal"><input type="radio" name="wb-goal" value="' + esc(g[0]) + '"' + (answers.goal === g[0] ? ' checked' : '') + '><span><strong>' + esc(g[0]) + '</strong><small>' + esc(g[1]) + '</small></span></label>';
+      }).join('');
+      return '<fieldset class="wb-q"><legend tabindex="-1"><span class="wb-sec">Section 3 of 4 · Your main goal</span><span class="wb-qtext">What would you most like to achieve?</span></legend>' +
+        '<p class="wb-hint">Choose one.</p><div class="wb-goals">' + goals + '</div></fieldset>';
+    }
+    return '<div class="wb-q"><p class="wb-sec" id="wb-pref-h" tabindex="-1">Section 4 of 4 · How you like to train</p>' + Object.keys(PREFS).map(function (k) {
+      return '<fieldset class="wb-pref"><legend class="wb-qtext">' + esc(PREFS[k].q) + '</legend><div class="wb-opts">' + PREFS[k].opts.map(function (o) {
+        return '<label class="wb-goal"><input type="radio" name="wb-' + k + '" value="' + esc(o) + '"' + (answers[k] === o ? ' checked' : '') + '><span><strong>' + esc(o) + '</strong></span></label>';
+      }).join('') + '</div></fieldset>';
+    }).join('') + '</div>';
   }
 
   function canGoOn() {
     if (step < SCALES.length) return !!answers.scores[SCALES[step].id];
     if (step === SCALES.length) return true;
-    return !!answers.goal;
+    if (step === SCALES.length + 1) return !!answers.goal;
+    return !!(answers.format && answers.pace);
   }
 
   function showStep(focus) {
@@ -210,7 +253,7 @@
     updateNext();
     if (step === SCALES.length) updateChallenges();
     scrollToTop();
-    if (focus) { var lg = $('legend', quiz); if (lg) lg.focus({ preventScroll: true }); }
+    if (focus) { var lg = $('legend, #wb-pref-h', quiz); if (lg) lg.focus({ preventScroll: true }); }
   }
 
   function updateNext() {
@@ -238,6 +281,7 @@
       answers.challenges = $$('.wb-groups input:checked', quiz).map(function (b) { return b.value; });
       updateChallenges();
     } else if (t.name === 'wb-goal') answers.goal = t.value;
+    else if (t.name === 'wb-format' || t.name === 'wb-pace') answers[t.name.slice(3)] = t.value;
     updateNext();
   });
   // Tapping a number moves straight on (keyboard users choose with the arrow keys, then press Next).
@@ -275,7 +319,7 @@
       Object.keys(map).forEach(function (k) {
         var w = map[k] * (weight || 1);
         pts[k] += w;
-        if (reason) why[k].push({ t: reason, w: w });
+        if (reason && w > 0) why[k].push({ t: reason, w: w });
       });
     }
     SCALE_RULES.forEach(function (r) {
@@ -283,7 +327,8 @@
       if (r[1](v)) add(r[2], r[3].replace('{v}', v));
     });
     a.challenges.forEach(function (c) { add(CHALLENGE_RULES[c] || {}, 'You chose ' + c.toLowerCase() + ' as a challenge'); });
-    add(GOAL_RULES[a.goal] || {}, 'You’re looking for ' + a.goal.toLowerCase(), 1.5);
+    add(GOAL_RULES[a.goal] || {}, 'You want ' + (GOAL_PHRASE[a.goal] || a.goal.toLowerCase()), 1.5);
+    [a.format, a.pace].forEach(function (p) { var r = PREF_RULES[p]; if (r) add(r[0], r[1]); });
     ORDER.forEach(function (k) {
       why[k] = why[k].sort(function (x, y) { return y.w - x.w; }).map(function (x) { return x.t; });
     });
@@ -316,8 +361,7 @@
       : mean < 5.5 ? ['Under pressure', 'You’re carrying a lot. A few steady habits and the right support can make a real difference.']
         : mean < 7.5 ? ['Finding your balance', 'There’s plenty going well, and a few areas that would benefit from some care.']
           : ['In a good place', 'You’re doing well. It’s a great time to build on it and keep growing.'];
-    var worry = a.scores.stress >= 9 || a.scores.anxiety >= 9 || a.scores.calm <= 2 || mean < 4 ||
-      ((a.challenges.indexOf('Negative thoughts') >= 0 || a.challenges.indexOf('Emotional overwhelm') >= 0) && mean < 5);
+    var worry = a.scores.stress >= 9 || mean < 4 || (a.challenges.indexOf('Feeling low') >= 0 && (mean < 5 || a.scores.stress >= 7));
     return { pts: pts, why: why, ranked: ranked, dims: dims, mean: mean, strengths: strengths, focus: focus, practices: practices, band: band, worry: worry };
   }
 
@@ -330,7 +374,7 @@
       ['Begin', ['Practise ' + inSentence(p[0]) + ' every day (' + p[0].min + ' minute' + (p[0].min > 1 ? 's' : '') + ').', 'Book ' + main.first + '.', 'Each evening, sum up how you feel in one word.']],
       ['Build', [p[1] ? 'Add ' + inSentence(p[1]) + ' on at least four days.' : 'Keep up your daily practice.', 'Go to ' + main.first + ' and notice how you feel afterwards.', tips[0]]],
       ['Deepen', [p[2] ? 'Try ' + inSentence(p[2]) + ', or repeat your favourite practice.' : 'Repeat your favourite practice.', second ? 'Keep going with ' + main.name + ', and try ' + second.name + ' if it appeals.' : 'Keep going with ' + main.name + '.', tips[1]]],
-      ['Reflect', ['Keep your daily practice going: it’s becoming a habit.', 'Take this check again and see what’s changed.', 'Choose what you’ll carry on with next month.']]
+      ['Reflect', ['Keep your daily practice going: it’s becoming a habit.', 'Take this assessment again and see what’s changed.', 'Choose what you’ll carry on with next month.']]
     ];
   }
 
@@ -388,12 +432,12 @@
       }).join('') + '</ul></div>';
     }).join('');
     var others = r.ranked.slice(1).map(function (k) { return serviceCard(k, r, false); }).join('');
-    var shareText = 'Hello, I’ve just done the EmptyHands wellbeing check. My suggested path is ' + joinList(r.ranked.map(function (k) { return SERVICES[k].name; })) +
-      ', and I’m looking for ' + a.goal.toLowerCase() + '. Could we arrange a first session?';
+    var shareText = 'Hello, I’ve just done the EmptyHands wellbeing assessment. My suggested path is ' + joinList(r.ranked.map(function (k) { return SERVICES[k].name; })) +
+      ', and I want ' + (GOAL_PHRASE[a.goal] || a.goal.toLowerCase()) + '. Could we arrange a first session?';
 
     results.innerHTML =
       '<div class="wb-top">' + ring(score) + '<div><span class="eyebrow">Your results · ' + fmtDate(rec.at) + '</span><h2 tabindex="-1">' + esc(r.band[0]) + '</h2><p>' + esc(r.band[1]) + '</p>' +
-        '<p class="wb-goalline">You’re looking for <strong>' + esc(a.goal.toLowerCase()) + '</strong>' + (a.challenges.length ? ', with ' + esc(joinList(a.challenges.map(function (c) { return c.toLowerCase(); }))) + ' weighing on you' : '') + '.</p></div></div>' +
+        '<p class="wb-goalline">You want <strong>' + esc(GOAL_PHRASE[a.goal] || a.goal.toLowerCase()) + '</strong>' + (a.challenges.length ? ', with help for ' + esc(joinList(a.challenges.map(function (c) { return c.charAt(0).toLowerCase() + c.slice(1); }))) : '') + '.</p></div></div>' +
       (r.worry ? '<aside class="wb-alert" role="note"><h3>Please look after yourself</h3><p>Your answers suggest things are hard right now. You don’t have to wait for a class or a plan. Talk to your GP, call <strong>NHS 111</strong> and choose the mental health option, or call <strong>Samaritans free on 116 123</strong>, day or night. You can also text <strong>SHOUT to 85258</strong>. If you’re in danger, call <strong>999</strong>.</p></aside>' : '') +
       '<section class="wb-block"><h2 class="wb-h">Where you are today</h2><ul class="wb-dims">' + bars + '</ul>' +
         '<p class="wb-dims-key"><span><i style="background:var(--ok)"></i>Going well</span><span><i style="background:var(--mid)"></i>Okay</span><span><i style="background:var(--low)"></i>Needs care</span></p>' +
@@ -405,8 +449,8 @@
       '<section class="wb-block wb-ai" hidden></section>' +
       '<div class="wb-actions btn-row"><a class="btn btn--seal" href="' + joinLink(r.ranked[0], r) + '">' + esc(SERVICES[r.ranked[0]].cta) + '</a>' +
         '<a class="btn btn--ghost" href="https://wa.me/447931300470?text=' + encodeURIComponent(shareText) + '" target="_blank" rel="noopener">Talk it over on WhatsApp</a>' +
-        '<button class="btn btn--ghost" type="button" data-act="print">Save or print</button><button class="btn btn--ghost" type="button" data-act="again">Take the check again</button></div>' +
-      '<p class="wb-fine">This check is a guide to general wellbeing, not a medical or psychological assessment. If you’re worried about your health, please speak to your GP. Your answers are kept only on this device.</p>';
+        '<button class="btn btn--ghost" type="button" data-act="print">Save or print</button><button class="btn btn--ghost" type="button" data-act="again">Take the assessment again</button></div>' +
+      '<p class="wb-fine">This is a guide to general wellbeing, not a medical or psychological assessment. If you’re worried about your health, please speak to your GP. Your answers are kept only on this device.</p>';
 
     intro.hidden = true; quiz.hidden = true; results.hidden = false;
     scrollToTop();
@@ -448,12 +492,12 @@
   }
 
   function askAI(rec, box, go) {
-    var status = $('.wb-ai-status', box), lines = ['Reading your answers…', 'Looking at what weighs on you most…', 'Matching you with the right practice…', 'Writing your 30-day plan…', 'Nearly there…'], i = 0;
+    var status = $('.wb-ai-status', box), lines = ['Reading your answers…', 'Looking at what you’d like help with…', 'Matching you with the right practice…', 'Writing your 30-day plan…', 'Nearly there…'], i = 0;
     go.disabled = true;
     status.textContent = lines[0];
     box.classList.add('is-busy');
     var tick = setInterval(function () { i = Math.min(i + 1, lines.length - 1); status.textContent = lines[i]; }, 6000);
-    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consent: true, scores: rec.a.scores, challenges: rec.a.challenges, goal: rec.a.goal }) })
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ consent: true, scores: rec.a.scores, challenges: rec.a.challenges, goal: rec.a.goal, format: rec.a.format, pace: rec.a.pace }) })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, code: r.status, d: d }; }); })
       .then(function (res) {
         clearInterval(tick); box.classList.remove('is-busy');
