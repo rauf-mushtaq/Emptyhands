@@ -1504,7 +1504,7 @@ def build_wellbeing():
              ('shiatsu', '指圧', 'Shiatsu', 'Hands-on healing and deep relaxation'), ('coaching', '指導', 'Wellbeing coaching', 'Confidence, purpose and mental health'),
              ('karate', '空手', 'Karate-Dō', 'Confidence, focus and discipline')]
     path_html = ''.join('<a class="wb-path reveal" href="%s.html"><span class="k">%s</span><strong>%s</strong><span>%s</span></a>' % x for x in paths)
-    body = page_hero('Wellbeing assessment · free · 3 minutes', 'Discover your path to wellbeing',
+    body = page_hero('Wellbeing assessment · free · 3 minutes', 'Discover your wellbeing practice',
                      'A short personal assessment that shows where you are today and suggests the classes, therapies and daily practices that suit you best.',
                      '心', None, 'Wellbeing assessment') + """
 <section class="section section--alt wb-section">
@@ -1547,11 +1547,11 @@ def build_wellbeing():
     v = _version('assets/js/wellbeing.js', 'assets/css/wellbeing.css')
     head = '<link rel="stylesheet" href="assets/css/wellbeing.css?v=%s">\n<script src="assets/js/wellbeing.js?v=%s" defer></script>\n' % (v, v)
     url = page_url('wellbeing.html')
-    schema = [{'@type': 'WebApplication', '@id': url + '#check', 'name': 'Discover your path to wellbeing: wellbeing assessment', 'url': url, 'applicationCategory': 'HealthApplication',
+    schema = [{'@type': 'WebApplication', '@id': url + '#check', 'name': 'Discover your wellbeing practice: wellbeing assessment', 'url': url, 'applicationCategory': 'HealthApplication',
                'operatingSystem': 'Any', 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP'}, 'provider': {'@id': BUSINESS_ID},
                'description': 'A free three-minute wellbeing assessment that recommends Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, with daily practices and a 30-day plan.'},
               {'@type': 'FAQPage', '@id': url + '#faq', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in WELLBEING_FAQS]}]
-    page('wellbeing.html', 'Free Wellbeing Assessment · Discover Your Path to Wellbeing',
+    page('wellbeing.html', 'Free Wellbeing Assessment · Discover Your Wellbeing Practice',
          'Take our free three-minute wellbeing assessment: see where you are today and get personal recommendations for Tai Chi, Yoga, Shiatsu, coaching or Karate in Ilford, plus daily practices and a 30-day plan.',
          body, 'wellbeing', extra_head=head, schema=schema, crumb=[('Wellbeing assessment', None)])
 

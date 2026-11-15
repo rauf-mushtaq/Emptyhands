@@ -1,4 +1,4 @@
-/* EmptyHands wellbeing assessment ("Discover your path to wellbeing", wellbeing.html).
+/* EmptyHands wellbeing assessment ("Discover your wellbeing practice", wellbeing.html).
    Everything is worked out here in the browser and kept only on this device. The optional AI report
    sends the answers (numbers and choices only) to the wellbeingReport Cloud Function. */
 (function () {
