@@ -1631,6 +1631,38 @@ def build_redirects():
             f.write(doc)
 
 
+# Short links to each Google Business Profile's "write a review" page, used on the QR-code review poster.
+REVIEW_LINKS = [
+    ('karate', 'Karate', '空手道', 'Emptyhands Karate School', 'https://search.google.com/local/writereview?placeid=ChIJXSXGceWm2EcR62pkOnA2vk8'),
+    ('tai-chi', 'Tai Chi', '太極拳', 'EmptyHands Tai Chi Chuan', 'https://search.google.com/local/writereview?placeid=ChIJ1c5Q0vGn2EcRlvrlX_mTEik'),
+    ('yoga', 'Yoga', 'ヨガ', 'EmptyHands Yoga', 'https://search.google.com/local/writereview?placeid=ChIJ_0koeuWm2EcRaHhHyRTureA'),
+]
+
+
+def build_review_links():
+    """emptyhands.co.uk/review/ lists the three Google review pages; /review/<class>/ forwards straight to one."""
+    for slug, name, k, profile, url in REVIEW_LINKS:
+        doc = ('<!doctype html>\n<html lang="en-GB"><head><meta charset="utf-8"><title>Review EmptyHands %s</title>\n'
+               '<meta name="robots" content="noindex">\n<script src="/assets/js/forward.js" data-to="%s"></script>\n'
+               '<meta http-equiv="refresh" content="0; url=%s">\n</head>\n'
+               '<body><p><a href="%s">Leave a Google review for %s</a></p></body></html>\n') % (name, url, url, url, profile)
+        dest = os.path.join(OUT, 'review', slug, 'index.html')
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        with open(dest, 'w') as f:
+            f.write(doc)
+    cards = ''.join('<div class="panel reveal%s"><span class="eyebrow">%s</span><h3>%s</h3><p>Write a review for %s on Google.</p>'
+                    '<a class="btn btn--seal" href="%s" target="_blank" rel="noopener">Review %s</a></div>'
+                    % (' reveal-d%d' % i if i else '', k, name, profile, url, name) for i, (slug, name, k, profile, url) in enumerate(REVIEW_LINKS))
+    body = page_hero('Reviews', 'Leave a Google review', 'Thank you for training with EmptyHands. A short review helps other people find the dojo.', '礼') + '''
+<section class="section">
+  <div class="wrap">
+    <div class="grid-3">%s</div>
+    <p class="muted center" style="margin-top:28px">Choose the class you attend. It only takes a minute - thank you.</p>
+  </div>
+</section>''' % cards
+    page('review/index.html', 'Leave a Google review', 'Leave a Google review for EmptyHands Karate, Tai Chi or Yoga in Ilford.', body, noindex=True)
+
+
 def build_sitemap():
     base = BASE_URL
     today = date.today().isoformat()
@@ -1669,5 +1701,6 @@ if __name__ == '__main__':
     build_404()
     build_sitemap()
     build_redirects()
+    build_review_links()
     write_headers()
     print('built %d posts + pages into %s' % (len(POSTS), OUT))
