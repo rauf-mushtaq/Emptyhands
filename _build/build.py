@@ -243,7 +243,7 @@ def header(active, prefix, over_hero):
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
         'wellbeing': menu([('wellbeing', '心', 'Wellbeing assessment', 'For adults and children')]),
         'wb': top('wellbeing', 'Wellbeing assessment'), 'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
-        'contact': top('contact', 'Contact'), 'app': top('our-app', 'EmptyHands Portal'),
+        'contact': top('contact', 'Contact'), 'app': top('our-app', 'Our app'),
     }
 
 
