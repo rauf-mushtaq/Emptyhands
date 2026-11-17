@@ -243,7 +243,7 @@ def header(active, prefix, over_hero):
         'cls': cls, 'p': prefix, 'chev': ICON['chev'], 'classes': menu(CLASSES), 'dojo': menu(DOJO_MENU),
         'wellbeing': menu([('wellbeing', '心', 'Wellbeing assessment', 'For adults and children')]),
         'wb': top('wellbeing', 'Wellbeing assessment'), 'fees': top('fees', 'Fees'), 'blog': '<a href="%sblog/index.html"%s>Journal</a>' % (prefix, ' aria-current="page"' if active == 'blog' else ''),
-        'contact': top('contact', 'Contact'), 'app': top('our-app', 'Student app'),
+        'contact': top('contact', 'Contact'), 'app': top('our-app', 'EmptyHands Portal'),
     }
 
 
@@ -272,7 +272,7 @@ def footer(prefix):
           <li><a href="%(p)syudansha.html">Yudansha wall</a></li>
           <li><a href="%(p)stestimonials.html">Testimonials</a></li>
           <li><a href="%(p)sgallery.html">Gallery</a></li>
-          <li><a href="%(p)sour-app.html">Student app</a></li>
+          <li><a href="%(p)sour-app.html">EmptyHands Portal</a></li>
           <li><a href="%(p)s%(syllabus)s" target="_blank" rel="noopener">Syllabus (PDF)</a></li>
           <li><a href="%(p)s%(calendar)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
         </ul>
@@ -1134,18 +1134,18 @@ def build_app():
         ('£', 'Pay your fees', 'Pay per lesson or per month by card or PayPal, and see what you’ve paid.'),
     ]
     feats = ''.join('<div class="app-feature reveal"><span class="k" aria-hidden="true">%s</span><h3>%s</h3><p>%s</p></div>' % f for f in features)
-    body = page_hero('Student app', 'EmptyHands in your pocket',
-                     'The EmptyHands Student app puts your calendar, Sensei’s notices, homework and fees on your phone - free for every student.', '生徒', None, 'Our app') + '''
+    body = page_hero('EmptyHands Portal', 'EmptyHands in your pocket',
+                     'The EmptyHands Portal puts your calendar, Sensei’s notices, homework and fees on your phone - free for every student.', '生徒', None, 'EmptyHands Portal') + '''
 <section class="section">
   <div class="wrap split app-get">
     <div class="reveal">
-      <span class="eyebrow">Get the app</span>
+      <span class="eyebrow">Get the Portal</span>
       <h2>One tap to add it to your home screen</h2>
       <p class="lead">Tap the button on your phone or tablet. On Android it installs straight away; on iPhone and iPad, a quick guide shows the two taps needed.</p>
-      <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the app</a></div>
-      <p class="muted" style="margin-top:14px">New students create an account in the app, then Sensei accepts the request.</p>
+      <div class="btn-row" style="margin-top:24px"><a class="btn btn--seal btn--lg" href="%(app)s?install=1">Get the Portal</a></div>
+      <p class="muted" style="margin-top:14px">New students create an account in the Portal, then Sensei accepts the request.</p>
     </div>
-    <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/app-icon-512.png" alt="The EmptyHands Student app icon" width="512" height="512" loading="lazy"><span>EmptyHands Student</span></div>
+    <div class="app-icon reveal reveal-d1"><img src="{{p}}assets/img/app-icon-512.png" alt="The EmptyHands Portal icon" width="512" height="512" loading="lazy"><span>EmptyHands Portal</span></div>
   </div>
 </section>
 <section class="section section--alt">
@@ -1155,7 +1155,7 @@ def build_app():
   </div>
 </section>
 ''' % {'app': STUDENT_APP, 'feats': feats}
-    page('our-app.html', 'Student app', 'The EmptyHands Student app: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
+    page('our-app.html', 'EmptyHands Portal', 'The EmptyHands Portal: dojo calendar, notices from Sensei, homework and fees on your phone. Add it to your home screen in one tap.', body, 'our-app')
 
 
 def build_contact():
@@ -1578,8 +1578,8 @@ def build_privacy():
 <p>You can change your choice at any time with <strong>Cookie settings</strong> at the bottom of every page. Your choice is saved in your browser (as <code>eh-ads-consent</code>) so we don’t ask again. Read <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">how Google uses information from sites that use its services</a>, and turn off personalised adverts in <a href="https://myadcenter.google.com/" target="_blank" rel="noopener">My Ad Center</a>.</p>
 <h2>Maps and links</h2>
 <p>Google Maps only loads on the Contact page when you click <strong>Show map</strong>, and Google may then set its own cookies. Links to Facebook, Instagram, YouTube and WhatsApp take you to those services, whose own privacy policies apply.</p>
-<h2>The student app</h2>
-<p>The EmptyHands Student app has its own <a href="%(app)sprivacy.html">privacy policy</a>.</p>
+<h2>The EmptyHands Portal</h2>
+<p>The EmptyHands Portal has its own <a href="%(app)sprivacy.html">privacy policy</a>.</p>
 <h2>Your rights</h2>
 <p>You can ask for a copy of the information we hold about you, or ask us to correct or delete it, by emailing <a href="mailto:%(email)s">%(email)s</a>. If you’re unhappy with how we handle your information you can complain to the Information Commissioner’s Office (<a href="https://ico.org.uk/" target="_blank" rel="noopener">ico.org.uk</a>).</p>
 <p><button type="button" class="btn js-cookie-settings" hidden>Change cookie settings</button></p>
