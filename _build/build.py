@@ -1608,6 +1608,7 @@ OLD_URLS = {
     'mentors': 'instructors.html#mentors', 'trainee-instructors': 'instructors.html', 'yudansha-wall': 'yudansha.html', 'testimonials': 'testimonials.html',
     'fees': 'fees.html', 'contact': 'contact.html', 'register-for-classes': 'join.html', 'syllabus': DOCS['syllabus'], 'terms-conditions': 'fees.html',
     'products': 'fees.html', 'my-account': 'our-app.html', 'checkout': 'fees.html', 'cart': 'fees.html', 'testing': '',
+    'yoga': 'yoga.html', 'tai-chi': 'tai-chi.html',   # addresses used on the Google Business Profiles
     'chi-2': 'blog/chi.html', 'blog-3': 'blog/index.html', 'blog-5': 'blog/index.html',
 }
 
