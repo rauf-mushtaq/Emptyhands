@@ -118,6 +118,7 @@ SOCIAL = {
 DOCS = {
     'syllabus': 'assets/docs/EmptyHands-Syllabus-Summary-Sheet-10th-Kyu-to-Shodan-Level.pdf',
     'calendar': 'assets/docs/EmptyHands-Dojo-Calendar-2026.pdf',
+    'calendar27': 'assets/docs/EmptyHands-Dojo-Calendar-2027.pdf',
 }
 DOJOS = [
     {
@@ -249,6 +250,7 @@ def footer(prefix):
           <li><a href="%(p)sour-app.html">EmptyHands Portal</a></li>
           <li><a href="%(p)s%(syllabus)s" target="_blank" rel="noopener">Syllabus (PDF)</a></li>
           <li><a href="%(p)s%(calendar)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
+          <li><a href="%(p)s%(calendar27)s" target="_blank" rel="noopener">Dojo calendar 2027 (PDF)</a></li>
         </ul>
       </div>
       <div>
@@ -269,7 +271,7 @@ def footer(prefix):
 </footer>
 <a class="wa-float" href="%(wa)s" target="_blank" rel="noopener" aria-label="Message us on WhatsApp">%(wai)s</a>''' % {
         'p': prefix, 'social': social, 'classes': classes, 'recent': recent, 'syllabus': DOCS['syllabus'],
-        'calendar': DOCS['calendar'], 'tel': PHONE_HREF, 'phone': PHONE, 'email': EMAIL, 'year': date.today().year,
+        'calendar': DOCS['calendar'], 'calendar27': DOCS['calendar27'], 'tel': PHONE_HREF, 'phone': PHONE, 'email': EMAIL, 'year': date.today().year,
         'wa': WHATSAPP, 'wai': ICON['whatsapp'],
     }
 
@@ -537,7 +539,8 @@ def words(items):
 def downloads(prefix='{{p}}'):
     items = [
         (DOCS['syllabus'], 'Karate syllabus', '10th Kyu to Shodan summary'),
-        (DOCS['calendar'], 'Dojo calendar 2026', 'Classes, gradings & workshops'),
+        (DOCS['calendar27'], 'Dojo calendar 2027', 'Classes, gradings & closures'),
+        (DOCS['calendar'], 'Dojo calendar 2026', 'Classes, gradings & closures'),
     ]
     return '<div class="downloads">%s</div>' % ''.join(
         '<a class="download" href="%s%s" target="_blank" rel="noopener"><span class="ic">PDF</span><span><strong>%s</strong><span>%s</span></span></a>' % (prefix, href, t, s)
@@ -643,7 +646,7 @@ def build_home():
   <div class="wrap">
     <div class="section-head reveal">
       <div><span class="eyebrow">Weekly timetable</span><h2>Train with us this week</h2></div>
-      <p class="lead">A full calendar is published at the end of each year, so everyone can plan ahead. <a class="link-arrow" href="%(calendar)s" target="_blank" rel="noopener">2026 calendar</a></p>
+      <p class="lead">A full calendar is published at the end of each year, so everyone can plan ahead. <a class="link-arrow" href="%(calendar27)s" target="_blank" rel="noopener">2027 calendar</a></p>
     </div>
     <div class="reveal">%(timetable)s</div>
   </div>
@@ -702,7 +705,7 @@ def build_home():
 ''' % {
         'img_main': img('azeem-mushtaq-sensei.webp', 'Sensei Azeem leading a training session in the dojo hall', 'main'),
         'img_inset': '',
-        'cards': ''.join(cards), 'kun': kun, 'timetable': timetable(), 'calendar': DOCS['calendar'],
+        'cards': ''.join(cards), 'kun': kun, 'timetable': timetable(), 'calendar': DOCS['calendar'], 'calendar27': DOCS['calendar27'],
         'azeem': img('amushtaqsensei.webp', 'Azeem Mushtaq Sensei', '', 724, 1048), 'play': ICON['play'],
         'quotes': quotes, 'faces': faces, 'posts': posts, 'locations': locations(), 'cta': cta_band(),
     }
@@ -1188,13 +1191,14 @@ def build_contact():
       <h3 style="margin-top:34px">Useful downloads</h3>
       <ul style="padding-left:1.1em;color:rgba(246,242,234,.8)">
         <li><a href="%(syl)s" target="_blank" rel="noopener">Karate syllabus (PDF)</a></li>
+        <li><a href="%(cal27)s" target="_blank" rel="noopener">Dojo calendar 2027 (PDF)</a></li>
         <li><a href="%(cal)s" target="_blank" rel="noopener">Dojo calendar 2026 (PDF)</a></li>
       </ul>
     </aside>
   </div>
 </section>''' % {
         'tel': PHONE_HREF, 'phone': PHONE, 'wa': WHATSAPP, 'email': EMAIL, 'iphone': ICON['phone'], 'iwa': ICON['whatsapp'], 'imail': ICON['mail'],
-        'locations': locations(), 'syl': DOCS['syllabus'], 'cal': DOCS['calendar'],
+        'locations': locations(), 'syl': DOCS['syllabus'], 'cal': DOCS['calendar'], 'cal27': DOCS['calendar27'],
         'social': ''.join('<a href="%s" target="_blank" rel="noopener" aria-label="%s">%s</a>' % (u, n.title(), ICON[n]) for n, u in SOCIAL.items()),
     }
     page('contact.html', 'Contact', 'Contact EmptyHands Karate School in Ilford: +44 7931 300470, info@emptyhands.co.uk. Karate, Tai Chi and Yoga at St Andrew’s Church Hall, The Drive, Ilford IG1 3PE.', body, 'contact', schema=[business_schema()], crumb=[('Contact', None)])
