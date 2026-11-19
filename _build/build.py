@@ -9,9 +9,12 @@ Usage: python3 build.py
 import html
 import json
 import os
+import sys
 from datetime import date
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import share_cards
 OUT = os.path.dirname(HERE)
 POSTS = json.load(open(os.path.join(HERE, 'content', 'posts.json')))
 
@@ -344,6 +347,17 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
     if crumb:
         graph.append(breadcrumbs(crumb, url))
     seo = '<link rel="canonical" href="%s">\n<meta property="og:url" content="%s">\n' % (url, url)
+    # Link-preview image: a branded card with the logo and this page's title (see share_cards.py)
+    share = None
+    if not noindex:
+        name = 'index' if path == 'index.html' else path[:-5].replace('/index', '').replace('/', '-')
+        is_post = path.startswith('blog/') and path != 'blog/index.html'
+        if title == SITE:
+            share = share_cards.card(name, 'Karate, Tai Chi, Yoga & Shiatsu in Ilford', 'EmptyHands Karate School · Since 2006')
+        else:
+            share = share_cards.card(name, title.split(' · ')[0], 'EmptyHands · Journal' if is_post else 'EmptyHands Karate School · Ilford')
+    share_url = BASE_URL + (share or 'assets/img/share/default.jpg')
+    og_type = 'article' if path.startswith('blog/') and path != 'blog/index.html' else 'website'
     if noindex:
         seo = '<meta name="robots" content="noindex">\n'
     if graph:
@@ -358,13 +372,17 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 <title>%(title)s</title>
 <meta name="description" content="%(desc)s">
 <meta name="theme-color" content="#14120f">
-%(seo)s<meta property="og:type" content="website">
+%(seo)s<meta property="og:type" content="%(og_type)s">
 <meta property="og:site_name" content="EmptyHands Karate School">
 <meta property="og:locale" content="en_GB">
 <meta property="og:title" content="%(title)s">
 <meta property="og:description" content="%(desc)s">
-<meta property="og:image" content="%(base)sassets/img/hero-poster.jpg">
+<meta property="og:image" content="%(share)s">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="EmptyHands Karate School logo">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="%(share)s">
 <link rel="icon" href="%(p)sfavicon.ico" sizes="48x48">
 <link rel="icon" href="%(p)sassets/img/favicon-96.png" sizes="96x96" type="image/png">
 <link rel="icon" href="%(p)sassets/img/home-icon-192.png" sizes="192x192" type="image/png">
@@ -387,6 +405,7 @@ def page(path, title, description, body, active='', over_hero=False, extra_head=
 ''' % {
         'title': e(full_title), 'desc': e(description), 'p': prefix, 'extra': extra_head,
         'csp': csp(), 'ads': ads_tags(prefix), 'v': ASSET_V, 'seo': seo, 'base': BASE_URL,
+        'share': share_url, 'og_type': og_type,
         'header': header(active, prefix, over_hero), 'body': body.replace('{{p}}', prefix), 'footer': footer(prefix),
     }
     dest = os.path.join(OUT, path)
