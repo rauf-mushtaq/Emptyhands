@@ -16,33 +16,7 @@ OUT = os.path.dirname(HERE)
 POSTS = json.load(open(os.path.join(HERE, 'content', 'posts.json')))
 
 # Cleaner, consistent (sentence-case) titles for the imported WordPress articles. URLs (slugs) stay the same.
-POST_TITLES = {
-    'reflections-learning-from-lockdown': 'Reflections: lessons from lockdown',
-    'history-of-karate-do': 'The history of Karate-Dō',
-    'sports-injuries': 'Sports injuries and the martial arts',
-    'emptyhands-charity-cup': 'The EmptyHands Charity Cup',
-    'workshop-with-shihan-chris-rowen': 'Workshop with Shihan Chris Rowen',
-    'sotai-master-class-with-rex-lassalle': 'Sōtai master class with Rex Lassalle',
-    'warm-up': 'The dojo warm-up',
-    'clinic': 'The EmptyHands Shiatsu clinic',
-    'bodhidharma-founder-of-martial-arts': 'Bodhidharma, founder of the martial arts',
-    'chi': 'Chi: understanding the vital life force',
-    'virtual-dojo': 'The virtual dojo',
-    'yoga-karate': 'Yoga and Karate',
-    'coronavirus-online-karate-training': 'Training Karate online through the pandemic',
-    'fight-club': 'Fight Club: back to the roots of Karate',
-    'immunity-tips': 'Boosting immunity with acupressure',
-    'kobudo': 'Kobudō: traditional Japanese weaponry',
-    'coping-with-stress-is-karate-the-answer': 'Coping with stress: is Karate the answer?',
-    '5-actionable-tips-to-becoming-a-better-karateka': 'Five ways to become a better karateka',
-    'neurobics-for-karate': 'Neurobics for Karate',
-    'karate-mindsets': 'Karate mindsets',
-    'shotokan-tigers': 'The Shotokan tiger',
-    'evidence-based-karate-training': 'Evidence-based Karate training',
-    'budo-culture': 'Budō culture',
-    'creating-online-dojo-with-microsoft-teams': 'Creating an online dojo with Microsoft Teams',
-    'karate_rules': 'Karate rules for personal growth',
-}
+POST_TITLES = {}   # all imported articles have been rewritten with their own titles in posts.json
 # Words that keep their capital letter when article headings are put into sentence case.
 KEEP_CAPS = {'Karate', 'Karateka', 'Karate-Dō', 'EmptyHands', 'Shihan', 'Chris', 'Rowen', 'Bodhidharma', 'China', 'Shaolin',
              'Japan', 'Japanese', 'Chi', 'Yin', 'Yang', 'To-Te', 'Jitsu', 'Gichin', 'Funakoshi', 'Asian', 'Kidney', 'Lung', 'Intestine',
