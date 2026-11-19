@@ -46,9 +46,7 @@ def tidy_heading(text):
 
 
 # Replacement cover photos for imported articles: slug -> (file, width, height)
-POST_COVERS = {
-    'coronavirus-online-karate-training': ('azeem-mushtaq.webp', 480, 371),
-}
+POST_COVERS = {}   # covers are now set per article in posts.json
 
 
 def tidy_post(p):
