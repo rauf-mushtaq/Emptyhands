@@ -118,7 +118,6 @@ SOCIAL = {
 DOCS = {
     'syllabus': 'assets/docs/EmptyHands-Syllabus-Summary-Sheet-10th-Kyu-to-Shodan-Level.pdf',
     'calendar': 'assets/docs/EmptyHands-Dojo-Calendar-2026.pdf',
-    'planner': 'assets/docs/EH-Yearly-Planner.pdf',
 }
 DOJOS = [
     {
@@ -539,7 +538,6 @@ def downloads(prefix='{{p}}'):
     items = [
         (DOCS['syllabus'], 'Karate syllabus', '10th Kyu to Shodan summary'),
         (DOCS['calendar'], 'Dojo calendar 2026', 'Classes, gradings & workshops'),
-        (DOCS['planner'], 'Yearly planner', 'Plan your training year'),
     ]
     return '<div class="downloads">%s</div>' % ''.join(
         '<a class="download" href="%s%s" target="_blank" rel="noopener"><span class="ic">PDF</span><span><strong>%s</strong><span>%s</span></span></a>' % (prefix, href, t, s)
